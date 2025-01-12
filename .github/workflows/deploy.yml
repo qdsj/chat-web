@@ -1,0 +1,55 @@
+name: Auth WebDeploy
+
+on:
+    push:
+        branches: [main, develop]
+
+jobs:
+    Deploy:
+        runs-on: ubuntu-latest
+        environment:
+            name: ${{ github.ref == 'refs/heads/main' && 'production' || 'development' }}
+        steps:
+            - uses: actions/checkout@v4.2.2
+              with:
+                  persist-credentials: false
+
+            - name: Install
+              run: npm i
+
+            - name: Build
+              run: npm run build
+
+            - name: Set deploy directory
+              env:
+                  RELEASE_BRANCH: "refs/heads/main"
+                  RELEASE_DIR: "/www/wwwroot/authqdsj/release"
+                  DEV_BRANCH: "refs/heads/develop"
+                  DEV_DIR: "/www/wwwroot/authqdsj/develop"
+              run: |
+                  # 根据分支设置部署路径
+                  if [ "${{ github.ref }}" = "$RELEASE_BRANCH" ]; then
+                    echo "DEPLOY_DIR=$RELEASE_DIR" >> $GITHUB_ENV
+                  elif [ "${{ github.ref }}" = "$DEV_BRANCH" ]; then
+                    echo "DEPLOY_DIR=$DEV_DIR" >> $GITHUB_ENV
+                  fi
+            - name: Setup SSH
+              uses: webfactory/ssh-agent@v0.8.0
+              with:
+                  ssh-private-key: ${{ secrets.SERVER_KEY }}
+            - name: Deploy
+              env:
+                  # DEPLOY_PATH: "/www/wwwroot/todo-list" # 部署路径
+                  DEPLOY_USER: ${{ secrets.SERVER_USER_NAME }}
+                  DEPLOY_HOST: ${{ secrets.SERVER_HOST }}
+              run: |
+                  # 首先添加服务器到已知主机
+                  ssh-keyscan -H $DEPLOY_HOST >> ~/.ssh/known_hosts
+
+                  TIMESTAMP=$(date +%Y%m%d_%H%M%S)
+                  DEPLOY_DIR_PRE="${DEPLOY_DIR}"
+                  DEPLOY_DIR="${DEPLOY_DIR}/${TIMESTAMP}"
+
+                  ssh $DEPLOY_USER@$DEPLOY_HOST "mkdir -p ${DEPLOY_DIR}"
+                  scp -r dist/* $DEPLOY_USER@$DEPLOY_HOST:${DEPLOY_DIR}/
+                  ssh $DEPLOY_USER@$DEPLOY_HOST "ln -sfn ${DEPLOY_DIR} ${DEPLOY_DIR_PRE}/current"
