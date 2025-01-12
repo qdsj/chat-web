@@ -1,4 +1,4 @@
-name: Auth WebDeploy
+name: Chat Web Deploy
 
 on:
     push:
