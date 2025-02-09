@@ -4,6 +4,7 @@ import { ref } from 'vue';
 const message = ref('');
 const activeConversation = ref('1');
 const conversations = ref([
+  {id:'group-all', name:'所有人的群聊',},
   { id: '1', name: '张三', lastMessage: '你好！', time: '10:00' },
   { id: '2', name: '李四', lastMessage: '在吗？', time: '09:30' },
   { id: '3', name: '王五', lastMessage: '好的', time: '昨天' },
@@ -132,6 +133,12 @@ function insertEmoji(emoji: any) {
     .conversation-info {
       margin-left: 12px;
       flex: 1;
+      display: flex;
+    flex-direction: column;
+    height: 100%;
+    line-height: 1;
+    justify-content: space-between;
+
       .name {
         display: block;
         font-weight: bold;
