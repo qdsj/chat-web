@@ -1,44 +1,16 @@
 <script setup lang="ts">
-import { io } from "socket.io-client";
+import { fetchTest } from "@/apis/auth";
+import { storeRefreshToken } from "@/apis/util";
 
 onMounted(() => {
-	const client = io("http://localhost:3210");
-
-	client.on("connect", () => {
-		console.log("连接成功");
-
-		client.emit("test", "hello", (data: any) => {
-			console.log(data);
-		});
-
-		client.emit("connect-server", {
-			id: client.id,
-			name: "zhangsan",
-		});
-
-		client.emit("join-room", {
-			id: client.id,
-			roomId: "1",
-			name: "zhangsan",
-		});
-
-		client.emit("findAllOnline", (data: any) => {
-			console.log(data);
-		});
-	});
-
-	client.on("connect_error", () => {
-		console.log("error");
-	});
-
-	client.on("data", (data) => {
-		console.log("data: ", data);
-	});
+	// openWindow = window.open("http://localhost:3111/authqdsj/login", "_blank");
 });
+
+// fetchTest();
 </script>
 
 <template>
-	<div>page2</div>
+	<el-button @click="fetchTest">测试</el-button>
 </template>
 
 <style scoped lang="scss"></style>
