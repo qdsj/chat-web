@@ -1,12 +1,5 @@
 <script setup lang="ts">
 import { fetchTest } from "@/apis/auth";
-import { storeRefreshToken } from "@/apis/util";
-
-onMounted(() => {
-	// openWindow = window.open("http://localhost:3111/authqdsj/login", "_blank");
-});
-
-// fetchTest();
 </script>
 
 <template>

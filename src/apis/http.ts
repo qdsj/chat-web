@@ -1,4 +1,3 @@
-import { ElMessage } from "element-plus";
 import { accessAuth, checkResponseToken, getAuthToken, getRefreshToken } from "./util";
 
 const baseUrl = import.meta.env.VITE_BASE_URL;
@@ -54,4 +53,4 @@ const getFetch = (url: string) => {
 	return fetchApi(url, { method: "GET" });
 };
 
-export { postFetch, getFetch };
+export { getFetch, postFetch };
