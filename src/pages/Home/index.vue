@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { ref } from 'vue';
+import {useSocketStore} from '@/store/useSocketStore' 
+import { useRoute } from 'vue-router';
 
+const selfName = ref('');
 const message = ref('');
 const activeConversation = ref('1');
 const conversations = ref([
@@ -9,21 +12,85 @@ const conversations = ref([
   { id: '2', name: '李四', lastMessage: '在吗？', time: '09:30' },
   { id: '3', name: '王五', lastMessage: '好的', time: '昨天' },
 ]);
+const selectFriend = ref<any>(conversations.value[activeConversation.value as any]);
 
 const messages = ref([
-  { id: 1, content: '你好！', isSelf: false, time: '10:00' },
-  { id: 2, content: '你好，有什么可以帮你的吗？', isSelf: true, time: '10:01' },
+  { id: 1, sender:'', content: '你好！', isSelf: false, time: '10:00' },
+  { id: 2, sender:selfName.value, content: '你好，有什么可以帮你的吗？', isSelf: true, time: '10:01' },
 ]);
+
+const socketStore = useSocketStore();
+const route = useRoute();
+
+onMounted(() => {
+  // if(!selfName.value) {
+  // // get user name
+  // let user = prompt('请输入用户名：');
+  // while (!user) {
+  //   user = prompt('请输入用户名：');
+  // }
+  console.log(route)
+  selfName.value = (route.query.name || '') as string;
+  
+
+
+  // connect socket
+socketStore.socketInitial({
+  onConnectCallbacks:[
+    () => {
+      // socketStore.client!.emit('join', {
+      //   room: 'group-all',
+      //   name: selfName.value
+      // });
+      socketStore.socketJoinRoom('group-all')
+    }
+  ],
+  onMessageCallbacks:[
+    (data:any) => {
+      console.log('message', data)
+      messages.value.push({
+        id: messages.value.length + 1,
+        sender: data.sender,
+        content: data.content,
+        isSelf: false,
+        time: new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })
+      });
+    }
+    ]
+})
+});
+
+const handleSelect = (key: string, keyPath: string[]) => {
+  console.log(key, keyPath)
+  conversations.value.forEach(item => {
+    if(item.id === key) {
+      selectFriend.value = item;
+    }
+  });
+}
+
 
 function sendMessage() {
   if (message.value.trim()) {
     messages.value.push({
       id: messages.value.length + 1,
+      sender: selfName.value,
       content: message.value,
       isSelf: true,
       time: new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })
     });
+
+
+    socketStore.socketSend({
+      roomId: 'group-all',
+      type:'group',
+      sender: selfName.value,
+      content: message.value,
+      time: new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })
+    })
+
     message.value = '';
+
   }
 }
 
@@ -43,7 +110,9 @@ function insertEmoji(emoji: any) {
 <template>
   <el-container class="chat-container">
     <el-aside width="250px" class="sidebar">
-      <el-menu :default-active="activeConversation" class="conversation-list">
+      <el-menu :default-active="activeConversation" class="conversation-list"
+      @select="handleSelect"
+      >
         <el-menu-item v-for="conv in conversations" :key="conv.id" :index="conv.id">
           <el-avatar size="small">{{ conv.name[0] }}</el-avatar>
           <div class="conversation-info">
@@ -60,7 +129,7 @@ function insertEmoji(emoji: any) {
         <div class="messages-container">
           <div v-for="msg in messages" :key="msg.id" 
                :class="['message', msg.isSelf ? 'message-self' : 'message-other']">
-            <el-avatar size="small">{{ msg.isSelf ? 'Me' : '对方' }}</el-avatar>
+            <el-avatar size="small">{{ msg.isSelf ? 'Me' : msg.sender }}</el-avatar>
             <el-card class="message-content" shadow="never">
               {{ msg.content }}
               <div class="message-time">{{ msg.time }}</div>
