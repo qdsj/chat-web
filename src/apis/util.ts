@@ -43,10 +43,10 @@ const accessAuth = (response: Response) => {
 				setTimeout(() => {
 					openWindow!.close();
 				}, 1000);
-				// openWindow.postMessage({ type: "auth-token" }, "*");
 			}
 		}
 	});
+
 	setTimeout(() => {
 		openWindow = window.open(redirectUrl!, "_blank");
 	}, 1000);
