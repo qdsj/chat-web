@@ -1,0 +1,44 @@
+{
+  "id": "4825916",
+  "name": "chat-web",
+  "font_family": "iconfont",
+  "css_prefix_text": "icon-",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "20888023",
+      "name": "icon-plane",
+      "font_class": "icon-plane",
+      "unicode": "e754",
+      "unicode_decimal": 59220
+    },
+    {
+      "icon_id": "31579145",
+      "name": "icon-add-group",
+      "font_class": "icon-add-group",
+      "unicode": "e64b",
+      "unicode_decimal": 58955
+    },
+    {
+      "icon_id": "4766293",
+      "name": "user",
+      "font_class": "user",
+      "unicode": "e7ae",
+      "unicode_decimal": 59310
+    },
+    {
+      "icon_id": "16618014",
+      "name": "chat",
+      "font_class": "chat",
+      "unicode": "e69d",
+      "unicode_decimal": 59037
+    },
+    {
+      "icon_id": "21216900",
+      "name": "more2",
+      "font_class": "more2",
+      "unicode": "e689",
+      "unicode_decimal": 59017
+    }
+  ]
+}
