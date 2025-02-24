@@ -2,7 +2,7 @@
 import emojiLists from "@/util/Emoji";
 import { ref } from "vue";
 
-const props = defineProps({
+defineProps({
   currentChatSession: {
     type: Object,
     default: () => {},
@@ -18,10 +18,8 @@ const hidePopover = () => {
   showEmojiPopover.value = false;
   showSendMsgPopover.value = false;
 };
-// 发送图片消息
-const sendImage = (file: File) => {};
 // 发送表情包
-const sendEmoji = (emoji: string) => {
+const sendEmoji = () => {
   showEmojiPopover.value = false;
 };
 const showEmojiPopoverHandle = () => {
@@ -85,7 +83,7 @@ const pasteFile = () => {};
                 <div
                   class="emoji-item"
                   v-for="item in emoji.emojiList"
-                  @click.stop="sendEmoji(item)"
+                  @click.stop="sendEmoji"
                 >
                   {{ item }}
                 </div>
