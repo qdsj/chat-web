@@ -8,7 +8,7 @@ import Blank from "@/components/Blank.vue";
 const socketStore = useSocketStore();
 const route = useRoute();
 const selfName = ref("");
-const message = ref("");
+// const message = ref("");
 const searchKey = ref("");
 
 // 搜索好友 or 群聊
