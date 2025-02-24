@@ -4,6 +4,8 @@ import { useRoute } from "vue-router";
 const route = useRoute();
 const searchKey = ref("");
 
+const rightTitle = ref();
+
 // 搜索好友 or 群聊
 const search = () => {
   console.log(searchKey.value);
@@ -116,7 +118,12 @@ const partJump = (item: any) => {
       </div>
     </template>
     <!-- 右边 -->
-    <!-- <template #right-content></template> -->
+    <template #right-content>
+      <div class="title-panel">{{ rightTitle }}</div>
+      <router-view v-slot="{ Component }">
+        <component :is="Component" ref="componentRef"></component>
+      </router-view>
+    </template>
   </Layout>
 </template>
 
@@ -127,7 +134,7 @@ const partJump = (item: any) => {
   display: flex;
   align-items: center;
   .iconfont {
-    font-size: 12px;
+    font-size: 18px;
   }
 }
 .contact-list {
