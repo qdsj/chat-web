@@ -17,6 +17,22 @@ const formatTime = (timestamp: number) => {
   }
 };
 
+const isEmpty = (str: string) => {
+  if (str == null || str == "" || str == undefined) {
+    return true;
+  }
+  return false;
+};
+
+const getAreaInfo = (data: string) => {
+  if (isEmpty(data)) {
+    return "-";
+  }
+  return data.replace(",", " ");
+};
+
 export default {
   formatTime,
+  isEmpty,
+  getAreaInfo,
 };
