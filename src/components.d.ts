@@ -7,24 +7,41 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    AvatarBase: typeof import('./components/AvatarBase.vue')['default']
     Blank: typeof import('./components/Blank.vue')['default']
+    ContentPanel: typeof import('./components/ContentPanel.vue')['default']
     ElAside: typeof import('element-plus/es')['ElAside']
     ElAvatar: typeof import('element-plus/es')['ElAvatar']
     ElButton: typeof import('element-plus/es')['ElButton']
     ElCard: typeof import('element-plus/es')['ElCard']
     ElContainer: typeof import('element-plus/es')['ElContainer']
+    ElDropdown: typeof import('element-plus/es')['ElDropdown']
+    ElDropdownItem: typeof import('element-plus/es')['ElDropdownItem']
+    ElDropdownMenu: typeof import('element-plus/es')['ElDropdownMenu']
     ElFooter: typeof import('element-plus/es')['ElFooter']
+    ElForm: typeof import('element-plus/es')['ElForm']
+    ElFormItem: typeof import('element-plus/es')['ElFormItem']
+    ElFromItem: typeof import('element-plus/es')['ElFromItem']
     ElIcon: typeof import('element-plus/es')['ElIcon']
+    ElImage: typeof import('element-plus/es')['ElImage']
     ElInput: typeof import('element-plus/es')['ElInput']
     ElMain: typeof import('element-plus/es')['ElMain']
     ElMenu: typeof import('element-plus/es')['ElMenu']
     ElMenuItem: typeof import('element-plus/es')['ElMenuItem']
     ElPopover: typeof import('element-plus/es')['ElPopover']
+    ElRadio: typeof import('element-plus/es')['ElRadio']
+    ElRadioGroup: typeof import('element-plus/es')['ElRadioGroup']
+    ElSwitch: typeof import('element-plus/es')['ElSwitch']
     ElTabPane: typeof import('element-plus/es')['ElTabPane']
     ElTabs: typeof import('element-plus/es')['ElTabs']
     ElUpload: typeof import('element-plus/es')['ElUpload']
     Layout: typeof import('./components/Layout.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    ShowLocalImage: typeof import('./components/ShowLocalImage.vue')['default']
+    UserBaseInfo: typeof import('./components/UserBaseInfo.vue')['default']
+  }
+  export interface ComponentCustomProperties {
+    vLoading: typeof import('element-plus/es')['ElLoadingDirective']
   }
 }

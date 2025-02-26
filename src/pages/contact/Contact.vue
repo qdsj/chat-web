@@ -1,10 +1,9 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 const route = useRoute();
+const router = useRouter();
 const searchKey = ref("");
-
-const rightTitle = ref();
 
 // 搜索好友 or 群聊
 const search = () => {
@@ -16,6 +15,12 @@ const partList = ref([
   {
     partName: "新朋友",
     children: [
+      {
+        name: "搜好友",
+        icon: "icon-search",
+        iconBgColor: "#fa9d3b",
+        path: "/contact/search",
+      },
       {
         name: "新的朋友",
         icon: "icon-icon-plane",
@@ -63,9 +68,16 @@ const partList = ref([
   },
 ]);
 
-// TODO 此处需要对接后端接口获取数据
-const partJump = (item: any) => {
-  console.log(item);
+const rightTitle = ref();
+const partJump = (data: any) => {
+  if (data.showTitle) {
+    rightTitle.value = data.name;
+  } else {
+    rightTitle.value = null;
+  }
+
+  // TODO 处理联系人好友申请 数量已读
+  router.push(data.path);
 };
 </script>
 
@@ -167,7 +179,7 @@ const partJump = (item: any) => {
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 36px;
+        font-size: 24px;
         color: #fff;
       }
       .text {
@@ -196,7 +208,7 @@ const partJump = (item: any) => {
 }
 .title-panel {
   width: 100%;
-  height: 6px;
+  height: 60px;
   display: flex;
   align-items: center;
   padding-left: 10px;

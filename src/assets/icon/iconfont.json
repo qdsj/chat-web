@@ -6,6 +6,41 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "11653927",
+      "name": "icon-woman",
+      "font_class": "icon-woman",
+      "unicode": "e627",
+      "unicode_decimal": 58919
+    },
+    {
+      "icon_id": "11779434",
+      "name": "icon-man",
+      "font_class": "icon-man",
+      "unicode": "e639",
+      "unicode_decimal": 58937
+    },
+    {
+      "icon_id": "3781858",
+      "name": "icon-folder1",
+      "font_class": "icon-folder",
+      "unicode": "e908",
+      "unicode_decimal": 59656
+    },
+    {
+      "icon_id": "23754197",
+      "name": "icon-about",
+      "font_class": "icon-about",
+      "unicode": "e686",
+      "unicode_decimal": 59014
+    },
+    {
+      "icon_id": "29631531",
+      "name": "HG-icon-user-settings-line",
+      "font_class": "HG-icon-user-settings-line",
+      "unicode": "e618",
+      "unicode_decimal": 58904
+    },
+    {
       "icon_id": "1127417",
       "name": "搜索",
       "font_class": "search",
