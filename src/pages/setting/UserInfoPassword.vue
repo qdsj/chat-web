@@ -7,6 +7,7 @@ const formData = reactive({
   rePassword: "",
 });
 const validateRePass = (rule: any, value: string) => {
+  void rule;
   if (value !== formData.password) {
     return new Error("两次输入的密码不一致");
   }
@@ -30,7 +31,7 @@ const rules = reactive({
     { required: true, message: "请再次输入密码", trigger: "blur" },
     {
       validator: validateRePass,
-      massage: "两次输入的密码不一致！",
+      message: "两次输入的密码不一致！",
     },
   ],
 });
