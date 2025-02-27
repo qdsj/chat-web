@@ -55,7 +55,9 @@ const cancel = () => {
       label-width="100px"
       @submit.prevent
     >
-      <el-form-item label="头像" prop="avatarFile"></el-form-item>
+      <el-form-item label="头像" prop="avatarFile">
+        <AvatarUpload v-model="formData.avatarFile"></AvatarUpload>
+      </el-form-item>
       <el-form-item label="昵称" prop="nickName">
         <el-input
           maxlength="150"

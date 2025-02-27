@@ -90,10 +90,15 @@ const editBack = () => {
       position: absolute;
       right: 0px;
       top: 20px;
-      .icon-more {
-        color: #9e9e9e;
-        &:hover {
-          background: #ddd;
+      .el-dropdown-link {
+        .iconfont {
+          font-size: 20px;
+        }
+        .icon-icon_more {
+          color: #9e9e9e;
+          &:hover {
+            background: #ddd;
+          }
         }
       }
     }
