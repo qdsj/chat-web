@@ -11,6 +11,10 @@ defineProps({
     type: Boolean,
     default: true,
   },
+  width: {
+    type: Number,
+    default: 80,
+  },
 });
 </script>
 
@@ -18,7 +22,7 @@ defineProps({
   <div class="user-panel">
     <AvatarBase
       :userId="userInfo.userId || userInfo.contactId"
-      :width="80"
+      :width="width"
       :borderRadius="5"
       :showDetail="true"
     ></AvatarBase>
@@ -39,7 +43,7 @@ defineProps({
 <style scoped lang="scss">
 .user-panel {
   display: flex;
-  padding-bottom: 10px;
+  margin: 5px;
   .user-info {
     flex: 1;
     margin-left: 10px;

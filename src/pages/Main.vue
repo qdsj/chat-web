@@ -1,7 +1,12 @@
 <script setup lang="ts">
+import Avatar from "@/components/Avatar.vue";
 import { ref } from "vue";
 import { useRouter } from "vue-router";
+import { useUserStore } from "@/store/useUserStore";
+
 const router = useRouter();
+const userStore = useUserStore();
+
 // 图标菜单列表
 const menuList = ref([
   {
@@ -46,7 +51,7 @@ const changeMenu = (item: MenuItem) => {
     <!-- 左边 -->
     <div class="left-sider">
       <!-- 头像 -->
-      <div></div>
+      <Avatar :userId="userStore.userInfo.userId"></Avatar>
       <!-- 菜单列表 -->
       <div class="menu-list">
         <template v-for="item in menuList">

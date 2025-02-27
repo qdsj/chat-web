@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import Avatar from "@/components/Avatar.vue";
 import { ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 const route = useRoute();
@@ -62,7 +63,16 @@ const partList = ref([
     contactId: "contactId",
     contactName: "contactName",
     showTitle: true,
-    contactData: [],
+    contactData: [
+      {
+        contactId: "1",
+        contactName: "panda",
+        contactType: 0,
+        sex: null,
+        status: 1,
+        userId: "panda123",
+      },
+    ],
     contactPath: "/contact/userDetail",
     emptyMsg: "暂无好友",
   },
@@ -78,6 +88,11 @@ const partJump = (data: any) => {
 
   // TODO 处理联系人好友申请 数量已读
   router.push(data.path);
+};
+
+// 查看联系人详情
+const contactDetail = (data: any, item: any) => {
+  console.log(data, item);
 };
 </script>
 
@@ -121,7 +136,25 @@ const partJump = (data: any) => {
             </div>
             <!-- 数据 -->
             <!-- TODO  后台数据渲染-->
-            <!-- <template v-for="contact in item.contactData"></template> -->
+            <template v-for="contact in item.contactData">
+              <div
+                v-if="item.contactId && item.contactName"
+                :class="[
+                  'part-item',
+                  (contact as any)[item.contactId] == route.query.contactId
+                    ? 'active'
+                    : '',
+                ]"
+                @click="contactDetail(contact, item)"
+              >
+                <Avatar
+                  v-if="contact"
+                  :userId="contact.contactId"
+                  :width="35"
+                ></Avatar>
+                <div class="text">{{ (contact as any)[item.contactName] }}</div>
+              </div>
+            </template>
             <template v-if="item.contactData && item.contactData.length == 0">
               <div class="no-data">{{ item.emptyMsg }}</div>
             </template>

@@ -3,7 +3,7 @@ import { ref } from "vue";
 
 export const useUserStore = defineStore("user", () => {
   const userInfo = ref({
-    userId: "",
+    userId: "blue123",
     avatarFile: "",
     nickName: "blue",
     sex: 0,

@@ -2,6 +2,8 @@
 import UserBaseInfo from "@/components/UserBaseInfo.vue";
 import { ElMessage } from "element-plus";
 import { useUserStore } from "@/store/useUserStore";
+import ContentPanel from "@/components/ContentPanel.vue";
+import SearchAdd from "./SearchAdd.vue";
 
 const userStore = useUserStore();
 const contactId = ref();
@@ -17,8 +19,8 @@ const search = () => {
   // 后台接口返回的数据
   let result = {
     // 0:非好友；1:好友；2:已删除好友；3:被删除好友
-    status: 1,
-    nickName: "blue",
+    status: 0,
+    nickName: "friend",
     contactId: contactId.value,
     contactType: "USER",
   };
@@ -33,11 +35,19 @@ const contactTypeName = computed(() => {
   if (searchResult.value.contactType === "GROUP") return "群组";
 });
 
+const searchAddRef = ref();
 // 发送好友申请
-const applyContact = () => {};
+const applyContact = () => {
+  if (searchAddRef.value) {
+    searchAddRef.value.showFun(searchResult.value);
+  }
+};
 
 // 发消息
 const sendMessage = () => {};
+
+// 重置表单
+const resetForm = () => {};
 </script>
 
 <template>
@@ -90,6 +100,8 @@ const sendMessage = () => {};
     </div>
     <!-- <div v-if="!searchResult" class="no-data">没有搜索到任何结果</div> -->
   </ContentPanel>
+  <!-- 添加好友申请弹框 -->
+  <SearchAdd ref="searchAddRef" @reload="resetForm"></SearchAdd>
 </template>
 
 <style scoped lang="scss">
