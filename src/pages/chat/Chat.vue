@@ -190,7 +190,7 @@ onMounted(() => {
           <span>{{ currentChatSession.name }}</span>
         </div>
         <!-- 群聊 -->
-        <div class="iconfont icon-icon_more no-drag"></div>
+        <div class="iconfont icon-icon_more"></div>
       </div>
       <el-main class="chat-box" v-show="currentChatSession">
         <div class="messages-container">
@@ -432,11 +432,6 @@ onMounted(() => {
   .title {
     font-size: 18px;
     font-weight: 600;
-  }
-  .no-drag {
-    margin-top: 10px;
-    cursor: pointer;
-    font-size: 20px;
   }
 }
 </style>
