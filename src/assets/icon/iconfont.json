@@ -6,6 +6,27 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "877693",
+      "name": "icon_email",
+      "font_class": "iconemail",
+      "unicode": "e610",
+      "unicode_decimal": 58896
+    },
+    {
+      "icon_id": "20290180",
+      "name": "icon_checkcode",
+      "font_class": "icon_checkcode",
+      "unicode": "e7cc",
+      "unicode_decimal": 59340
+    },
+    {
+      "icon_id": "36072959",
+      "name": "icon-password",
+      "font_class": "icon-password",
+      "unicode": "e607",
+      "unicode_decimal": 58887
+    },
+    {
       "icon_id": "2207751",
       "name": "icon-add",
       "font_class": "add",

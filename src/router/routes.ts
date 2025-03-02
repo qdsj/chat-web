@@ -1,6 +1,16 @@
 export default [
   {
     path: "/",
+    name: "默认路径",
+    redirect: "/login",
+  },
+  {
+    path: "/login",
+    name: "登录",
+    component: () => import("@/pages/Login.vue"),
+  },
+  {
+    path: "/main",
     redirect: "/chat",
     name: "主页面",
     component: () => import("@/pages/Main.vue"),
