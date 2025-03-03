@@ -33,7 +33,7 @@ const partList = ref([
     ],
   },
   {
-    partName: "我的群聊",
+    partName: "群聊",
     children: [
       {
         name: "新建群聊",
@@ -45,18 +45,23 @@ const partList = ref([
     contactId: "groupId",
     contactName: "groupName",
     showTitle: true,
-    contactData: [],
+    contactData: [
+      {
+        contactId: "1",
+        groupName: "群聊",
+      },
+    ],
     contactPath: "/contact/groupDetail",
   },
-  {
-    partName: "我加入的群聊",
-    contactId: "contactId",
-    contactName: "contactName",
-    showTitle: true,
-    contactData: [],
-    contactPath: "/contact/groupDetail",
-    emptyMsg: "暂未加入群聊",
-  },
+  // {
+  //   partName: "我加入的群聊",
+  //   contactId: "contactId",
+  //   contactName: "contactName",
+  //   showTitle: true,
+  //   contactData: [],
+  //   contactPath: "/contact/groupDetail",
+  //   emptyMsg: "暂未加入群聊",
+  // },
   {
     partName: "我的好友",
     children: [],
@@ -91,8 +96,18 @@ const partJump = (data: any) => {
 };
 
 // 查看联系人详情
-const contactDetail = (data: any, item: any) => {
-  console.log(data, item);
+const contactDetail = (contact: any, part: any) => {
+  if (part.showTitle) {
+    rightTitle.value = contact[part.contactName];
+  } else {
+    rightTitle.value = null;
+  }
+  router.push({
+    path: part.contactPath,
+    query: {
+      contactId: contact[part.contactId],
+    },
+  });
 };
 </script>
 
@@ -241,7 +256,7 @@ const contactDetail = (data: any, item: any) => {
 }
 .title-panel {
   width: 100%;
-  height: 60px;
+  height: 90px;
   display: flex;
   align-items: center;
   padding-left: 10px;

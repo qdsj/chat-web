@@ -49,7 +49,7 @@ const addContact = () => {};
     <template #reference>
       <AvatarBase
         :userId="userId"
-        :width="40"
+        :width="width"
         :borderRadius="borderRadius"
         :showDetail="false"
       ></AvatarBase>

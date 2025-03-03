@@ -36,6 +36,26 @@ export default [
             name: "搜索",
             component: () => import("@/pages/contact/Search.vue"),
           },
+          {
+            path: "/contact/contactNotice",
+            name: "新的朋友",
+            component: () => import("@/pages/contact/ContactApply.vue"),
+          },
+          {
+            path: "/contact/createGroup",
+            name: "创建群聊",
+            component: () => import("@/pages/contact/GroupEdit.vue"),
+          },
+          {
+            path: "/contact/userDetail",
+            name: "用户详情",
+            component: () => import("@/pages/contact/UserDetail.vue"),
+          },
+          {
+            path: "/contact/groupDetail",
+            name: "群聊详情",
+            component: () => import("@/pages/contact/GroupDetail.vue"),
+          },
         ],
       },
       {

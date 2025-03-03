@@ -21,7 +21,8 @@ const props = defineProps({
 <style scoped lang="scss">
 .content-panel {
   overflow: hidden;
-  height: calc(100vh - 62px);
+  height: calc(100vh - 92px);
+  padding-top: 10px;
   .content-inner {
     margin: 0px auto;
     width: 600px;
