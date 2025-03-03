@@ -22,6 +22,8 @@ declare module 'vue' {
     ElDropdownMenu: typeof import('element-plus/es')['ElDropdownMenu']
     ElForm: typeof import('element-plus/es')['ElForm']
     ElFormItem: typeof import('element-plus/es')['ElFormItem']
+    ElFrom: typeof import('element-plus/es')['ElFrom']
+    ElFromItem: typeof import('element-plus/es')['ElFromItem']
     ElImage: typeof import('element-plus/es')['ElImage']
     ElInput: typeof import('element-plus/es')['ElInput']
     ElMain: typeof import('element-plus/es')['ElMain']
@@ -39,6 +41,7 @@ declare module 'vue' {
     UserBaseInfo: typeof import('./components/UserBaseInfo.vue')['default']
   }
   export interface ComponentCustomProperties {
+    vInfiniteScroll: typeof import('element-plus/es')['ElInfiniteScroll']
     vLoading: typeof import('element-plus/es')['ElLoadingDirective']
   }
 }
