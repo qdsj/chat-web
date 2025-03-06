@@ -1,10 +1,10 @@
 <script setup lang="ts">
+import Avatar from "@/components/Avatar.vue";
 import { ref } from "vue";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 const route = useRoute();
+const router = useRouter();
 const searchKey = ref("");
-
-const rightTitle = ref();
 
 // 搜索好友 or 群聊
 const search = () => {
@@ -17,6 +17,12 @@ const partList = ref([
     partName: "新朋友",
     children: [
       {
+        name: "搜好友",
+        icon: "icon-search",
+        iconBgColor: "#fa9d3b",
+        path: "/contact/search",
+      },
+      {
         name: "新的朋友",
         icon: "icon-icon-plane",
         iconBgColor: "#08bf61",
@@ -27,7 +33,7 @@ const partList = ref([
     ],
   },
   {
-    partName: "我的群聊",
+    partName: "群聊",
     children: [
       {
         name: "新建群聊",
@@ -39,33 +45,69 @@ const partList = ref([
     contactId: "groupId",
     contactName: "groupName",
     showTitle: true,
-    contactData: [],
+    contactData: [
+      {
+        contactId: "1",
+        groupName: "群聊",
+      },
+    ],
     contactPath: "/contact/groupDetail",
   },
-  {
-    partName: "我加入的群聊",
-    contactId: "contactId",
-    contactName: "contactName",
-    showTitle: true,
-    contactData: [],
-    contactPath: "/contact/groupDetail",
-    emptyMsg: "暂未加入群聊",
-  },
+  // {
+  //   partName: "我加入的群聊",
+  //   contactId: "contactId",
+  //   contactName: "contactName",
+  //   showTitle: true,
+  //   contactData: [],
+  //   contactPath: "/contact/groupDetail",
+  //   emptyMsg: "暂未加入群聊",
+  // },
   {
     partName: "我的好友",
     children: [],
     contactId: "contactId",
     contactName: "contactName",
     showTitle: true,
-    contactData: [],
+    contactData: [
+      {
+        contactId: "1",
+        contactName: "panda",
+        contactType: 0,
+        sex: null,
+        status: 1,
+        userId: "panda123",
+      },
+    ],
     contactPath: "/contact/userDetail",
     emptyMsg: "暂无好友",
   },
 ]);
 
-// TODO 此处需要对接后端接口获取数据
-const partJump = (item: any) => {
-  console.log(item);
+const rightTitle = ref();
+const partJump = (data: any) => {
+  if (data.showTitle) {
+    rightTitle.value = data.name;
+  } else {
+    rightTitle.value = null;
+  }
+
+  // TODO 处理联系人好友申请 数量已读
+  router.push(data.path);
+};
+
+// 查看联系人详情
+const contactDetail = (contact: any, part: any) => {
+  if (part.showTitle) {
+    rightTitle.value = contact[part.contactName];
+  } else {
+    rightTitle.value = null;
+  }
+  router.push({
+    path: part.contactPath,
+    query: {
+      contactId: contact[part.contactId],
+    },
+  });
 };
 </script>
 
@@ -109,7 +151,25 @@ const partJump = (item: any) => {
             </div>
             <!-- 数据 -->
             <!-- TODO  后台数据渲染-->
-            <!-- <template v-for="contact in item.contactData"></template> -->
+            <template v-for="contact in item.contactData">
+              <div
+                v-if="item.contactId && item.contactName"
+                :class="[
+                  'part-item',
+                  (contact as any)[item.contactId] == route.query.contactId
+                    ? 'active'
+                    : '',
+                ]"
+                @click="contactDetail(contact, item)"
+              >
+                <Avatar
+                  v-if="contact"
+                  :userId="contact.contactId"
+                  :width="35"
+                ></Avatar>
+                <div class="text">{{ (contact as any)[item.contactName] }}</div>
+              </div>
+            </template>
             <template v-if="item.contactData && item.contactData.length == 0">
               <div class="no-data">{{ item.emptyMsg }}</div>
             </template>
@@ -167,7 +227,7 @@ const partJump = (item: any) => {
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 36px;
+        font-size: 24px;
         color: #fff;
       }
       .text {
@@ -196,7 +256,7 @@ const partJump = (item: any) => {
 }
 .title-panel {
   width: 100%;
-  height: 6px;
+  height: 90px;
   display: flex;
   align-items: center;
   padding-left: 10px;

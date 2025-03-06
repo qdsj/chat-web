@@ -1,8 +1,8 @@
 @font-face {
   font-family: "iconfont"; /* Project id 4825916 */
-  src: url('iconfont.woff2?t=1740373753024') format('woff2'),
-       url('iconfont.woff?t=1740373753024') format('woff'),
-       url('iconfont.ttf?t=1740373753024') format('truetype');
+  src: url('iconfont.woff2?t=1740901632539') format('woff2'),
+       url('iconfont.woff?t=1740901632539') format('woff'),
+       url('iconfont.ttf?t=1740901632539') format('truetype');
 }
 
 .iconfont {
@@ -11,6 +11,46 @@
   font-style: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-icon_chat:before {
+  content: "\e600";
+}
+
+.icon-iconemail:before {
+  content: "\e610";
+}
+
+.icon-icon_checkcode:before {
+  content: "\e7cc";
+}
+
+.icon-icon-password:before {
+  content: "\e607";
+}
+
+.icon-add:before {
+  content: "\e64d";
+}
+
+.icon-icon-woman:before {
+  content: "\e627";
+}
+
+.icon-icon-man:before {
+  content: "\e639";
+}
+
+.icon-icon-folder:before {
+  content: "\e908";
+}
+
+.icon-icon-about:before {
+  content: "\e686";
+}
+
+.icon-HG-icon-user-settings-line:before {
+  content: "\e618";
 }
 
 .icon-search:before {
