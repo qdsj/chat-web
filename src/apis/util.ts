@@ -48,7 +48,7 @@ const accessAuth = (response: Response) => {
 	});
 
 	setTimeout(() => {
-		openWindow = window.open(redirectUrl!, "_blank");
+		openWindow = window.open(import.meta.env.VITE_AUTH_URL + redirectUrl!, "_blank");
 	}, 1000);
 };
 
