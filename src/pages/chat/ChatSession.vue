@@ -55,12 +55,13 @@ defineProps({
   }
   .user-info {
     flex: 1;
-    margin-left: 10px;
+    margin: 0 15px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
     .user-name-panel {
       display: flex;
+      justify-content: space-between;
       .user-name {
         width: 280px;
         color: #000;
@@ -77,7 +78,7 @@ defineProps({
       }
     }
     .last-message {
-      width: 280px;
+      max-width: 95%;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;

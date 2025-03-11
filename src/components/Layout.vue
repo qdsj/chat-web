@@ -1,19 +1,28 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { Splitpanes, Pane } from "splitpanes";
+import "splitpanes/dist/splitpanes.css";
+</script>
 
 <template>
-  <div class="layout-container">
-    <!-- 左边 -->
-    <div class="left-side-inner">
+  <splitpanes class="layout-container">
+    <pane min-size="20" size="30" max-size="50" class="left-side-inner">
       <slot name="left-content"></slot>
-    </div>
-    <!-- 右边 -->
-    <div class="right-content">
+    </pane>
+    <pane min-size="50" size="70" class="right-content">
       <slot name="right-content"></slot>
-    </div>
-  </div>
+    </pane>
+  </splitpanes>
 </template>
 
 <style scoped lang="scss">
+.splitpanes__pane {
+  transition: none; /* 禁用过渡效果 */
+}
+
+:deep(.splitpanes__splitter) {
+  width: 5px;
+}
+
 .layout-container {
   display: flex;
   .left-side-inner {

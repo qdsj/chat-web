@@ -38,7 +38,7 @@ const jump = (item: any) => {
       <div class="menu-list">
         <div
           v-for="item in settingMenuList"
-          :class="['menu-item', route.path == item.path ? 'ment-active' : '']"
+          :class="['menu-item', route.path == item.path ? 'menu-active' : '']"
           @click="jump(item)"
         >
           <div

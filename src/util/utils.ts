@@ -31,8 +31,4 @@ const getAreaInfo = (data: string) => {
   return data.replace(",", " ");
 };
 
-export default {
-  formatTime,
-  isEmpty,
-  getAreaInfo,
-};
+export { formatTime, isEmpty, getAreaInfo };

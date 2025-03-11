@@ -3,13 +3,13 @@ import "./style.css";
 import App from "./App.vue";
 import router from "./router";
 import { createPinia } from "pinia";
-import "element-plus/dist/index.css";
-
 const pinia = createPinia();
 
 import "./assets/css/common.css";
 import "@/assets/icon/iconfont.css";
 import Layout from "@/components/Layout.vue";
+
+import "element-plus/dist/index.css";
 
 const app = createApp(App);
 app.use(pinia);

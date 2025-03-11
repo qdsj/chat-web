@@ -1,6 +1,12 @@
 <script setup lang="ts">
 import emojiLists from "@/util/Emoji";
-import { ref } from "vue";
+import { Message } from "@/util/types";
+import { useUserStore } from "@/store/useUserStore";
+import { useChatStore } from "@/store/useChatStore";
+import { formatTime } from "@/util/utils";
+
+const userStore = useUserStore();
+const chatStore = useChatStore();
 
 defineProps({
   currentChatSession: {
@@ -14,12 +20,31 @@ const activeEmoji = ref("笑脸");
 const showEmojiPopover = ref(false);
 const showSendMsgPopover = ref(false);
 const hidePopover = () => {
-  console.log("hide");
   showEmojiPopover.value = false;
   showSendMsgPopover.value = false;
 };
+
+const inputRef = ref();
 // 发送表情包
-const sendEmoji = () => {
+const chooseEmoji = async (emoji: string) => {
+  const inputElement = inputRef.value?.$el?.querySelector("textarea");
+  if (!inputElement) return;
+  // 获取当前光标的起始和结束位置
+  const start = inputElement.selectionStart;
+  const end = inputElement.selectionEnd;
+  // 将输入框的文本按光标位置拆分为前后两部分
+  const before = msgContent.value.slice(0, start);
+  const after = msgContent.value.slice(end);
+  // 插入表情
+  msgContent.value = before + emoji + after;
+
+  setTimeout(() => {
+    if (inputElement) {
+      inputElement.focus();
+      inputElement.selectionStart = inputElement.selectionEnd =
+        start + emoji.length;
+    }
+  }, 100);
   showEmojiPopover.value = false;
 };
 const showEmojiPopoverHandle = () => {
@@ -34,7 +59,8 @@ const uploadFile = ref();
 const uploadExceed = () => {};
 
 // 输入框内容
-const msgContent = ref();
+const msgContent = ref("");
+
 // 发送消息
 const sendMessage = (e: any) => {
   e.preventDefault();
@@ -44,11 +70,25 @@ const sendMessage = (e: any) => {
   const messageContent = msgContent.value ? msgContent.value.trim() : "";
   if (messageContent == "") {
     showSendMsgPopover.value = true;
+    setTimeout(() => {
+      hidePopover();
+    }, 1000);
     return;
   }
+  const message = reactive<Message>({
+    id: 1,
+    sender: userStore.userInfo.userId as string,
+    receiver: "",
+    content: messageContent,
+    isSelf: true,
+    time: formatTime(new Date().getTime()) as string,
+    type: "text" as string,
+  });
+
+  chatStore.appendMessageToCurrentConversation(message);
+  chatStore.appendMessageToConversation(message.receiver, message);
+  msgContent.value = "";
 };
-// 复制文件
-const pasteFile = () => {};
 </script>
 
 <template>
@@ -73,7 +113,7 @@ const pasteFile = () => {};
           ></div>
         </template>
         <template #default>
-          <el-tabs v-model="activeEmoji" @click.stop>
+          <el-tabs v-model="activeEmoji">
             <el-tab-pane
               v-for="emoji in emojiLists"
               :label="emoji.name"
@@ -83,7 +123,7 @@ const pasteFile = () => {};
                 <div
                   class="emoji-item"
                   v-for="item in emoji.emojiList"
-                  @click.stop="sendEmoji"
+                  @click.stop="chooseEmoji(item)"
                 >
                   {{ item }}
                 </div>
@@ -108,16 +148,14 @@ const pasteFile = () => {};
     <!-- 输入框 -->
     <div class="input-area">
       <el-input
-        :rows="7"
+        ref="inputRef"
+        autofocus
         v-model="msgContent"
         type="textarea"
         resize="none"
-        maxlength="500"
-        show-word-limit
         spellcheck="true"
-        input-style="background-color:#f5f5f5;border:none"
+        input-style="background-color:#f5f5f5;border:none;font-size:18px"
         @keydown.enter="sendMessage"
-        @paste="pasteFile"
       ></el-input>
     </div>
     <!-- 按钮 -->
@@ -162,7 +200,7 @@ const pasteFile = () => {};
   }
 }
 .send-panel {
-  height: 200px;
+  height: 100%;
   border-top: 1px solid #ddd;
   .toolbar {
     height: 40px;
@@ -183,13 +221,14 @@ const pasteFile = () => {};
     padding: 0px 10px;
     outline: none;
     width: 100%;
-    height: 170px;
+    min-height: 180px;
     overflow: auto;
     word-wrap: break-word;
     word-break: break-all;
-
     :deep(.el-textarea__inner) {
       box-shadow: none;
+      min-height: 180px !important;
+      background: #f2f2f2 !important;
     }
     :deep(.el-input__count) {
       background: none;
@@ -197,9 +236,9 @@ const pasteFile = () => {};
     }
   }
   .send-btn-panel {
-    text-align: right;
-    padding-top: 10px;
-    margin-right: 22px;
+    position: absolute;
+    bottom: 10px; /* 距离底部的距离 */
+    right: 10px; /* 可选：如果需要控制宽度 */
     .send-btn {
       cursor: pointer;
       color: #07c160;

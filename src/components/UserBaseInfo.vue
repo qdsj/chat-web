@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import utils from "@/util/utils.ts";
-const { getAreaInfo } = utils;
+import { getAreaInfo } from "@/util/utils.ts";
 
 defineProps({
   userInfo: {
