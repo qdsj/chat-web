@@ -2,7 +2,7 @@ export default [
   {
     path: "/",
     name: "默认路径",
-    redirect: "/login",
+    redirect: "/chat",
   },
   {
     path: "/login",
@@ -23,14 +23,14 @@ export default [
       {
         path: "/contact",
         name: "联系人",
-        redirect: "/contact/search",
+        redirect: "/contact/blank",
         component: () => import("@/pages/contact/Contact.vue"),
         children: [
-          // {
-          //   path: "/contact/blank",
-          //   name: "空白页",
-          //   component: () => import("@/pages/contact/BlankPage.vue"),
-          // },
+          {
+            path: "/contact/blank",
+            name: "空白页",
+            component: () => import("@/pages/contact/BlankPage.vue"),
+          },
           {
             path: "/contact/search",
             name: "搜索",
@@ -47,14 +47,14 @@ export default [
             component: () => import("@/pages/contact/GroupEdit.vue"),
           },
           {
-            path: "/contact/groupDetail",
-            name: "群聊详情",
-            component: () => import("@/pages/contact/GroupDetail.vue"),
-          },
-          {
             path: "/contact/userDetail",
             name: "用户详情",
             component: () => import("@/pages/contact/UserDetail.vue"),
+          },
+          {
+            path: "/contact/groupDetail",
+            name: "群聊详情",
+            component: () => import("@/pages/contact/GroupDetail.vue"),
           },
         ],
       },
