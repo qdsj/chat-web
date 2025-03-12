@@ -2,7 +2,7 @@
 import { setThemeColor } from "./util/setTheme";
 
 onMounted(() => {
-  setThemeColor("green");
+  setThemeColor("#08bf61", "#129611");
 });
 </script>
 
