@@ -1,5 +1,7 @@
 import { defineStore } from "pinia";
 import { io, Socket } from "socket.io-client";
+import { useUserInfoStore } from "./useUserInfo.store";
+import { getAuthToken, getRefreshToken } from "@/apis/util";
 
 type SocketOptions = {
 	onConnectCallbacks?: Array<() => void>;
@@ -16,9 +18,18 @@ type SendMsgType = {
 
 export const useSocketStore = defineStore("socket-store", () => {
 	const client = ref<Socket | null>(null);
+	const userInfoStore = useUserInfoStore();
+
 	const socketInitial = (options: SocketOptions = {}) => {
 		if (client.value) return client.value;
-		const connect = io("http://localhost:3210");
+		console.log("socket initial", userInfoStore.userInfo);
+		if (!userInfoStore.userInfo) return;
+
+		const connect = io("http://localhost:3210", {
+			auth: {
+				authorization: `Bearer ${getAuthToken()}`,
+			},
+		});
 		client.value = connect;
 		connect.on("connect", () => {
 			console.log("socket connected");

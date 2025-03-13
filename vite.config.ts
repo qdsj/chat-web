@@ -28,7 +28,8 @@ export default defineConfig({
 	server: {
 		proxy: {
 			"/api": {
-				target: "https://dev.qdsj.top/server/chatweb",
+				target: "http://localhost:3200",
+				// target: "https://dev.qdsj.top/server/chatweb",
 				changeOrigin: true,
 				rewrite: (path) => path.replace(/^\/api/, ""),
 			},

@@ -6,4 +6,9 @@ const fetchTest = () => {
 	});
 };
 
-export { fetchTest };
+const fetchUserInfo = async () => {
+	const res = await getFetch("/getUserInfo");
+	return res.data;
+};
+
+export { fetchTest, fetchUserInfo };
