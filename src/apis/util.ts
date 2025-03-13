@@ -26,6 +26,7 @@ const accessAuth = (response: Response) => {
 		type: "warning",
 	});
 	const redirectUrl = response.headers.get("redirect");
+	console.log(redirectUrl);
 	if (!redirectUrl) {
 		ElMessage({
 			message: "跳转失败：" + redirectUrl,

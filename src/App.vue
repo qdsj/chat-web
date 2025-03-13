@@ -3,10 +3,9 @@ import { useUserInfoStore } from "./store/useUserInfo.store";
 import { setThemeColor } from "./util/setTheme";
 const userInfoStore = useUserInfoStore();
 onMounted(() => {
-	setThemeColor("green");
-
 	// get user info
 	userInfoStore.getUserInfo();
+	setThemeColor("#08bf61", "#129611");
 });
 </script>
 

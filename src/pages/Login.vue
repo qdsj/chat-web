@@ -16,7 +16,6 @@ const formData = ref({
 const validateEmail = (rule: any, value: string, callback: Function) => {
   const reg = /^[a-zA-Z0-9_.-]+@[a-zA-Z0-9-]+(\.[a-zA-Z]{2,4}){1,2}$/;
   if (!reg.test(value)) {
-    console.log();
     callback(new Error(rule.message));
   }
   return true;

@@ -47,7 +47,7 @@ const partList = ref([
     showTitle: true,
     contactData: [
       {
-        contactId: "1",
+        groupId: "1",
         groupName: "群聊",
       },
     ],
@@ -70,7 +70,7 @@ const partList = ref([
     showTitle: true,
     contactData: [
       {
-        contactId: "1",
+        contactId: "2",
         contactName: "panda",
         contactType: 0,
         sex: null,
@@ -90,7 +90,6 @@ const partJump = (data: any) => {
   } else {
     rightTitle.value = null;
   }
-
   // TODO 处理联系人好友申请 数量已读
   router.push(data.path);
 };
@@ -136,24 +135,31 @@ const contactDetail = (contact: any, part: any) => {
           <div class="part-title">{{ item.partName }}</div>
           <!-- 列表 -->
           <div class="part-list">
-            <div
-              v-for="sub in item.children"
-              :class="['part-item', sub.path == route.path ? 'active' : '']"
-              @click="partJump(sub)"
-            >
-              <!-- 图标 -->
+            <template v-for="sub in item.children">
               <div
-                :class="['iconfont', sub.icon]"
-                :style="{ background: sub.iconBgColor }"
-              ></div>
-              <!-- 名字 -->
-              <div class="text">{{ sub.name }}</div>
-            </div>
+                v-if="item.children && item.children.length"
+                :class="['part-item', sub.path == route.path ? 'active' : '']"
+                @click="partJump(sub)"
+              >
+                <!-- 图标 -->
+                <div
+                  :class="['iconfont', sub.icon]"
+                  :style="{ background: sub.iconBgColor }"
+                ></div>
+                <!-- 名字 -->
+                <div class="text">{{ sub.name }}</div>
+              </div>
+            </template>
             <!-- 数据 -->
             <!-- TODO  后台数据渲染-->
             <template v-for="contact in item.contactData">
               <div
-                v-if="item.contactId && item.contactName"
+                v-if="
+                  item.contactData &&
+                  item.contactData.length &&
+                  item.contactId &&
+                  item.contactName
+                "
                 :class="[
                   'part-item',
                   (contact as any)[item.contactId] == route.query.contactId
@@ -164,7 +170,7 @@ const contactDetail = (contact: any, part: any) => {
               >
                 <Avatar
                   v-if="contact"
-                  :userId="contact.contactId"
+                  :userId="(contact as any)[item.contactId]"
                   :width="35"
                 ></Avatar>
                 <div class="text">{{ (contact as any)[item.contactName] }}</div>
@@ -189,7 +195,7 @@ const contactDetail = (contact: any, part: any) => {
 
 <style scoped lang="scss">
 .top-search {
-  padding: 30px 10px 20px 10px;
+  padding: 20px 10px;
   background-color: #f7f7f7;
   display: flex;
   align-items: center;
@@ -222,8 +228,8 @@ const contactDetail = (contact: any, part: any) => {
         background-color: #d6d6d6;
       }
       .iconfont {
-        width: 35px;
-        height: 35px;
+        width: 37px;
+        height: 37px;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -247,16 +253,16 @@ const contactDetail = (contact: any, part: any) => {
       line-height: 30px;
     }
     .active {
-      background-color: #c4c4c4;
+      background-color: #c9c8c6;
       &:hover {
-        background-color: #c4c4c4;
+        background-color: #c9c8c6;
       }
     }
   }
 }
 .title-panel {
   width: 100%;
-  height: 90px;
+  height: 81px;
   display: flex;
   align-items: center;
   padding-left: 10px;

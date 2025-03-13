@@ -1,72 +1,163 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { useSocketStore } from "@/store/useSocketStore";
+import { useChatStore } from "@/store/useChatStore";
 import { useRoute } from "vue-router";
 import ChatSession from "./ChatSession.vue";
 import MessageSend from "./MessageSend.vue";
 import Blank from "@/components/Blank.vue";
+import { fetchTest } from "@/apis/auth";
+
+import { Splitpanes, Pane } from "splitpanes";
+import "splitpanes/dist/splitpanes.css";
+import { Message } from "@/util/types";
+
 const socketStore = useSocketStore();
+const chatStore = useChatStore();
+
 const route = useRoute();
 const selfName = ref("");
-// const message = ref("");
 const searchKey = ref("");
 
 // 搜索好友 or 群聊
 const search = () => {
 	console.log(searchKey.value);
 };
-// 会话列表
-interface Conversation {
-	id: string;
-	name: string;
-	lastMessage?: string;
-	time?: string;
-	contactType?: number;
-	topType?: number;
-}
-const conversations = ref<Conversation[]>([
-	{ id: "group-all", name: "所有人的群聊", contactType: 1 },
-	{ id: "1", name: "张三", lastMessage: "你好！", time: "10:00", topType: 1 },
-	{ id: "2", name: "Zenos", lastMessage: "在吗？", time: "09:30" },
-	{ id: "3", name: "王五", lastMessage: "好的", time: "昨天" },
-]);
 
-// 当前选中的会话
-const currentChatSession = ref<Conversation | null>();
+// 模拟初始化会话列表和好友列表
+const initialConversations = [
+	{
+		id: "group-all",
+		name: "所有人的群聊",
+		contactType: 1,
+		memberCount: 1,
+		messages: [
+			{
+				id: 1,
+				sender: "其他",
+				receiver: "",
+				content: "你好！",
+				isSelf: false,
+				time: "10:00",
+			},
+			{
+				id: 2,
+				sender: "我自己",
+				receiver: "",
+				content: "你好，有什么可以帮你的吗？",
+				isSelf: true,
+				time: "10:01",
+			},
+		],
+	},
+	// 可以添加更多会话
+	{
+		id: "1",
+		name: "张三",
+		lastMessage:
+			"你好！你好！你好！你好！你好！你好！你好！你好！你好！你好！你好！你好！你好！你好！你好！你好！你好！你好！你好！你好！你好！",
+		time: "10:00",
+		topType: 1,
+		messages: [
+			{
+				id: 1,
+				sender: "其他",
+				receiver: "",
+				content: "你好！",
+				isSelf: false,
+				time: "10:00",
+			},
+			{
+				id: 2,
+				sender: "我自己",
+				receiver: "",
+				content: "你好，有什么可以帮你的吗？",
+				isSelf: true,
+				time: "10:01",
+			},
+		],
+	},
+	{
+		id: "2",
+		name: "Zenos",
+		lastMessage: "在吗？",
+		time: "09:30",
+		messages: [
+			{
+				id: 1,
+				sender: "其他",
+				receiver: "",
+				content: "你好！",
+				isSelf: false,
+				time: "10:00",
+			},
+			{
+				id: 2,
+				sender: "我自己",
+				receiver: "",
+				content: "你好，有什么可以帮你的吗？",
+				isSelf: true,
+				time: "10:01",
+			},
+		],
+	},
+	{
+		id: "3",
+		name: "王五",
+		lastMessage: "好的",
+		time: "昨天",
+		messages: [
+			{
+				id: 1,
+				sender: "其他",
+				receiver: "",
+				content: "你好！",
+				isSelf: false,
+				time: "10:00",
+			},
+			{
+				id: 2,
+				sender: "我自己",
+				receiver: "",
+				content: "你好，有什么可以帮你的吗？",
+				isSelf: true,
+				time: "10:01",
+			},
+		],
+	},
+];
+
+const initialFriends = [
+	{ id: "1", name: "张三" },
+	{ id: "2", name: "Zenos" },
+	{ id: "3", name: "王五" },
+];
+
+chatStore.initConversations(initialConversations);
+chatStore.initFriends(initialFriends);
+
 // 点击会话
-const chatSessionClickHandle = (item: Conversation) => {
-	currentChatSession.value = Object.assign({}, item);
+const chatSessionClickHandle = (conversationId: string) => {
+	chatStore.setCurrentConversation(conversationId);
 };
 
-// 聊天记录列表
-const messages = ref([
-	{ id: 1, sender: "", content: "你好！", isSelf: false, time: "10:00" },
-	{
-		id: 2,
-		sender: selfName.value,
-		content: "你好，有什么可以帮你的吗？",
-		isSelf: true,
-		time: "10:01",
-	},
-]);
-
 onMounted(() => {
-	console.log(route);
+	fetchTest();
 	selfName.value = (route.query.name || "") as string;
 
 	// connect socket
 	socketStore.socketInitial({
 		onConnectCallbacks: [
 			() => {
-				// socketStore.socketJoinRoom("group-all");
+				socketStore.socketJoinRoom("group-all");
 			},
 		],
 		onMessageCallbacks: [
 			(data: any) => {
-				console.log("message", data);
-				messages.value.push({
-					id: messages.value.length + 1,
+				const message = reactive<Message>({
+					id: chatStore.getCurrentConversation!.messages.length + 1,
 					sender: data.sender,
+					receiver: "",
 					content: data.content,
 					isSelf: false,
 					time: new Date().toLocaleTimeString("zh-CN", {
@@ -74,10 +165,15 @@ onMounted(() => {
 						minute: "2-digit",
 					}),
 				});
+				console.log("message", data);
+				chatStore.appendMessageToConversation(data.id, message);
 			},
 		],
 	});
 });
+
+// 显示群聊详情
+const showGroupDetail = () => {};
 </script>
 
 <template>
@@ -94,45 +190,69 @@ onMounted(() => {
 			</div>
 			<!-- 会话列表 -->
 			<div class="chat-session-list">
-				<template v-for="item in conversations">
-					<ChatSession :data="item" @click="chatSessionClickHandle(item)"></ChatSession>
+				<template v-for="item in chatStore.allConversations" :key="item.id">
+					<ChatSession
+						:currentSession="chatStore.getCurrentConversation?.id === item.id"
+						:data="item"
+						@click="chatSessionClickHandle(item.id)"></ChatSession>
 				</template>
 			</div>
 		</template>
 
 		<!-- 右边 -->
 		<template #right-content>
-			<div class="title-panel" v-if="currentChatSession">
-				<div class="title">
-					<span>{{ currentChatSession.name }}</span>
-				</div>
-				<!-- 群聊 -->
-				<div class="iconfont icon-icon_more"></div>
-			</div>
-			<el-main class="chat-box" v-show="currentChatSession">
-				<div class="messages-container">
-					<div
-						v-for="msg in messages"
-						:key="msg.id"
-						:class="['message', msg.isSelf ? 'message-self' : 'message-other']">
-						<el-avatar size="small">{{ msg.isSelf ? "Me" : msg.sender }}</el-avatar>
-						<el-card class="message-content" shadow="never">
-							{{ msg.content }}
-							<div class="message-time">{{ msg.time }}</div>
-						</el-card>
+			<splitpanes horizontal class="default-theme">
+				<pane size="75">
+					<div class="title-panel" v-if="chatStore.getCurrentConversation">
+						<div class="title">
+							<span>{{ chatStore.getCurrentConversation.name }}</span>
+							<!-- 群聊 -->
+							<span v-if="chatStore.getCurrentConversation.contactType == 1">
+								({{ chatStore.getCurrentConversation.memberCount }})
+							</span>
+						</div>
+						<!-- 群聊 -->
+						<div
+							v-if="chatStore.getCurrentConversation.contactType == 1"
+							class="iconfont icon-icon_more"
+							@click="showGroupDetail"></div>
 					</div>
-				</div>
-			</el-main>
-			<Blank v-if="!currentChatSession"></Blank>
-			<!-- 发送组件 -->
-			<MessageSend v-if="currentChatSession" :currentChatSession="currentChatSession || {}"></MessageSend>
+					<el-container>
+						<el-main class="chat-box" v-show="chatStore.getCurrentConversation">
+							<div class="messages-container">
+								<template v-for="msg in chatStore.getCurrentConversation?.messages" :key="msg">
+									<div class="message-time">
+										<span>{{ msg.time }}</span>
+									</div>
+									<div :class="['message', msg.isSelf ? 'message-self' : 'message-other']">
+										<el-avatar size="small">{{ msg.isSelf ? "Me" : msg.sender }}</el-avatar>
+										<div class="message-content" shadow="never">
+											{{ msg.content }}
+										</div>
+									</div>
+								</template>
+							</div>
+						</el-main>
+					</el-container>
+					<Blank v-if="!chatStore.getCurrentConversation"></Blank>
+				</pane>
+				<pane min-size="15" size="25" v-if="chatStore.getCurrentConversation">
+					<!-- 发送组件 -->
+					<MessageSend :chatStore.getCurrentConversation="chatStore.getCurrentConversation || {}">
+					</MessageSend>
+				</pane>
+			</splitpanes>
 		</template>
 	</Layout>
 </template>
 
 <style scoped lang="scss">
+.splitpanes__pane {
+	transition: none; /* 禁用过渡效果 */
+}
+
 .top-search {
-	padding: 30px 10px 20px 10px;
+	padding: 20px 10px;
 	background-color: #f7f7f7;
 	display: flex;
 	align-items: center;
@@ -180,7 +300,7 @@ onMounted(() => {
 }
 
 .chat-box {
-	height: calc(100vh - 360px);
+	// height: calc(100vh - 360px);
 	padding: 0;
 	display: flex;
 	flex-direction: column;
@@ -189,6 +309,18 @@ onMounted(() => {
 		flex: 1;
 		padding: 20px;
 		overflow-y: auto;
+
+		.message-time {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			span {
+				padding: 2px 5px;
+				background: #ddd;
+				color: #fff;
+				border-radius: 2px;
+			}
+		}
 
 		.message {
 			display: flex;
@@ -211,12 +343,15 @@ onMounted(() => {
 
 			.message-content {
 				max-width: 60%;
-				.message-time {
-					font-size: 12px;
-					color: #909399;
-					margin-top: 4px;
-					text-align: right;
-				}
+				display: flex;
+				align-items: center;
+				flex-wrap: wrap;
+				padding: 12px 16px;
+				white-space: normal;
+				background: #e0e0e0;
+				color: #000;
+				border-radius: 24px 16px 16px 4px;
+				box-shadow: 0 3px 3px rgba(0, 0, 0, 0.5);
 			}
 		}
 	}
@@ -255,7 +390,7 @@ onMounted(() => {
 
 .title-panel {
 	width: 100%;
-	height: 91px;
+	height: 81px;
 	display: flex;
 	align-items: center;
 	justify-content: space-between;

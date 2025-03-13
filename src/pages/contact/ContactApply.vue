@@ -1,5 +1,17 @@
 <script setup lang="ts">
+import { DialogConfig } from "@/util/types";
 import { ElMessage, ElMessageBox } from "element-plus";
+import type { ButtonType as ElButtonType } from "element-plus";
+
+const dialogConfig = ref<DialogConfig>({
+  show: false,
+  title: "通过朋友验证",
+  buttons: [],
+});
+
+const formData = ref({
+  remarkName: "",
+});
 
 const applyList = ref([
   {
@@ -19,8 +31,6 @@ onMounted(() => {
 
 // TODO 此处需要对接后端接口，获取好友申请列表
 const getContactApplyList = () => {
-  // pageNum.value++;
-  // if (pageNum.value > pageTotal.value) return;
   applyList.value = [
     {
       contactType: 0, // 联系人类型，0为好友，1为群聊
@@ -35,24 +45,37 @@ const getContactApplyList = () => {
 };
 
 const delWithApply = (applyId: string, contactType: number, status: number) => {
-  ElMessageBox.confirm("确定要执行此操作吗?", "Warning", {
-    confirmButtonText: "确定",
-    cancelButtonText: "取消",
-    type: "warning",
-  })
-    .then(() => {
-      ElMessage({
-        type: "success",
-        message: "操作成功",
-      });
-      console.log(applyId, contactType, status);
+  if (status === 1) {
+    dialogConfig.value.buttons = [
+      {
+        type: "primary" as ElButtonType,
+        text: "确定",
+        click: () => {
+          delWithApply(applyId, contactType, status);
+        },
+      },
+    ];
+    dialogConfig.value.show = true;
+  } else {
+    ElMessageBox.confirm("确定要执行此操作吗?", "Warning", {
+      confirmButtonText: "确定",
+      cancelButtonText: "取消",
+      type: "warning",
     })
-    .catch(() => {
-      ElMessage({
-        type: "info",
-        message: "取消操作",
+      .then(() => {
+        ElMessage({
+          type: "success",
+          message: "操作成功",
+        });
+        console.log(applyId, contactType, status);
+      })
+      .catch(() => {
+        ElMessage({
+          type: "info",
+          message: "取消操作",
+        });
       });
-    });
+  }
 };
 </script>
 
@@ -94,6 +117,23 @@ const delWithApply = (applyId: string, contactType: number, status: number) => {
           </div>
           <div v-else class="result-name">{{ item.statusName }}</div>
         </div>
+        <Dialog
+          :show="dialogConfig.show"
+          :title="dialogConfig.title"
+          :buttons="dialogConfig.buttons"
+          width="400px"
+          @close="dialogConfig.show = false"
+          :showCancel="true"
+        >
+          <el-form :model="formData" label-width="60px">
+            <el-form-item label="备注名" props="remarkName">
+              <el-input
+                v-model="formData.remarkName"
+                placeholder="请输入备注名"
+              ></el-input>
+            </el-form-item>
+          </el-form>
+        </Dialog>
       </div>
     </div>
     <div v-if="!applyList" class="no-data">暂无申请</div>
