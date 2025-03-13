@@ -18,7 +18,7 @@ const fetchApi = (url: string, options: RequestInit & { isNeedResponse?: boolean
 	if (refreshToken) {
 		options.headers = {
 			...options.headers,
-			authToken: `Bearer ${refreshToken}`,
+			refreshToken: `Bearer ${refreshToken}`,
 		};
 	}
 
