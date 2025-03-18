@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 import { io, Socket } from "socket.io-client";
 import { useUserInfoStore } from "./useUserInfo.store";
-import { getAuthToken, getRefreshToken } from "@/apis/util";
+import { getAuthToken } from "@/apis/util";
 
 type SocketOptions = {
 	onConnectCallbacks?: Array<() => void>;
@@ -25,7 +25,7 @@ export const useSocketStore = defineStore("socket-store", () => {
 		console.log("socket initial", userInfoStore.userInfo);
 		if (!userInfoStore.userInfo) return;
 
-		const connect = io("http://localhost:3210", {
+		const connect = io(import.meta.env.VITE_SOCKET_HOST, {
 			auth: {
 				authorization: `Bearer ${getAuthToken()}`,
 			},
