@@ -26,6 +26,7 @@ export const useSocketStore = defineStore("socket-store", () => {
 		if (!userInfoStore.userInfo) return;
 
 		const connect = io(import.meta.env.VITE_SOCKET_HOST, {
+			withCredentials: false,
 			auth: {
 				authorization: `Bearer ${getAuthToken()}`,
 			},
