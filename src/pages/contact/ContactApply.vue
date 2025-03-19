@@ -88,7 +88,11 @@ const handleBlock = (applyId: string, username: string) => {
         >
           {{ item.contactType == 0 ? "好友" : "群聊" }}
         </div> -->
-        <Avatar :width="50" :userId="item.id"></Avatar>
+        <Avatar
+          :width="50"
+          :userId="item.id"
+          :username="item.username"
+        ></Avatar>
         <div class="contact-info">
           <div class="nickname">{{ item.username }}</div>
           <div class="apply-info">{{ item.requestMessage }}</div>
