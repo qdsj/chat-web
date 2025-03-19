@@ -44,6 +44,7 @@ const showDetailHandler = () => {
 
 <style scoped lang="scss">
 .user-avatar {
+  flex-shrink: 0;
   background: #d3d3d3;
   display: flex;
   align-items: center;

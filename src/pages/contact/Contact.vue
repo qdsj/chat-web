@@ -237,7 +237,9 @@ const onContextMenu = (e: MouseEvent, data: any) => {
                 <Avatar
                   v-if="contact"
                   :userId="(contact as any)[item.contactId]"
+                  :username="(contact as any)[item.contactName]"
                   :width="35"
+                  :showDetail="false"
                 ></Avatar>
                 <div class="text">
                   {{ (contact as any)[item.contactName] }}

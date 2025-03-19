@@ -59,7 +59,11 @@ onMounted(() => {
     <!-- 左边 -->
     <div class="left-sider">
       <!-- 头像 -->
-      <Avatar :userId="userStore.userInfo!.id"></Avatar>
+      <Avatar
+        :userId="userStore.userInfo!.email"
+        :username="userStore.userInfo!.username"
+        :showDetail="true"
+      ></Avatar>
       <!-- 菜单列表 -->
       <div class="menu-list">
         <template v-for="item in menuList">

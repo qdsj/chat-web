@@ -7,6 +7,10 @@ const props = defineProps({
     type: String,
     required: true,
   },
+  username: {
+    type: String,
+    required: true,
+  },
   width: {
     type: Number,
     default: 40,
@@ -15,17 +19,21 @@ const props = defineProps({
     type: Number,
     default: 0,
   },
+  showDetail: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 const userInfo = ref({
-  userId: "",
-  nickName: "",
+  id: "",
+  username: "",
   contactType: 1,
 });
 const getContactInfo = () => {
-  userInfo.value.userId = props.userId;
+  userInfo.value.id = props.userId;
   // TODO 获取联系人详情数据
-  userInfo.value.nickName = "nickName";
+  userInfo.value.username = props.username;
 };
 
 // TODO 发送消息
@@ -37,7 +45,7 @@ const addContact = () => {};
 
 <template>
   <el-popover
-    :width="250"
+    :width="300"
     placement="right-start"
     :show-arrow="false"
     transition="none"
@@ -51,12 +59,12 @@ const addContact = () => {};
         :userId="userId"
         :width="width"
         :borderRadius="borderRadius"
-        :showDetail="false"
+        :showDetail="showDetail"
       ></AvatarBase>
     </template>
     <template #default>
       <UserBaseInfo :userInfo="userInfo"></UserBaseInfo>
-      <div class="op-btn" v-if="userId !== userStroe.userInfo?.id">
+      <div class="op-btn" v-if="userId !== userStroe.userInfo?.email">
         <el-button
           v-if="userInfo.contactType == 1"
           type="primary"
