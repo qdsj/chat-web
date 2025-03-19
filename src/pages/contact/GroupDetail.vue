@@ -74,7 +74,10 @@ const getGroupInfo = () => {
     <div class="group-info-item">
       <div class="group-title">封面:</div>
       <div class="group-value">
-        <Avatar :userId="groupInfo.groupId"></Avatar>
+        <Avatar
+          :userId="groupInfo.groupId"
+          :username="groupInfo.groupName"
+        ></Avatar>
       </div>
       <el-dropdown placement="bottom-end" trigger="click">
         <span class="el-dropdown-link">
