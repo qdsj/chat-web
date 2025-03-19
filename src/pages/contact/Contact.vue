@@ -6,6 +6,7 @@ import ContextMenu from "@imengyu/vue3-context-menu";
 import { useRoute, useRouter } from "vue-router";
 import { useFriendStore } from "@/store/useFriendStore";
 import { blockFriend, unblockFriend } from "@/apis/friend";
+import { ElMessage, ElMessageBox } from "element-plus";
 
 const friendStore = useFriendStore();
 const route = useRoute();

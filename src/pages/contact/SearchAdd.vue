@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { ButtonType as ElButtonType } from "element-plus";
+import { ElMessage } from "element-plus";
 import { addFriend } from "@/apis/friend";
 
 import { useUserStore } from "@/store/useUserStore";
@@ -43,7 +44,7 @@ const showFun = (data?: any) => {
   nextTick(() => {
     formDataRef.value.resetFields();
     formData.value = data;
-    formData.value.applyInfo = "我是" + userStore.userInfo.nickName;
+    formData.value.applyInfo = "我是" + userStore.userInfo!.username;
   });
 };
 
