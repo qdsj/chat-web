@@ -4,33 +4,32 @@ import { ElMessage } from "element-plus";
 import { useUserStore } from "@/store/useUserStore";
 import ContentPanel from "@/components/ContentPanel.vue";
 import SearchAdd from "./SearchAdd.vue";
+import { findUserByName } from "@/apis/friend";
 
 const userStore = useUserStore();
 const contactId = ref();
 
 const searchResult = ref();
 
-const search = () => {
+const search = async () => {
   if (!contactId.value) {
-    ElMessage.warning("请输入用户ID或群组ID");
+    ElMessage.warning("请输入用户名");
     return;
   }
 
-  // 后台接口返回的数据
-  let result = {
-    // 0:非好友；1:好友；2:已删除好友；3:被删除好友
-    status: 0,
-    nickName: "friend",
-    contactId: contactId.value,
-    contactType: "USER",
-  };
-  if (!result) return;
-
-  searchResult.value = result;
+  const res = await findUserByName(contactId.value);
+  if (res) {
+    searchResult.value = res.data;
+    searchResult.value.status = 0; // 默认不是好友
+    // searchResult.contactType == "USER";
+  } else {
+    ElMessage.error("未找到用户");
+    return;
+  }
 };
 
 const contactTypeName = computed(() => {
-  if (userStore.userInfo.userId === searchResult.value.contactId) return "自己";
+  if (userStore.userInfo!.id === searchResult.value.contactId) return "自己";
   if (searchResult.value.contactType === "USER") return "用户";
   if (searchResult.value.contactType === "GROUP") return "群组";
 });
@@ -75,7 +74,7 @@ const resetForm = () => {};
       <!-- 各类按钮(搜索人不是自己显示) -->
       <div
         class="op-btn"
-        v-if="searchResult.contactId != userStore.userInfo.userId"
+        v-if="searchResult.contactId != userStore.userInfo!.id"
       >
         <el-button
           type="primary"
@@ -87,7 +86,8 @@ const resetForm = () => {};
           @click="applyContact"
         >
           {{
-            searchResult.contactType == "USER" ? "添加到联系人" : "申请加入群组"
+            // searchResult.contactType == "USER" ? "添加到联系人" : "申请加入群组"
+            "申请添加好友"
           }}
         </el-button>
         <el-button

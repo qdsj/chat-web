@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { ButtonType as ElButtonType } from "element-plus";
+import { addFriend } from "@/apis/friend";
 
 import { useUserStore } from "@/store/useUserStore";
 const userStore = useUserStore();
@@ -8,6 +9,7 @@ const emits = defineEmits(["reload"]);
 
 const formDataRef = ref();
 const formData = ref({
+  id: "",
   applyInfo: "",
 });
 const rules = reactive({
@@ -35,14 +37,6 @@ const dialogConfig = ref({
   ],
 });
 
-// 提交好友申请信息
-const submitApply = () => {
-  // 添加成功  or  申请成功，等待对方同意
-
-  dialogConfig.value.show = false;
-  emits("reload");
-};
-
 // 显示弹窗，传入数据
 const showFun = (data?: any) => {
   dialogConfig.value.show = true;
@@ -51,6 +45,25 @@ const showFun = (data?: any) => {
     formData.value = data;
     formData.value.applyInfo = "我是" + userStore.userInfo.nickName;
   });
+};
+
+// 提交好友申请信息
+const submitApply = () => {
+  // 添加成功  or  申请成功，等待对方同意
+  formDataRef.value.validate(async (valid: any) => {
+    if (!valid) return;
+    const res = await addFriend({
+      friendId: formData.value.id,
+      requestMessage: formData.value.applyInfo,
+    });
+    if (res.status === 200) {
+      ElMessage.success("申请成功，等待对方同意");
+    } else {
+      ElMessage.error("申请失败");
+    }
+  });
+  dialogConfig.value.show = false;
+  emits("reload");
 };
 
 defineExpose({
