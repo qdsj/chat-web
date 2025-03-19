@@ -23,11 +23,9 @@ const editBack = () => {
     <!-- 个人信息详情 -->
     <div class="show-info" v-if="showType == 0">
       <div class="user-info">
+        <!-- :showArea="userStore.userInfo.contactType == 'USER'" -->
         <!-- TODO 个人用户信息-->
-        <UserBaseInfo
-          :userInfo="userStore.userInfo"
-          :showArea="userStore.userInfo.contactType == 'USER'"
-        ></UserBaseInfo>
+        <UserBaseInfo :userInfo="userStore.userInfo!"></UserBaseInfo>
         <div class="more-op">
           <el-dropdown placement="bottom-end" trigger="click">
             <span class="el-dropdown-link">
@@ -49,17 +47,17 @@ const editBack = () => {
       <div class="part-item">
         <div class="part-title">朋友权限</div>
         <div class="part-content">
-          {{
+          <!-- {{
             userStore.userInfo.joinType == 0
               ? "直接添加为好友"
               : "加我为好友时需要验证"
-          }}
+          }} -->
         </div>
       </div>
       <div class="part-item">
         <div class="part-title">个性签名</div>
         <div class="part-content">
-          {{ userStore.userInfo.personalSignature || "-" }}
+          <!-- {{ userStore.userInfo.personalSignature || "-" }} -->
         </div>
       </div>
       <div class="logout">
@@ -70,7 +68,7 @@ const editBack = () => {
     <!-- 修改个人信息 -->
     <div v-if="showType == 1">
       <UserInfoEdit
-        :data="userStore.userInfo"
+        :data="userStore.userInfo!"
         @editBack="editBack"
       ></UserInfoEdit>
     </div>
