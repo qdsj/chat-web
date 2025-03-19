@@ -77,7 +77,7 @@ const sendMessage = (e: any) => {
   }
   const message = reactive<Message>({
     id: 1,
-    sender: userStore.userInfo.userId as string,
+    sender: userStore.userInfo!.id as string,
     receiver: "",
     content: messageContent,
     isSelf: true,

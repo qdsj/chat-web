@@ -27,11 +27,11 @@ defineProps({
     ></AvatarBase>
     <div class="user-info">
       <div class="nick-name">
-        {{ userInfo.nickName }}
+        {{ userInfo.username }}
         <span class="iconfont icon-icon-woman" v-if="userInfo.sex == 0"></span>
         <span class="iconfont icon-icon-man" v-if="userInfo.sex == 1"></span>
       </div>
-      <div class="info">ID: {{ userInfo.userId || userInfo.contactId }}</div>
+      <div class="info">ID: {{ userInfo.email }}</div>
       <div class="info" v-if="showArea">
         地区: {{ getAreaInfo(userInfo.areaName) }}
       </div>

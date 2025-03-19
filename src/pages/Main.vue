@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import Avatar from "@/components/Avatar.vue";
 import { ref } from "vue";
-import { useRouter } from "vue-router";
+import { useRouter, useRoute } from "vue-router";
 import { useUserStore } from "@/store/useUserStore";
 
 const router = useRouter();
+const route = useRoute();
 const userStore = useUserStore();
 
 // 图标菜单列表
@@ -44,6 +45,13 @@ const changeMenu = (item: MenuItem) => {
   currentMenu.value = item;
   router.push(item.path);
 };
+onMounted(() => {
+  const currentPath = route.path;
+  const foundMenu = menuList.value.find((item) =>
+    currentPath.startsWith(item.path)
+  );
+  currentMenu.value = foundMenu || menuList.value[0];
+});
 </script>
 
 <template>
@@ -51,7 +59,7 @@ const changeMenu = (item: MenuItem) => {
     <!-- 左边 -->
     <div class="left-sider">
       <!-- 头像 -->
-      <Avatar :userId="userStore.userInfo.userId"></Avatar>
+      <Avatar :userId="userStore.userInfo!.id"></Avatar>
       <!-- 菜单列表 -->
       <div class="menu-list">
         <template v-for="item in menuList">
@@ -63,9 +71,7 @@ const changeMenu = (item: MenuItem) => {
             ]"
             v-if="item.position == 'top'"
             @click="changeMenu(item)"
-          >
-            <template v-if="item.name == 'chat'"> </template>
-          </div>
+          ></div>
         </template>
       </div>
       <div class="menu-list menu-bottom">

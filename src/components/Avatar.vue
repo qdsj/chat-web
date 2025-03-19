@@ -56,7 +56,7 @@ const addContact = () => {};
     </template>
     <template #default>
       <UserBaseInfo :userInfo="userInfo"></UserBaseInfo>
-      <div class="op-btn" v-if="userId !== userStroe.userInfo.userId">
+      <div class="op-btn" v-if="userId !== userStroe.userInfo?.id">
         <el-button
           v-if="userInfo.contactType == 1"
           type="primary"

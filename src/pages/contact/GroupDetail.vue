@@ -82,7 +82,7 @@ const getGroupInfo = () => {
         </span>
         <template #dropdown>
           <el-dropdown-menu
-            v-if="groupInfo.groupOwnerId == useStore.userInfo.userId"
+            v-if="groupInfo.groupOwnerId == useStore.userInfo!.id"
           >
             <el-dropdown-item @click="editGroupInfo"
               >修改群聊信息</el-dropdown-item

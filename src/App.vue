@@ -1,18 +1,22 @@
 <script setup lang="ts">
-import { useUserInfoStore } from "./store/useUserInfo.store";
+import { useUserStore } from "./store/useUserStore";
+import { useFriendStore } from "./store/useFriendStore";
 import { setThemeColor } from "./util/setTheme";
-const userInfoStore = useUserInfoStore();
+const userStore = useUserStore();
+const friendStore = useFriendStore();
+
 onMounted(() => {
-	// get user info
-	userInfoStore.getUserInfo();
-	setThemeColor("#08bf61", "#129611");
+  // get user info
+  userStore.getUserInfo();
+  friendStore.getAllFriend();
+  setThemeColor("#08bf61", "#129611");
 });
 </script>
 
 <template>
-	<div>
-		<RouterView></RouterView>
-	</div>
+  <div>
+    <RouterView></RouterView>
+  </div>
 </template>
 
 <style scoped></style>

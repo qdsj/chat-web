@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@imengyu/vue3-context-menu": "^1.4.5",
     "axios": "^1.7.9",
     "element-plus": "^2.9.6",
     "moment": "^2.30.1",

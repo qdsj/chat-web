@@ -1,7 +1,13 @@
 <script setup lang="ts">
 import Avatar from "@/components/Avatar.vue";
 import { ref } from "vue";
+import "@imengyu/vue3-context-menu/lib/vue3-context-menu.css";
+import ContextMenu from "@imengyu/vue3-context-menu";
 import { useRoute, useRouter } from "vue-router";
+import { useFriendStore } from "@/store/useFriendStore";
+import { blockFriend, unblockFriend } from "@/apis/friend";
+
+const friendStore = useFriendStore();
 const route = useRoute();
 const router = useRouter();
 const searchKey = ref("");
@@ -65,27 +71,18 @@ const partList = ref([
   {
     partName: "我的好友",
     children: [],
-    contactId: "contactId",
-    contactName: "contactName",
+    contactId: "email",
+    contactName: "username",
     showTitle: true,
-    contactData: [
-      {
-        contactId: "2",
-        contactName: "panda",
-        contactType: 0,
-        sex: null,
-        status: 1,
-        userId: "panda123",
-      },
-    ],
     contactPath: "/contact/userDetail",
+    contactData: friendStore.friendList || [],
     emptyMsg: "暂无好友",
   },
 ]);
-
 const rightTitle = ref();
 const partJump = (data: any) => {
   if (data.showTitle) {
+    partList;
     rightTitle.value = data.name;
   } else {
     rightTitle.value = null;
@@ -106,6 +103,73 @@ const contactDetail = (contact: any, part: any) => {
     query: {
       contactId: contact[part.contactId],
     },
+  });
+};
+
+const onContextMenu = (e: MouseEvent, data: any) => {
+  e.preventDefault();
+  ContextMenu.showContextMenu({
+    x: e.x,
+    y: e.y,
+    items: [
+      {
+        label: "删除好友",
+        onClick: () => {
+          ElMessageBox.confirm("你确定要拉黑该联系人吗?", "Warning", {
+            confirmButtonText: "确定",
+            cancelButtonText: "取消",
+            type: "warning",
+          })
+            .then(() => {
+              ElMessage({
+                type: "success",
+                message: "删除联系人成功",
+              });
+            })
+            .catch(() => {
+              ElMessage({
+                type: "info",
+                message: "取消删除",
+              });
+            });
+        },
+      },
+      {
+        label: data.status == "blocked" ? "恢复好友关系" : "拉黑好友",
+        onClick: () => {
+          const confirmMsg =
+            data.status === "blocked"
+              ? "你确定要恢复与该联系人的好友关系吗？"
+              : "你确定要删除该好友吗？";
+          ElMessageBox.confirm(confirmMsg, "Warning", {
+            confirmButtonText: "确定",
+            cancelButtonText: "取消",
+            type: "warning",
+          })
+            .then(async () => {
+              if (data.status === "status") {
+                await unblockFriend({ friendId: data.id });
+              } else {
+                await blockFriend({ friendId: data.id });
+              }
+              const successMsg =
+                data.status === "blocked" ? "恢复好友关系成功" : "删除好友成功";
+              ElMessage({
+                type: "success",
+                message: successMsg,
+              });
+            })
+            .catch(() => {
+              const cancelMsg =
+                data.status === "blocked" ? "取消恢复好友关系" : "取消删除好友";
+              ElMessage({
+                type: "info",
+                message: cancelMsg,
+              });
+            });
+        },
+      },
+    ],
   });
 };
 </script>
@@ -167,13 +231,16 @@ const contactDetail = (contact: any, part: any) => {
                     : '',
                 ]"
                 @click="contactDetail(contact, item)"
+                @contextmenu.stop="onContextMenu($event, contact)"
               >
                 <Avatar
                   v-if="contact"
                   :userId="(contact as any)[item.contactId]"
                   :width="35"
                 ></Avatar>
-                <div class="text">{{ (contact as any)[item.contactName] }}</div>
+                <div class="text">
+                  {{ (contact as any)[item.contactName] }}
+                </div>
               </div>
             </template>
             <template v-if="item.contactData && item.contactData.length == 0">
