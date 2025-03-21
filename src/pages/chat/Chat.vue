@@ -146,30 +146,23 @@ onMounted(() => {
 	selfName.value = (route.query.name || "") as string;
 
 	// connect socket
-	socketStore.socketInitial({
-		onConnectCallbacks: [
-			() => {
-				socketStore.socketJoinRoom("group-all");
-			},
-		],
-		onMessageCallbacks: [
-			(data: any) => {
-				const message = reactive<Message>({
-					id: chatStore.getCurrentConversation!.messages.length + 1,
-					sender: data.sender,
-					receiver: "",
-					content: data.content,
-					isSelf: false,
-					time: new Date().toLocaleTimeString("zh-CN", {
-						hour: "2-digit",
-						minute: "2-digit",
-					}),
-				});
-				console.log("message", data);
-				chatStore.appendMessageToConversation(data.id, message);
-			},
-		],
-	});
+	socketStore.addMsgCallbacks([
+		(data: any) => {
+			const message = reactive<Message>({
+				id: chatStore.getCurrentConversation!.messages.length + 1,
+				sender: data.sender,
+				receiver: "",
+				content: data.content,
+				isSelf: false,
+				time: new Date().toLocaleTimeString("zh-CN", {
+					hour: "2-digit",
+					minute: "2-digit",
+				}),
+			});
+			console.log("message", data);
+			chatStore.appendMessageToConversation(data.id, message);
+		},
+	]);
 });
 
 // 显示群聊详情
