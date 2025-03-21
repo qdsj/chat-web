@@ -74,7 +74,7 @@ const partList = ref([
     children: [],
     contactId: "email",
     contactName: "username",
-    showTitle: true,
+    showTitle: false,
     contactPath: "/contact/userDetail",
     contactData: friendStore.friendList || [],
     emptyMsg: "暂无好友",
@@ -102,7 +102,8 @@ const contactDetail = (contact: any, part: any) => {
   router.push({
     path: part.contactPath,
     query: {
-      contactId: contact[part.contactId],
+      id: contact[part.contactId],
+      username: contact[part.contactName],
     },
   });
 };

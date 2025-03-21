@@ -1,16 +1,17 @@
 <script setup lang="ts">
 import { ElMessage, ElMessageBox } from "element-plus";
-import { useRouter } from "vue-router";
+import { useRouter, useRoute } from "vue-router";
 const router = useRouter();
+const route = useRoute();
 
 const userInfo = ref({
-  nickName: "",
-  personalSignature: "",
+  id: "",
+  username: "",
 });
 onMounted(() => {
   userInfo.value = {
-    nickName: "panda",
-    personalSignature: "panda的个性签名",
+    id: route.query.id as string,
+    username: route.query.username as string,
   };
 });
 
@@ -35,11 +36,13 @@ const delContact = () => {
     });
 };
 
-const sendmessage = () => {};
+const sendmessage = () => {
+  router.push("/chat");
+};
 </script>
 
 <template>
-  <ContentPanel :showTopBorder="true">
+  <ContentPanel :showTopBorder="false">
     <div class="user-info">
       <UserBaseInfo :userInfo="userInfo"></UserBaseInfo>
       <div class="more-op">
@@ -53,10 +56,10 @@ const sendmessage = () => {};
         </el-dropdown>
       </div>
     </div>
-    <div class="part-item">
+    <!-- <div class="part-item">
       <div class="part-title">个性签名</div>
       <div class="part-content">{{ userInfo.personalSignature || "-" }}</div>
-    </div>
+    </div> -->
     <div class="send-message" @click="sendmessage">
       <div class="iconfont icon-icon_chat"></div>
       <div class="text">发消息</div>
