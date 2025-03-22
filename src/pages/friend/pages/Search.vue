@@ -5,7 +5,7 @@ import { useUserStore } from "@/store/useUserStore";
 import ContentPanel from "@/components/ContentPanel.vue";
 import SearchAdd from "../../contact/SearchAdd.vue";
 import { useFriendStore } from "@/store/useFriendStore";
-import { I_FindUserByNameApiResult } from "@/apis/friend";
+import { I_FindUserByNameApiResult } from "@/apis/types/friend.types";
 
 const userStore = useUserStore();
 const friendStore = useFriendStore();
@@ -24,7 +24,7 @@ const search = async () => {
 		return;
 	}
 
-	const [error, data] = await friendStore.searchUserByName(contactId.value);
+	const [_, data] = await friendStore.searchUserByName(contactId.value);
 	if (data) {
 		searchResult.value = data;
 	} else {

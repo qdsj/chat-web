@@ -18,17 +18,17 @@ export const addFriendApi = (data: { friendId: string; requestMessage: string })
 };
 
 // 获取请求列表
-export const getRequestList = (): Promise<I_GetRequestListApiResult> => {
+export const getRequestListApi = (): Promise<I_GetRequestListApiResult> => {
 	return getFetch("/user/getRequestList");
 };
 
 // 同意好友申请
-export const agreeFriend = (data: Object): Promise<I_AgreeFriendApiResult> => {
+export const agreeFriendApi = (data: { friendId: string }): Promise<I_AgreeFriendApiResult> => {
 	return postFetch("/user/agreeFriend", data);
 };
 
 // 获取好友列表
-export const getFriendList = (): Promise<I_GetFriendListApiResult> => {
+export const getFriendListApi = (): Promise<I_GetFriendListApiResult> => {
 	return getFetch("/user/getFriendList");
 };
 

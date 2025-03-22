@@ -4,6 +4,8 @@ export interface I_ErrorApiResult {
 	data: null;
 }
 
+type I_FriendShipStatus = "pending" | "accepted" | "rejected" | "blocked";
+
 export interface I_FindUserByNameApiResult {
 	data: {
 		id: "string";
@@ -15,7 +17,7 @@ export interface I_FindUserByNameApiResult {
 			friendId: "string";
 			requesterId: "string";
 			requestMessage: "string";
-			status: "string";
+			status: I_FriendShipStatus;
 			blockerId: "string";
 			createdAt: "string";
 		};
@@ -46,7 +48,7 @@ export interface I_GetRequestListApiResult {
 				friendId: "string";
 				requesterId: "string";
 				requestMessage: "string";
-				status: "string";
+				status: I_FriendShipStatus;
 				blockerId: "string";
 				createdAt: "string";
 			};
@@ -78,7 +80,7 @@ export interface I_GetFriendListApiResult {
 				friendId: "string";
 				requesterId: "string";
 				requestMessage: "string";
-				status: "string";
+				status: I_FriendShipStatus;
 				blockerId: string;
 				createdAt: "string";
 			};

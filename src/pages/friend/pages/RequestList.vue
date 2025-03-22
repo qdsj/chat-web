@@ -2,7 +2,11 @@
 import { DialogConfig } from "@/util/types";
 import { ElMessage, ElMessageBox } from "element-plus";
 import type { ButtonType as ElButtonType } from "element-plus";
-import { getRequestList, agreeFriend, blockFriend } from "@/apis/friend";
+import { blockFriend } from "@/apis/friend";
+import { useFriendStore } from "@/store/useFriendStore";
+import { I_GetRequestListApiResult } from "@/apis/types/friend.types";
+
+const friendStore = useFriendStore();
 
 const dialogConfig = ref<DialogConfig>({
 	show: false,
@@ -14,17 +18,7 @@ const formData = ref({
 	remarkName: "",
 });
 
-const applyList = ref([
-	{
-		contactType: 0, // 联系人类型，0为好友，1为群聊
-		status: "", // 状态，0为待处理，1为已同意，2为已拒绝，3为被拉黑
-		statusName: "statusName",
-		applyUserId: "",
-		id: "",
-		username: "",
-		requestMessage: "",
-	},
-]);
+const applyList = ref<I_GetRequestListApiResult["data"]>();
 
 onMounted(() => {
 	getContactApplyList();
@@ -32,12 +26,10 @@ onMounted(() => {
 
 // 获取好友申请列表
 const getContactApplyList = async () => {
-	const res = await getRequestList();
-	if (res.status == 200) {
-		applyList.value = res.data;
-	} else {
-		ElMessage.warning("获取好友申请列表失败");
-		return;
+	const [_, res] = await friendStore.getRequestList();
+
+	if (res) {
+		applyList.value = res;
 	}
 };
 
@@ -49,7 +41,7 @@ const agreeApply = async (applyId: string, username: string) => {
 			type: "primary" as ElButtonType,
 			text: "确定",
 			click: async () => {
-				await agreeFriend({ friendId: applyId });
+				await friendStore.agreeFriend(applyId);
 			},
 		},
 	];
@@ -82,19 +74,13 @@ const handleBlock = (applyId: string, username: string) => {
 	<ContentPanel :showTopBorder="true"
 		><div>
 			<div class="apply-item" v-for="item in applyList">
-				{{ item.contactType }}
-				<!-- <div
-          :class="['contact-type', item.contactType == 0 ? 'user-contact' : '']"
-        >
-          {{ item.contactType == 0 ? "好友" : "群聊" }}
-        </div> -->
 				<Avatar :width="50" :userId="item.id" :username="item.username"></Avatar>
 				<div class="contact-info">
 					<div class="nickname">{{ item.username }}</div>
-					<div class="apply-info">{{ item.requestMessage }}</div>
+					<div class="apply-info">{{ item.friendShip.requestMessage }}</div>
 				</div>
 				<div class="op-btn">
-					<div v-if="item.status == 'pending'">
+					<div v-if="item.friendShip.status == 'pending'">
 						<el-dropdown placement="bottom-end" trigger="click">
 							<span class="el-dropdown-link">
 								<el-button type="primary">接受</el-button>
@@ -105,7 +91,7 @@ const handleBlock = (applyId: string, username: string) => {
 							</template>
 						</el-dropdown>
 					</div>
-					<div v-else class="result-name">{{ item.status }}</div>
+					<div v-else class="result-name">{{ item.friendShip.status }}</div>
 				</div>
 			</div>
 		</div>
