@@ -12,6 +12,11 @@ const friendStore = useFriendStore();
 const contactId = ref();
 
 const searchResult = ref<I_FindUserByNameApiResult["data"]>({} as I_FindUserByNameApiResult["data"]);
+type friendShipStatusType = "pending" | "accepted" | "rejected" | "blocked";
+
+const friendShipStatus = computed(() => {
+	return (searchResult.value.friendShip?.status || "pending") as friendShipStatusType;
+});
 
 const search = async () => {
 	if (!contactId.value) {
@@ -63,7 +68,7 @@ const resetForm = () => {};
 				@keydown.enter="search"></el-input>
 			<div class="search-btn iconfont icon-search" @click="search"></div>
 		</div>
-		<div class="search-result-panel" v-if="searchResult">
+		<div class="search-result-panel" v-if="searchResult.id">
 			<!-- 信息展示 -->
 			<div class="search-result">
 				<span class="contact-type">{{ contactTypeName }}</span>
@@ -71,16 +76,12 @@ const resetForm = () => {};
 			</div>
 			<!-- 各类按钮(搜索人不是自己显示) -->
 			<div class="op-btn" v-if="searchResult.id != userStore.userInfo!.id">
-				<el-button
-					type="primary"
-					v-if="searchResult.status == 0 || searchResult.status == 2 || searchResult.status == 3"
-					@click="applyContact">
-					{{
-						// searchResult.contactType == "USER" ? "添加到联系人" : "申请加入群组"
-						"申请添加好友"
-					}}
+				<el-button type="primary" v-if="friendShipStatus === 'pending'" @click="applyContact">
+					{{ "申请添加好友" }}
 				</el-button>
-				<el-button type="primary" v-if="searchResult.status == 1" @click="sendMessage">发消息</el-button>
+				<el-button type="primary" v-if="['accepted', 'blocked'].includes(friendShipStatus)" @click="sendMessage"
+					>发消息</el-button
+				>
 			</div>
 		</div>
 		<!-- <div v-if="!searchResult" class="no-data">没有搜索到任何结果</div> -->
