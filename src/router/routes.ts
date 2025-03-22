@@ -28,12 +28,12 @@ export default [
 					{
 						path: "/contact/search",
 						name: "搜索",
-						component: () => import("@/pages/contact/Search.vue"),
+						component: () => import("@/pages/friend/pages/Search.vue"),
 					},
 					{
 						path: "/contact/contactNotice",
 						name: "新的朋友",
-						component: () => import("@/pages/contact/ContactApply.vue"),
+						component: () => import("@/pages/friend/pages/RequestList.vue"),
 					},
 					{
 						path: "/contact/createGroup",

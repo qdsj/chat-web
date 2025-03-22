@@ -3,7 +3,7 @@ import UserBaseInfo from "@/components/UserBaseInfo.vue";
 import { ElMessage } from "element-plus";
 import { useUserStore } from "@/store/useUserStore";
 import ContentPanel from "@/components/ContentPanel.vue";
-import SearchAdd from "./SearchAdd.vue";
+import SearchAdd from "../../contact/SearchAdd.vue";
 import { useFriendStore } from "@/store/useFriendStore";
 import { I_FindUserByNameApiResult } from "@/apis/friend";
 
