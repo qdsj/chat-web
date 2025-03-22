@@ -1,4 +1,5 @@
 import { addFriendApi, findUserByNameApi, getFriendList, I_FindUserByNameApiResult } from "@/apis/friend";
+import { T_User } from "@/types/model/friend.types";
 import { defineStore } from "pinia";
 // 具体和api交互的代码，统一放在store中。
 // vue文件只需要考虑和store进行交互即可
@@ -6,7 +7,7 @@ import { defineStore } from "pinia";
 export const useFriendStore = defineStore(
 	"use-friend-store",
 	() => {
-		const friendList = ref([]);
+		const friendList = ref<T_User[]>([]);
 
 		const getAllFriend = async () => {
 			const list = await getFriendList();

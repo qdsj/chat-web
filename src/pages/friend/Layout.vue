@@ -78,6 +78,7 @@ const onContextMenu = (e: MouseEvent, data: any) => {
 		</template>
 		<!-- 右边 -->
 		<template #right-content>
+			<!-- header -->
 			<router-view v-slot="{ Component }">
 				<component :is="Component" ref="componentRef"></component>
 			</router-view>
