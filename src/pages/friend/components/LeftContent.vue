@@ -4,7 +4,8 @@ import ListGroup from "./ListGroup.vue";
 
 const friendStore = useFriendStore();
 const searchKey = ref("");
-
+const defaultAvatar =
+	"https://th.bing.com/th/id/OIP.-I18fiU0rmHiiS5FtMDyHgHaHa?w=207&h=207&c=7&r=0&o=5&dpr=1.5&pid=1.7";
 // 搜索好友 or 群聊
 const search = () => {
 	console.log(searchKey.value);
@@ -38,7 +39,7 @@ const newGroupGroup = {
 			name: "相亲相爱一家人",
 			path: "/contact/groupDetail?id=group@qq.com&name=相亲相爱一家人",
 			type: "friend",
-			avatar: "",
+			avatar: defaultAvatar,
 			data: {
 				email: "group@qq.com",
 				name: "相亲相爱一家人",
@@ -55,7 +56,7 @@ const friendGroup = {
 				name: item.username,
 				path: `/contact/userDetail?id=${item.email}&username=${item.username}`,
 				type: "friend",
-				avatar: "",
+				avatar: defaultAvatar,
 				data: {
 					email: item.email,
 					name: item.username,

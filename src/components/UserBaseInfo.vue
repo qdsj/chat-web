@@ -25,6 +25,7 @@ defineProps({
 			:userId="userInfo.id || userInfo.contactId"
 			:width="width"
 			:borderRadius="5"
+			:alt="userInfo.username"
 			:showDetail="showDetail"></AvatarBase>
 		<div class="user-info">
 			<div class="nick-name">
