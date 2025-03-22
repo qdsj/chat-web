@@ -1,9 +1,7 @@
 <script setup lang="ts">
 import { useChatStore } from "@/store/useChatStore";
-import { useUserStore } from "@/store/useUserStore";
 import emojiLists from "@/util/Emoji";
 
-const userStore = useUserStore();
 const chatStore = useChatStore();
 
 defineProps({

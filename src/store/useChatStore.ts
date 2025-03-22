@@ -1,10 +1,10 @@
-import { defineStore } from "pinia";
-import { ref, computed } from "vue";
 import { Conversation, Message, SocketMessage } from "@/util/types";
+import { defineStore } from "pinia";
 import { v4 as uuidv4 } from "uuid";
-import { useUserStore } from "./useUserStore";
-import { useSocketStore } from "./useSocketStore";
+import { ref } from "vue";
 import { useFriendStore } from "./useFriendStore";
+import { useSocketStore } from "./useSocketStore";
+import { useUserStore } from "./useUserStore";
 
 export const useChatStore = defineStore(
 	"chat",
@@ -89,7 +89,12 @@ export const useChatStore = defineStore(
 				content,
 			} = params;
 
-			const message = createMessage(sender, receiver, content, type);
+			const message = createMessage({
+				sender,
+				receiver,
+				content,
+				type,
+			});
 			appendMessageToConversation(conversationId, message);
 
 			// told socket
