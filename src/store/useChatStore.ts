@@ -1,15 +1,17 @@
 import { defineStore } from "pinia";
 import { ref, computed } from "vue";
-import { Conversation, Message } from "@/util/types";
+import { Conversation, Message, SocketMessage } from "@/util/types";
 import { v4 as uuidv4 } from "uuid";
 import { useUserStore } from "./useUserStore";
 import { useSocketStore } from "./useSocketStore";
+import { useFriendStore } from "./useFriendStore";
 
 export const useChatStore = defineStore(
 	"chat",
 	() => {
 		const userStore = useUserStore();
 		const socketStore = useSocketStore();
+		const friendStore = useFriendStore();
 		// 会话列表
 		const conversationsList = ref<Conversation[]>([]);
 		// 当前会话对象
@@ -55,7 +57,13 @@ export const useChatStore = defineStore(
 			conversationsList.value.push(conversation);
 		};
 
-		const createMessage = (sender: string, receiver: string, content: string, type: string = "text"): Message => {
+		const createMessage = (params: {
+			sender: string;
+			receiver: string;
+			content: string;
+			type: string;
+		}): Message => {
+			const { sender, receiver, content, type = "text" } = params;
 			return {
 				id: uuidv4(),
 				sender,
@@ -92,6 +100,30 @@ export const useChatStore = defineStore(
 			});
 		};
 
+		// 用来处理接收到的消息
+		const addMessage = (message: SocketMessage) => {
+			// 发送消息的人是否在会话列表中
+			const isSenderInConversations = conversationsList.value.some((conv) => conv.id === message.senderId);
+			const _message = createMessage({
+				sender: message.senderId,
+				receiver: message.receiverId,
+				content: message.msg,
+				type: message.msgType,
+			});
+			// 如果不在，添加新的会话
+			if (!isSenderInConversations) {
+				addConversation({
+					id: message.senderId,
+					name: friendStore.getFriendById(message.senderId)?.username || "未知用户",
+					avatar: "",
+					messages: [_message],
+				});
+			} else {
+				// 如果在，追加消息到对应会话
+				appendMessageToConversation(message.senderId, _message);
+			}
+		};
+
 		return {
 			conversationsList,
 			currentConversation,
@@ -101,6 +133,7 @@ export const useChatStore = defineStore(
 			addConversation,
 			appendMessageToCurrentConversation,
 			sendMessage,
+			addMessage,
 		};
 	},
 	{

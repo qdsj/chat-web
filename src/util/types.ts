@@ -11,6 +11,13 @@ export interface Message {
 	type?: string;
 }
 
+export interface SocketMessage {
+	msg: string;
+	senderId: string;
+	receiverId: string;
+	msgType: string;
+}
+
 // 会话列表
 export interface Conversation {
 	id: string; // roomId / friendId

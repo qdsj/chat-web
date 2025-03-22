@@ -69,6 +69,10 @@ export const useFriendStore = defineStore(
 			}
 		};
 
+		const getFriendById = (id: string) => {
+			return friendList.value.find((friend) => friend.id === id);
+		};
+
 		return {
 			friendList,
 			getAllFriend,
@@ -76,6 +80,7 @@ export const useFriendStore = defineStore(
 			searchUserByName,
 			getRequestList,
 			agreeFriend,
+			getFriendById,
 		};
 	},
 	{

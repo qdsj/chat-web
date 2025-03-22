@@ -28,6 +28,8 @@ watch(
 			socketStore.addMsgCallbacks([
 				(data: any) => {
 					console.log(data);
+					// 将消息保存到会话列表中
+					chatStore.addMessage(data);
 				},
 			]);
 		}

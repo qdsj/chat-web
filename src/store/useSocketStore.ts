@@ -36,18 +36,6 @@ export const useSocketStore = defineStore("socket-store", () => {
 			options.onConnectCallbacks?.forEach((callback) => {
 				callback();
 			});
-
-			// client.value?.emit(
-			// 	"send",
-			// 	{
-			// 		roomId: "40be5cbe-fbd1-43a8-bd35-d51c0c8bc876",
-			// 		msg: "hello blue",
-			// 		type: "person",
-			// 	},
-			// 	(...args: any) => {
-			// 		console.log("send", args);
-			// 	}
-			// );
 		});
 
 		connect.on("message", (msg) => {
