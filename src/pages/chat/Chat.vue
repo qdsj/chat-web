@@ -134,7 +134,7 @@ const initialFriends = [
 ];
 
 chatStore.initConversations(initialConversations);
-chatStore.initFriends(initialFriends);
+// chatStore.initFriends(initialFriends);
 
 // 点击会话
 const chatSessionClickHandle = (conversationId: string) => {
