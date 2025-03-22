@@ -42,6 +42,10 @@ const showGroupDetail = () => {};
 const isSelf = (sender: string) => {
 	return sender === userStore.userInfo!.id;
 };
+
+const isSelf = (sender: string) => {
+	return sender === userStore.userInfo!.id;
+};
 </script>
 
 <template>
@@ -58,6 +62,7 @@ const isSelf = (sender: string) => {
 			</div>
 			<!-- 会话列表 -->
 			<SessionList />
+			<SessionList />
 		</template>
 
 		<!-- 右边 -->
@@ -65,9 +70,13 @@ const isSelf = (sender: string) => {
 			<splitpanes horizontal class="default-theme">
 				<pane size="75">
 					<div class="title-panel" v-if="chatStore.currentConversation">
+					<div class="title-panel" v-if="chatStore.currentConversation">
 						<div class="title">
 							<span>{{ chatStore.currentConversation.name }}</span>
+							<span>{{ chatStore.currentConversation.name }}</span>
 							<!-- 群聊 -->
+							<span v-if="chatStore.currentConversation.contactType == 1">
+								({{ chatStore.currentConversation.memberCount }})
 							<span v-if="chatStore.currentConversation.contactType == 1">
 								({{ chatStore.currentConversation.memberCount }})
 							</span>
@@ -75,16 +84,22 @@ const isSelf = (sender: string) => {
 						<!-- 群聊 -->
 						<div
 							v-if="chatStore.currentConversation.contactType == 1"
+							v-if="chatStore.currentConversation.contactType == 1"
 							class="iconfont icon-icon_more"
 							@click="showGroupDetail"></div>
 					</div>
 					<el-container class="chat-container">
 						<el-main class="chat-box" v-show="chatStore.currentConversation">
+					<el-container class="chat-container">
+						<el-main class="chat-box" v-show="chatStore.currentConversation">
 							<div class="messages-container">
+								<template v-for="msg in chatStore.currentConversation?.messages" :key="msg">
 								<template v-for="msg in chatStore.currentConversation?.messages" :key="msg">
 									<div class="message-time">
 										<span>{{ msg.time }}</span>
 									</div>
+									<div :class="['message', isSelf(msg.sender) ? 'message-self' : 'message-other']">
+										<el-avatar size="small">{{ isSelf(msg.sender) ? "Me" : msg.sender }}</el-avatar>
 									<div :class="['message', isSelf(msg.sender) ? 'message-self' : 'message-other']">
 										<el-avatar size="small">{{ isSelf(msg.sender) ? "Me" : msg.sender }}</el-avatar>
 										<div class="message-content" shadow="never">
@@ -96,9 +111,12 @@ const isSelf = (sender: string) => {
 						</el-main>
 					</el-container>
 					<Blank v-if="!chatStore.currentConversation"></Blank>
+					<Blank v-if="!chatStore.currentConversation"></Blank>
 				</pane>
 				<pane min-size="15" size="25" v-if="chatStore.currentConversation">
+				<pane min-size="15" size="25" v-if="chatStore.currentConversation">
 					<!-- 发送组件 -->
+					<MessageSend :chatStore.currentConversation="chatStore.currentConversation || {}"> </MessageSend>
 					<MessageSend :chatStore.currentConversation="chatStore.currentConversation || {}"> </MessageSend>
 				</pane>
 			</splitpanes>

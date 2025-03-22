@@ -36,6 +36,18 @@ export const useSocketStore = defineStore("socket-store", () => {
 			options.onConnectCallbacks?.forEach((callback) => {
 				callback();
 			});
+
+			// client.value?.emit(
+			// 	"send",
+			// 	{
+			// 		roomId: "40be5cbe-fbd1-43a8-bd35-d51c0c8bc876",
+			// 		msg: "hello blue",
+			// 		type: "person",
+			// 	},
+			// 	(...args: any) => {
+			// 		console.log("send", args);
+			// 	}
+			// );
 		});
 
 		connect.on("message", (msg) => {
@@ -47,6 +59,14 @@ export const useSocketStore = defineStore("socket-store", () => {
 		return connect;
 	};
 
+	const socketSend = (msg: SendMsgType, callback?: (...args: any) => void) => {
+		if (!msg.msgType) {
+			msg.msgType = "text";
+		}
+
+		client.value?.emit("send", msg, (...args: any) => {
+			callback && callback(...args);
+		});
 	const socketSend = (msg: SendMsgType, callback?: (...args: any) => void) => {
 		if (!msg.msgType) {
 			msg.msgType = "text";
