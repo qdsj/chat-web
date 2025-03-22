@@ -1,4 +1,4 @@
-import { addFriendApi, getFriendList } from "@/apis/friend";
+import { addFriendApi, findUserByNameApi, getFriendList } from "@/apis/friend";
 import { defineStore } from "pinia";
 // 具体和api交互的代码，统一放在store中。
 // vue文件只需要考虑和store进行交互即可
@@ -27,12 +27,20 @@ export const useFriendStore = defineStore(
 		};
 
 		// 搜索好友
-		const searchUserbyName = () => {};
+		const searchUserByName = async (username: string) => {
+			try {
+				const res = await findUserByNameApi(username);
+				return res.data;
+			} catch (error) {
+				return null;
+			}
+		};
 
 		return {
 			friendList,
 			getAllFriend,
 			addFriend,
+			searchUserByName,
 		};
 	},
 	{

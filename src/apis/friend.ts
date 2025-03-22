@@ -1,7 +1,24 @@
 import { getFetch, postFetch } from "./http.ts";
 
+export interface I_FindUserByNameApiResult {
+	data: {
+		id: "string";
+		username: "string";
+		email: "string";
+		friendShip: {
+			id: "string";
+			userId: "string";
+			friendId: "string";
+			requesterId: "string";
+			requestMessage: "string";
+			status: "string";
+			blockerId: "string";
+			createdAt: "string";
+		};
+	};
+}
 // 通过名字查找用户
-export const findUserByName = (username: string) => {
+export const findUserByNameApi = (username: string): Promise<I_FindUserByNameApiResult> => {
 	return getFetch(`/user/findUserByName?username=${username}`);
 };
 

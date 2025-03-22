@@ -4,12 +4,14 @@ import { ElMessage } from "element-plus";
 import { useUserStore } from "@/store/useUserStore";
 import ContentPanel from "@/components/ContentPanel.vue";
 import SearchAdd from "./SearchAdd.vue";
-import { findUserByName } from "@/apis/friend";
+import { useFriendStore } from "@/store/useFriendStore";
+import { I_FindUserByNameApiResult } from "@/apis/friend";
 
 const userStore = useUserStore();
+const friendStore = useFriendStore();
 const contactId = ref();
 
-const searchResult = ref();
+const searchResult = ref<I_FindUserByNameApiResult["data"]>({} as I_FindUserByNameApiResult["data"]);
 
 const search = async () => {
 	if (!contactId.value) {
@@ -17,10 +19,11 @@ const search = async () => {
 		return;
 	}
 
-	const res = await findUserByName(contactId.value);
-	if (res) {
-		searchResult.value = res.data;
-		searchResult.value.status = 0; // 默认不是好友
+	const data = await friendStore.searchUserByName(contactId.value);
+	if (data) {
+		searchResult.value = data;
+		// magic number
+		// searchResult.value.status = data.friendShip.status; // 默认不是好友
 	} else {
 		ElMessage.error("未找到用户");
 		return;
@@ -28,9 +31,9 @@ const search = async () => {
 };
 
 const contactTypeName = computed(() => {
-	if (userStore.userInfo!.id === searchResult.value.contactId) return "自己";
-	if (searchResult.value.contactType === "USER") return "用户";
-	if (searchResult.value.contactType === "GROUP") return "群组";
+	if (userStore.userInfo!.id === searchResult.value.id) return "自己";
+	// if (searchResult.value.contactType === "USER") return "用户";
+	// if (searchResult.value.contactType === "GROUP") return "群组";
 });
 
 const searchAddRef = ref();
@@ -64,10 +67,10 @@ const resetForm = () => {};
 			<!-- 信息展示 -->
 			<div class="search-result">
 				<span class="contact-type">{{ contactTypeName }}</span>
-				<UserBaseInfo :userInfo="searchResult" :showArea="searchResult.contactType == 'USER'"></UserBaseInfo>
+				<UserBaseInfo :userInfo="searchResult"></UserBaseInfo>
 			</div>
 			<!-- 各类按钮(搜索人不是自己显示) -->
-			<div class="op-btn" v-if="searchResult.contactId != userStore.userInfo!.id">
+			<div class="op-btn" v-if="searchResult.id != userStore.userInfo!.id">
 				<el-button
 					type="primary"
 					v-if="searchResult.status == 0 || searchResult.status == 2 || searchResult.status == 3"
