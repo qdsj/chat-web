@@ -1,22 +1,19 @@
 <script setup lang="ts">
-import { ref } from "vue";
-import { useSocketStore } from "@/store/useSocketStore";
-import { useChatStore } from "@/store/useChatStore";
-import { useRoute } from "vue-router";
-import ChatSession from "./ChatSession.vue";
-import MessageSend from "./MessageSend.vue";
 import Blank from "@/components/Blank.vue";
-import { fetchTest } from "@/apis/auth";
+import { useChatStore } from "@/store/useChatStore";
+import { useSocketStore } from "@/store/useSocketStore";
+import { ref } from "vue";
+import MessageSend from "./MessageSend.vue";
 
-import { Splitpanes, Pane } from "splitpanes";
+import { useUserStore } from "@/store/useUserStore";
+import { Pane, Splitpanes } from "splitpanes";
 import "splitpanes/dist/splitpanes.css";
-import { Message } from "@/util/types";
+import SessionList from "./SessionList.vue";
 
 const socketStore = useSocketStore();
 const chatStore = useChatStore();
+const userStore = useUserStore();
 
-const route = useRoute();
-const selfName = ref("");
 const searchKey = ref("");
 
 // 搜索好友 or 群聊
@@ -24,149 +21,25 @@ const search = () => {
 	console.log(searchKey.value);
 };
 
-// 模拟初始化会话列表和好友列表
-const initialConversations = [
-	{
-		id: "group-all",
-		name: "所有人的群聊",
-		contactType: 1,
-		memberCount: 1,
-		messages: [
-			{
-				id: 1,
-				sender: "其他",
-				receiver: "",
-				content: "你好！",
-				isSelf: false,
-				time: "10:00",
-			},
-			{
-				id: 2,
-				sender: "我自己",
-				receiver: "",
-				content: "你好，有什么可以帮你的吗？",
-				isSelf: true,
-				time: "10:01",
-			},
-		],
-	},
-	// 可以添加更多会话
-	{
-		id: "1",
-		name: "张三",
-		lastMessage:
-			"你好！你好！你好！你好！你好！你好！你好！你好！你好！你好！你好！你好！你好！你好！你好！你好！你好！你好！你好！你好！你好！",
-		time: "10:00",
-		topType: 1,
-		messages: [
-			{
-				id: 1,
-				sender: "其他",
-				receiver: "",
-				content: "你好！",
-				isSelf: false,
-				time: "10:00",
-			},
-			{
-				id: 2,
-				sender: "我自己",
-				receiver: "",
-				content: "你好，有什么可以帮你的吗？",
-				isSelf: true,
-				time: "10:01",
-			},
-		],
-	},
-	{
-		id: "2",
-		name: "Zenos",
-		lastMessage: "在吗？",
-		time: "09:30",
-		messages: [
-			{
-				id: 1,
-				sender: "其他",
-				receiver: "",
-				content: "你好！",
-				isSelf: false,
-				time: "10:00",
-			},
-			{
-				id: 2,
-				sender: "我自己",
-				receiver: "",
-				content: "你好，有什么可以帮你的吗？",
-				isSelf: true,
-				time: "10:01",
-			},
-		],
-	},
-	{
-		id: "3",
-		name: "王五",
-		lastMessage: "好的",
-		time: "昨天",
-		messages: [
-			{
-				id: 1,
-				sender: "其他",
-				receiver: "",
-				content: "你好！",
-				isSelf: false,
-				time: "10:00",
-			},
-			{
-				id: 2,
-				sender: "我自己",
-				receiver: "",
-				content: "你好，有什么可以帮你的吗？",
-				isSelf: true,
-				time: "10:01",
-			},
-		],
-	},
-];
-
-const initialFriends = [
-	{ id: "1", name: "张三" },
-	{ id: "2", name: "Zenos" },
-	{ id: "3", name: "王五" },
-];
-
-chatStore.initConversations(initialConversations);
-// chatStore.initFriends(initialFriends);
-
-// 点击会话
-const chatSessionClickHandle = (conversationId: string) => {
-	chatStore.setCurrentConversation(conversationId);
-};
-
-onMounted(() => {
-	fetchTest();
-	selfName.value = (route.query.name || "") as string;
-
-	// connect socket
-	socketStore.addMsgCallbacks([
-		(data: any) => {
-			const message = reactive<Message>({
-				id: chatStore.getCurrentConversation!.messages.length + 1,
-				sender: data.sender,
-				receiver: "",
-				content: data.content,
-				isSelf: false,
-				time: new Date().toLocaleTimeString("zh-CN", {
-					hour: "2-digit",
-					minute: "2-digit",
-				}),
-			});
-			console.log("message", data);
-			chatStore.appendMessageToConversation(data.id, message);
-		},
-	]);
-});
+watch(
+	() => socketStore.client,
+	(client) => {
+		if (client) {
+			socketStore.addMsgCallbacks([
+				(data: any) => {
+					console.log(data);
+				},
+			]);
+		}
+	}
+);
 
 // 显示群聊详情
 const showGroupDetail = () => {};
+
+const isSelf = (sender: string) => {
+	return sender === userStore.userInfo!.id;
+};
 </script>
 
 <template>
@@ -182,43 +55,36 @@ const showGroupDetail = () => {};
 				</el-input>
 			</div>
 			<!-- 会话列表 -->
-			<div class="chat-session-list">
-				<template v-for="item in chatStore.allConversations" :key="item.id">
-					<ChatSession
-						:currentSession="chatStore.getCurrentConversation?.id === item.id"
-						:data="item"
-						@click="chatSessionClickHandle(item.id)"></ChatSession>
-				</template>
-			</div>
+			<SessionList />
 		</template>
 
 		<!-- 右边 -->
 		<template #right-content>
 			<splitpanes horizontal class="default-theme">
 				<pane size="75">
-					<div class="title-panel" v-if="chatStore.getCurrentConversation">
+					<div class="title-panel" v-if="chatStore.currentConversation">
 						<div class="title">
-							<span>{{ chatStore.getCurrentConversation.name }}</span>
+							<span>{{ chatStore.currentConversation.name }}</span>
 							<!-- 群聊 -->
-							<span v-if="chatStore.getCurrentConversation.contactType == 1">
-								({{ chatStore.getCurrentConversation.memberCount }})
+							<span v-if="chatStore.currentConversation.contactType == 1">
+								({{ chatStore.currentConversation.memberCount }})
 							</span>
 						</div>
 						<!-- 群聊 -->
 						<div
-							v-if="chatStore.getCurrentConversation.contactType == 1"
+							v-if="chatStore.currentConversation.contactType == 1"
 							class="iconfont icon-icon_more"
 							@click="showGroupDetail"></div>
 					</div>
-					<el-container>
-						<el-main class="chat-box" v-show="chatStore.getCurrentConversation">
+					<el-container class="chat-container">
+						<el-main class="chat-box" v-show="chatStore.currentConversation">
 							<div class="messages-container">
-								<template v-for="msg in chatStore.getCurrentConversation?.messages" :key="msg">
+								<template v-for="msg in chatStore.currentConversation?.messages" :key="msg">
 									<div class="message-time">
 										<span>{{ msg.time }}</span>
 									</div>
-									<div :class="['message', msg.isSelf ? 'message-self' : 'message-other']">
-										<el-avatar size="small">{{ msg.isSelf ? "Me" : msg.sender }}</el-avatar>
+									<div :class="['message', isSelf(msg.sender) ? 'message-self' : 'message-other']">
+										<el-avatar size="small">{{ isSelf(msg.sender) ? "Me" : msg.sender }}</el-avatar>
 										<div class="message-content" shadow="never">
 											{{ msg.content }}
 										</div>
@@ -227,12 +93,11 @@ const showGroupDetail = () => {};
 							</div>
 						</el-main>
 					</el-container>
-					<Blank v-if="!chatStore.getCurrentConversation"></Blank>
+					<Blank v-if="!chatStore.currentConversation"></Blank>
 				</pane>
-				<pane min-size="15" size="25" v-if="chatStore.getCurrentConversation">
+				<pane min-size="15" size="25" v-if="chatStore.currentConversation">
 					<!-- 发送组件 -->
-					<MessageSend :chatStore.getCurrentConversation="chatStore.getCurrentConversation || {}">
-					</MessageSend>
+					<MessageSend :chatStore.currentConversation="chatStore.currentConversation || {}"> </MessageSend>
 				</pane>
 			</splitpanes>
 		</template>
@@ -383,7 +248,7 @@ const showGroupDetail = () => {};
 
 .title-panel {
 	width: 100%;
-	height: 81px;
+	height: 80px;
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
@@ -395,5 +260,9 @@ const showGroupDetail = () => {};
 		font-size: 18px;
 		font-weight: 600;
 	}
+}
+
+.chat-container {
+	height: calc(100% - 80px);
 }
 </style>

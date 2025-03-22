@@ -54,7 +54,7 @@ const friendGroup = {
 		...(friendStore.friendList || []).map((item) => {
 			return {
 				name: item.username,
-				path: `/contact/userDetail?id=${item.email}&username=${item.username}`,
+				path: `/contact/userDetail?id=${item.id}&username=${item.username}`,
 				type: "friend",
 				avatar: defaultAvatar,
 				data: {
