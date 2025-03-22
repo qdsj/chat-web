@@ -24,13 +24,11 @@ const search = async () => {
 		return;
 	}
 
-	const data = await friendStore.searchUserByName(contactId.value);
+	const [error, data] = await friendStore.searchUserByName(contactId.value);
 	if (data) {
 		searchResult.value = data;
-		// magic number
-		// searchResult.value.status = data.friendShip.status; // 默认不是好友
 	} else {
-		ElMessage.error("未找到用户");
+		ElMessage.error("没有该用户");
 		return;
 	}
 };

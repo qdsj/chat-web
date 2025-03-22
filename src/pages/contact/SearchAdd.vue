@@ -55,12 +55,12 @@ const submitApply = () => {
 	// 添加成功  or  申请成功，等待对方同意
 	formDataRef.value.validate(async (valid: any) => {
 		if (!valid) return;
-		const isSuccess = await friendStore.addFriend(formData.value.id, formData.value.applyInfo);
+		const [error, isSuccess] = await friendStore.addFriend(formData.value.id, formData.value.applyInfo);
 
 		if (isSuccess) {
 			ElMessage.success("申请成功，等待对方同意");
 		} else {
-			ElMessage.error("申请失败");
+			ElMessage.error(error || "申请失败");
 		}
 	});
 	dialogConfig.value.show = false;
