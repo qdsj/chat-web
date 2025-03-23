@@ -1,6 +1,10 @@
 <script setup lang="ts">
-import { useRouter } from "vue-router";
+import { useRouter, useRoute } from "vue-router";
 import { SearchIcon, newFriendIcon, groupIcon } from "./AvatarIcon";
+
+const router = useRouter();
+const route = useRoute();
+
 const props = defineProps({
   avatar: {
     type: String,
@@ -25,7 +29,6 @@ const props = defineProps({
     default: "friend",
   },
 });
-const router = useRouter();
 const avatarMap = {
   search: SearchIcon,
   newFriend: newFriendIcon,
@@ -38,7 +41,11 @@ const gotoPage = () => {
 </script>
 
 <template>
-  <div class="list-item part-item" @click="gotoPage">
+  <div
+    class="list-item part-item"
+    @click="gotoPage"
+    :class="[route.path == props.path ? 'active' : '']"
+  >
     <Avatar
       v-if="type == 'friend'"
       :avatar="avatar"

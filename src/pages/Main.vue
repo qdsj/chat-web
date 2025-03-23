@@ -40,21 +40,31 @@ interface MenuItem {
   countKey?: string;
   position: string;
 }
-const currentMenu = ref<MenuItem>(menuList.value[0]);
-const changeMenu = (item: MenuItem) => {
-  currentMenu.value = item;
-  router.push(item.path);
+const currentMenu = ref<MenuItem | null>(null);
+
+const updateCurrentMenu = () => {
+  const foundMenu = menuList.value.find((item) =>
+    route.path.startsWith(item.path)
+  );
+  currentMenu.value = foundMenu || menuList.value[0];
 };
+
+onMounted(() => {
+  updateCurrentMenu();
+});
 
 watch(
   () => route.path,
   () => {
-    const foundMenu = menuList.value.find((item) =>
-      route.path.startsWith(item.path)
-    );
-    currentMenu.value = foundMenu || menuList.value[0];
-  }
+    updateCurrentMenu();
+  },
+  { immediate: true }
 );
+
+const changeMenu = (item: MenuItem) => {
+  currentMenu.value = item;
+  router.push(item.path);
+};
 </script>
 
 <template>
@@ -74,7 +84,7 @@ watch(
             :class="[
               'tab-item iconfont',
               item.icon,
-              currentMenu.path.startsWith(item.path) ? 'active' : '',
+              currentMenu!.path.startsWith(item.path) ? 'active' : '',
             ]"
             v-if="item.position == 'top'"
             @click="changeMenu(item)"
@@ -87,7 +97,7 @@ watch(
             :class="[
               'tab-item iconfont',
               item.icon,
-              item.path == currentMenu.path ? 'active' : '',
+              currentMenu!.path.startsWith(item.path) ? 'active' : '',
             ]"
             v-if="item.position == 'bottom'"
             @click="changeMenu(item)"

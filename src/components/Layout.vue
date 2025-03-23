@@ -4,15 +4,6 @@ import "splitpanes/dist/splitpanes.css";
 </script>
 
 <template>
-  <!-- <div class="layout-container">
-    <div class="left-side-inner">
-      <slot name="left-content"></slot>
-    </div>
-    <div class="right-content">
-      <slot name="right-content"></slot>
-    </div>
-  </div> -->
-
   <splitpanes class="layout-container">
     <pane min-size="20" size="30" max-size="50" class="left-side-inner">
       <slot name="left-content"></slot>
