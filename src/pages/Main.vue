@@ -40,18 +40,21 @@ interface MenuItem {
   countKey?: string;
   position: string;
 }
-const currentMenu = ref(menuList.value[0]);
+const currentMenu = ref<MenuItem>(menuList.value[0]);
 const changeMenu = (item: MenuItem) => {
   currentMenu.value = item;
   router.push(item.path);
 };
-onMounted(() => {
-  const currentPath = route.path;
-  const foundMenu = menuList.value.find((item) =>
-    currentPath.startsWith(item.path)
-  );
-  currentMenu.value = foundMenu || menuList.value[0];
-});
+
+watch(
+  () => route.path,
+  () => {
+    const foundMenu = menuList.value.find((item) =>
+      route.path.startsWith(item.path)
+    );
+    currentMenu.value = foundMenu || menuList.value[0];
+  }
+);
 </script>
 
 <template>
@@ -71,7 +74,7 @@ onMounted(() => {
             :class="[
               'tab-item iconfont',
               item.icon,
-              item.path == currentMenu.path ? 'active' : '',
+              currentMenu.path.startsWith(item.path) ? 'active' : '',
             ]"
             v-if="item.position == 'top'"
             @click="changeMenu(item)"
