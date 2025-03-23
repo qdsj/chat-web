@@ -9,6 +9,7 @@ import { useUserStore } from "@/store/useUserStore";
 import { Pane, Splitpanes } from "splitpanes";
 import "splitpanes/dist/splitpanes.css";
 import SessionList from "./SessionList.vue";
+import { formatTime } from "@/util/utils";
 
 const socketStore = useSocketStore();
 const chatStore = useChatStore();
@@ -116,7 +117,7 @@ const isSelf = (sender: string) => {
                   :key="msg"
                 >
                   <div class="message-time">
-                    <span>{{ msg.time }}</span>
+                    <span>{{ formatTime(Number(msg.time)) }}</span>
                   </div>
                   <div
                     :class="[
