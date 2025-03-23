@@ -24,7 +24,6 @@ export const useChatStore = defineStore(
 
     // 设置当前会话
     const setCurrentConversation = (conversationId: string) => {
-      console.log("setCurrentConversation", conversationId);
       const targetConversation = conversationsList.value.find(
         (conv) => conv.id === conversationId
       );
