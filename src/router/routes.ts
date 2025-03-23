@@ -33,7 +33,7 @@ export default [
           {
             path: "/contact/createGroup",
             name: "创建群聊",
-            component: () => import("@/pages/contact/GroupEdit.vue"),
+            component: () => import("@/pages/group/GroupEdit.vue"),
           },
           {
             path: "/contact/userDetail",
@@ -43,7 +43,7 @@ export default [
           {
             path: "/contact/groupDetail",
             name: "群聊详情",
-            component: () => import("@/pages/contact/GroupDetail.vue"),
+            component: () => import("@/pages/group/GroupDetail.vue"),
           },
         ],
       },
