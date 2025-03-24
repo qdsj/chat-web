@@ -1,9 +1,8 @@
 <script setup lang="ts">
-import { useRouter, useRoute } from "vue-router";
+import { useRouter } from "vue-router";
 import { SearchIcon, newFriendIcon, groupIcon } from "./AvatarIcon";
 
 const router = useRouter();
-const route = useRoute();
 
 const props = defineProps({
   avatar: {
