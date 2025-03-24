@@ -37,9 +37,11 @@ const search = async () => {
 };
 
 const contactTypeName = computed(() => {
-  if (userStore.userInfo!.id === searchResult.value.id) return "自己";
-  // if (searchResult.value.contactType === "USER") return "用户";
-  // if (searchResult.value.contactType === "GROUP") return "群组";
+  if (userStore.userInfo!.id === searchResult.value.id) {
+    return "自己";
+  } else {
+    return "用户";
+  }
 });
 
 const searchAddRef = ref();
@@ -63,7 +65,7 @@ const resetForm = () => {};
     <div class="search-form">
       <el-input
         clearable
-        placeholder="请输入用户ID或群组ID"
+        placeholder="请输入用户ID"
         v-model="contactId"
         size="large"
         @keydown.enter="search"
@@ -93,7 +95,6 @@ const resetForm = () => {};
         >
       </div>
     </div>
-    <!-- <div v-if="!searchResult" class="no-data">没有搜索到任何结果</div> -->
   </ContentPanel>
   <!-- 添加好友申请弹框 -->
   <SearchAdd ref="searchAddRef" @reload="resetForm"></SearchAdd>

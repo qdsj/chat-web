@@ -41,11 +41,7 @@ const gotoPage = () => {
 </script>
 
 <template>
-  <div
-    class="list-item part-item"
-    @click="gotoPage"
-    :class="[route.path == props.path ? 'active' : '']"
-  >
+  <div class="list-item part-item" @click="gotoPage">
     <Avatar
       v-if="type == 'friend'"
       :avatar="avatar"
@@ -54,7 +50,6 @@ const gotoPage = () => {
       :width="35"
       :showDetail="false"
     ></Avatar>
-
     <component v-else :is="avatarMap[type as keyof typeof avatarMap]" />
 
     <div class="text">

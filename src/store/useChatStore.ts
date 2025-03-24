@@ -17,11 +17,6 @@ export const useChatStore = defineStore(
     // 当前会话对象
     const currentConversation = ref<Conversation | null>(null);
 
-    // 初始化会话列表
-    const initConversations = (newConversations: Conversation[]) => {
-      conversationsList.value = newConversations;
-    };
-
     // 设置当前会话
     const setCurrentConversation = (conversationId: string) => {
       const targetConversation = conversationsList.value.find(
@@ -141,7 +136,6 @@ export const useChatStore = defineStore(
     return {
       conversationsList,
       currentConversation,
-      initConversations,
       setCurrentConversation,
       appendMessageToConversation,
       addConversation,
