@@ -7,18 +7,19 @@ const userStore = useUserStore();
 const friendStore = useFriendStore();
 const socketStore = useSocketStore();
 onMounted(async () => {
-	setThemeColor("#08bf61", "#129611");
-	// app initial
-	await userStore.getUserInfo();
-	await friendStore.getAllFriend();
-	socketStore.socketInitial();
+  setThemeColor("#08bf61", "#129611");
+  // app initial
+  await userStore.getUserInfo();
+  await friendStore.getAllFriend();
+  await friendStore.getBlackList();
+  socketStore.socketInitial();
 });
 </script>
 
 <template>
-	<div>
-		<RouterView></RouterView>
-	</div>
+  <div>
+    <RouterView></RouterView>
+  </div>
 </template>
 
 <style scoped></style>

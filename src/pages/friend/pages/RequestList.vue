@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import { DialogConfig } from "@/types/types";
-import { ElMessage, ElMessageBox } from "element-plus";
 import type { ButtonType as ElButtonType } from "element-plus";
-import { blockFriend } from "@/apis/friend";
 import { useFriendStore } from "@/store/useFriendStore";
 import { I_GetRequestListApiResult } from "@/apis/types/friend.types";
 
@@ -46,28 +44,6 @@ const agreeApply = async (applyId: string, username: string) => {
     },
   ];
 };
-
-const handleBlock = (applyId: string, username: string) => {
-  ElMessageBox.confirm(`确定要拉黑${username}吗?`, "Warning", {
-    confirmButtonText: "确定",
-    cancelButtonText: "取消",
-    type: "warning",
-  })
-    .then(async () => {
-      const res = await blockFriend({ friendId: applyId });
-
-      ElMessage({
-        type: "success",
-        message: res.message,
-      });
-    })
-    .catch(() => {
-      ElMessage({
-        type: "info",
-        message: "取消拉黑",
-      });
-    });
-};
 </script>
 
 <template>
@@ -87,16 +63,12 @@ const handleBlock = (applyId: string, username: string) => {
           <div v-if="item.friendShip.status == 'pending'">
             <el-dropdown placement="bottom-end" trigger="click">
               <span class="el-dropdown-link">
-                <el-button type="primary">接受</el-button>
+                <el-button
+                  type="primary"
+                  @click="agreeApply(item.id, item.username)"
+                  >接受</el-button
+                >
               </span>
-              <template #dropdown>
-                <el-dropdown-item @click="agreeApply(item.id, item.username)"
-                  >同意</el-dropdown-item
-                >
-                <el-dropdown-item @click="handleBlock(item.id, item.username)"
-                  >拉黑</el-dropdown-item
-                >
-              </template>
             </el-dropdown>
           </div>
           <div v-else class="result-name">{{ item.friendShip.status }}</div>

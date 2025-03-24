@@ -1,13 +1,16 @@
 <script setup lang="ts">
 import { useChatStore } from "@/store/useChatStore";
+import { useFriendStore } from "@/store/useFriendStore";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { useRouter, useRoute } from "vue-router";
+
+const friendStore = useFriendStore();
 const router = useRouter();
 const route = useRoute();
 
 const chatStore = useChatStore();
 
-const userInfo = ref({
+const friendInfo = ref({
   id: "",
   username: "",
   avatar: "",
@@ -15,7 +18,7 @@ const userInfo = ref({
 
 // 更新 userInfo 的函数
 function updateUserInfo() {
-  userInfo.value = {
+  friendInfo.value = {
     id: (route.query.id as string) || "",
     username: (route.query.username as string) || "",
     avatar: "",
@@ -35,60 +38,91 @@ watch(
   }
 );
 
-const delContact = () => {
-  ElMessageBox.confirm("你确定要删除该联系人吗?", "Warning", {
-    confirmButtonText: "确定",
-    cancelButtonText: "取消",
-    type: "warning",
-  })
-    .then(() => {
-      ElMessage({
-        type: "success",
-        message: "删除联系人成功",
-      });
-      router.push("/contact/blank");
+const handleBlockFriend = () => {
+  ElMessageBox.confirm(
+    `你确定要拉黑好友${friendInfo.value.username}吗?`,
+    "Warning",
+    {
+      confirmButtonText: "确定",
+      cancelButtonText: "取消",
+      type: "warning",
+    }
+  )
+    .then(async () => {
+      await friendStore.blockFriend(friendInfo.value.id);
+      await friendStore.getAllFriend();
+      await friendStore.getBlackList();
     })
     .catch(() => {
       ElMessage({
         type: "info",
-        message: "取消删除",
+        message: "取消拉黑",
       });
     });
+};
+
+const handleUnblockFriend = async () => {
+  await friendStore.unblockFriend(friendInfo.value.id);
+  await friendStore.getAllFriend();
+  await friendStore.getBlackList();
 };
 
 const sendmessage = () => {
   // 检查是否在会话列表中
   const conversation = chatStore.conversationsList.filter((item) => {
-    return item.id === userInfo.value.id;
+    return item.id === friendInfo.value.id;
   });
 
   if (conversation.length === 0) {
     // 如果不在，添加到会话列表中
     chatStore.addConversation({
-      id: userInfo.value.id,
-      name: userInfo.value.username,
+      id: friendInfo.value.id,
+      name: friendInfo.value.username,
       avatar: "",
       messages: [],
     });
   }
-  chatStore.setCurrentConversation(userInfo.value.id);
+  chatStore.setCurrentConversation(friendInfo.value.id);
 
   // 跳转到聊天页面
   router.push("/chat");
 };
+
+const friendStatus = computed(() => {
+  const id = route.query.id;
+  // 优先级：blocked > accepted（确保互斥）
+  const isBlocked = friendStore.blockList.some(
+    (item) => item.id === id && item.friendShip?.status === "blocked"
+  );
+  const isAccepted =
+    !isBlocked &&
+    friendStore.friendList.some(
+      (item) => item.id === id && item.friendShip?.status === "accepted"
+    );
+  return { isAccepted, isBlocked };
+});
 </script>
 
 <template>
   <ContentPanel :showTopBorder="false">
     <div class="user-info">
-      <UserBaseInfo :userInfo="userInfo"></UserBaseInfo>
+      <UserBaseInfo :userInfo="friendInfo"></UserBaseInfo>
       <div class="more-op">
         <el-dropdown placement="bottom-end" trigger="click">
           <span class="el-dropdown-link">
             <div class="iconfont icon-icon_more"></div>
           </span>
           <template #dropdown>
-            <el-dropdown-item @click="delContact">删除联系人</el-dropdown-item>
+            <el-dropdown-item
+              v-if="friendStatus.isAccepted"
+              @click="handleBlockFriend"
+              >拉黑好友</el-dropdown-item
+            >
+            <el-dropdown-item
+              v-if="friendStatus.isBlocked"
+              @click="handleUnblockFriend"
+              >恢复好友关系</el-dropdown-item
+            >
           </template>
         </el-dropdown>
       </div>

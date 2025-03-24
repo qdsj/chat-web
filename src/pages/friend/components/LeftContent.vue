@@ -48,23 +48,35 @@ const newGroupGroup = {
   ],
 };
 
-const friendGroup = {
+const blockGroup = computed(() => ({
+  name: "我拉黑的好友",
+  children: (friendStore.blockList || []).map((item) => ({
+    name: item.username,
+    path: `/contact/userDetail?id=${item.id}&username=${item.username}`,
+    type: "friend",
+    avatar: defaultAvatar,
+    data: {
+      email: item.email,
+      name: item.username,
+    },
+  })),
+  msg: "暂没有拉黑的好友",
+}));
+
+const friendGroup = computed(() => ({
   name: "我的好友",
-  children: [
-    ...(friendStore.friendList || []).map((item) => {
-      return {
-        name: item.username,
-        path: `/contact/userDetail?id=${item.id}&username=${item.username}`,
-        type: "friend",
-        avatar: defaultAvatar,
-        data: {
-          email: item.email,
-          name: item.username,
-        },
-      };
-    }),
-  ],
-};
+  children: (friendStore.friendList || []).map((item) => ({
+    name: item.username,
+    path: `/contact/userDetail?id=${item.id}&username=${item.username}`,
+    type: "friend",
+    avatar: defaultAvatar,
+    data: {
+      email: item.email,
+      name: item.username,
+    },
+  })),
+  msg: "暂没有好友",
+}));
 </script>
 
 <template>
@@ -89,7 +101,16 @@ const friendGroup = {
       :children="newFriendGroup.children"
     />
     <ListGroup :name="newGroupGroup.name" :children="newGroupGroup.children" />
-    <ListGroup :name="friendGroup.name" :children="friendGroup.children" />
+    <ListGroup
+      :name="blockGroup.name"
+      :children="blockGroup.children"
+      :msg="blockGroup.msg"
+    />
+    <ListGroup
+      :name="friendGroup.name"
+      :children="friendGroup.children"
+      :msg="friendGroup.msg"
+    />
   </div>
 </template>
 
