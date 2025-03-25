@@ -4,15 +4,11 @@ defineProps({
     type: Object,
     default: () => {},
   },
-  currentSession: {
-    type: Boolean,
-    default: false,
-  },
 });
 </script>
 
 <template>
-  <div :class="['chat-session-item', currentSession ? 'active' : '']">
+  <div :class="['chat-session-item']">
     <div class="contact-tag" v-if="data.contactType == 1">群</div>
     <!-- 头像 -->
     <el-avatar :size="50" />
@@ -52,6 +48,9 @@ defineProps({
     .message-time {
       color: #9a9898 !important;
     }
+  }
+  &:active {
+    background: #d8d8d7;
   }
   .user-info {
     flex: 1;

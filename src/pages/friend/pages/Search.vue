@@ -6,9 +6,13 @@ import ContentPanel from "@/components/ContentPanel.vue";
 import SearchAdd from "../components/SearchAdd.vue";
 import { useFriendStore } from "@/store/useFriendStore";
 import { I_FindUserByNameApiResult } from "@/apis/types/friend.types";
+import { useChatStore } from "@/store/useChatStore";
+import { useRouter } from "vue-router";
 
+const chatStore = useChatStore();
 const userStore = useUserStore();
 const friendStore = useFriendStore();
+const router = useRouter();
 const contactId = ref();
 
 const searchResult = ref<I_FindUserByNameApiResult["data"]>(
@@ -53,7 +57,16 @@ const applyContact = () => {
 };
 
 // 发消息
-const sendMessage = () => {};
+const sendMessage = () => {
+  chatStore.handleConversation({
+    id: searchResult.value.id,
+    name: searchResult.value.username,
+    avatar: "",
+  });
+
+  // 跳转到聊天页面
+  router.push("/chat");
+};
 
 // 重置表单
 const resetForm = () => {};
@@ -65,7 +78,7 @@ const resetForm = () => {};
     <div class="search-form">
       <el-input
         clearable
-        placeholder="请输入用户ID"
+        placeholder="请输入用户名"
         v-model="contactId"
         size="large"
         @keydown.enter="search"

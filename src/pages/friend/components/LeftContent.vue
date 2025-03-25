@@ -41,6 +41,7 @@ const newGroupGroup = {
       type: "friend",
       avatar: defaultAvatar,
       data: {
+        id: "gruopId",
         email: "group@qq.com",
         name: "相亲相爱一家人",
       },
@@ -56,6 +57,7 @@ const blockGroup = computed(() => ({
     type: "friend",
     avatar: defaultAvatar,
     data: {
+      id: item.id,
       email: item.email,
       name: item.username,
     },
@@ -71,6 +73,7 @@ const friendGroup = computed(() => ({
     type: "friend",
     avatar: defaultAvatar,
     data: {
+      id: item.id,
       email: item.email,
       name: item.username,
     },

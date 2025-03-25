@@ -58,6 +58,29 @@ export const useChatStore = defineStore(
       conversationsList.value.push(conversation);
     };
 
+    // 通用会话处理逻辑
+    const handleConversation = (params: {
+      id: string;
+      name: string;
+      avatar?: string;
+    }) => {
+      // 检查是否是否在会话列表中
+      const conversation = conversationsList.value.filter((item) => {
+        return item.id === params.id;
+      });
+
+      // 如果不存在，则添加到会话列表中
+      if (conversation.length == 0) {
+        addConversation({
+          id: params.id,
+          name: params.name,
+          avatar: params.avatar || "",
+          messages: [],
+        });
+      }
+      setCurrentConversation(params.id);
+    };
+
     const createMessage = (params: {
       sender: string;
       receiver: string;
@@ -140,6 +163,7 @@ export const useChatStore = defineStore(
       appendMessageToConversation,
       addConversation,
       appendMessageToCurrentConversation,
+      handleConversation,
       sendMessage,
       addMessage,
     };

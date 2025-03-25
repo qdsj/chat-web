@@ -68,21 +68,11 @@ const handleUnblockFriend = async () => {
 };
 
 const sendmessage = () => {
-  // 检查是否在会话列表中
-  const conversation = chatStore.conversationsList.filter((item) => {
-    return item.id === friendInfo.value.id;
+  chatStore.handleConversation({
+    id: friendInfo.value.id,
+    name: friendInfo.value.username,
+    avatar: "",
   });
-
-  if (conversation.length === 0) {
-    // 如果不在，添加到会话列表中
-    chatStore.addConversation({
-      id: friendInfo.value.id,
-      name: friendInfo.value.username,
-      avatar: "",
-      messages: [],
-    });
-  }
-  chatStore.setCurrentConversation(friendInfo.value.id);
 
   // 跳转到聊天页面
   router.push("/chat");

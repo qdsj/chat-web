@@ -44,7 +44,7 @@ const gotoPage = () => {
     <Avatar
       v-if="type == 'friend'"
       :avatar="avatar"
-      :userId="data.email"
+      :userId="data.id"
       :username="data.name"
       :width="35"
       :showDetail="false"

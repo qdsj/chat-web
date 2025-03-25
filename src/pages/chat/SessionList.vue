@@ -12,15 +12,19 @@ const chatSessionClickHandle = (conversationId: string) => {
 
 <template>
   <template v-for="item in chatStore.conversationsList" :key="item.id">
-    <ChatSession
-      :currentSession="chatStore.currentConversation?.id === item.id"
-      :data="item"
-      @click="chatSessionClickHandle(item.id)"
-    ></ChatSession>
+    <div :class="{ active: chatStore.currentConversation?.id === item.id }">
+      <ChatSession
+        :data="item"
+        @click="chatSessionClickHandle(item.id)"
+      ></ChatSession>
+    </div>
   </template>
 </template>
 
 <style scoped lang="scss">
+.active {
+  background: #f0f0f0;
+}
 .chat-session-list {
   overflow-y: auto;
   .chat-session {

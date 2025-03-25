@@ -73,7 +73,7 @@ const changeMenu = (item: MenuItem) => {
     <div class="left-sider">
       <!-- 头像 -->
       <Avatar
-        :userId="userStore.userInfo!.email"
+        :userId="userStore.userInfo!.id"
         :username="userStore.userInfo!.username"
         :showDetail="true"
       ></Avatar>
