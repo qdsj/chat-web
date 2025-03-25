@@ -53,6 +53,7 @@ const agreeApply = async (applyId: string, username: string) => {
         <Avatar
           :width="50"
           :userId="item.id"
+          :email="item.email"
           :username="item.username"
         ></Avatar>
         <div class="contact-info">

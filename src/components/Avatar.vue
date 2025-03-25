@@ -19,6 +19,10 @@ const props = defineProps({
     type: String,
     default: "",
   },
+  email: {
+    type: String,
+    default: "",
+  },
   width: {
     type: Number,
     default: 40,
@@ -38,12 +42,14 @@ const friendInfo = ref({
   username: "",
   contactType: 1,
   avatar: "",
+  email: "",
 });
 const getContactInfo = () => {
   friendInfo.value.id = props.userId;
   // TODO 获取联系人详情数据
   friendInfo.value.username = props.username;
   friendInfo.value.avatar = props.avatar;
+  friendInfo.value.email = props.email;
 };
 
 // TODO 发送消息

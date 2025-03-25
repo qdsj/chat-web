@@ -115,7 +115,9 @@ export const useFriendStore = defineStore(
     };
 
     const getFriendById = (id: string) => {
-      return friendList.value.find((friend) => friend.id === id);
+      const friend = friendList.value.find((friend) => friend.id === id);
+      if (friend) return friend;
+      return blockList.value.find((blockFriend) => blockFriend.id === id);
     };
 
     return {

@@ -14,6 +14,7 @@ const friendInfo = ref({
   id: "",
   username: "",
   avatar: "",
+  email: "",
 });
 
 // 更新 userInfo 的函数
@@ -22,6 +23,7 @@ function updateUserInfo() {
     id: (route.query.id as string) || "",
     username: (route.query.username as string) || "",
     avatar: "",
+    email: friendStore.getFriendById(route.query.id as string)?.email as string,
   };
 }
 

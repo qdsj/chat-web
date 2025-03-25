@@ -32,7 +32,7 @@ defineProps({
         <span class="iconfont icon-icon-woman" v-if="userInfo.sex == 0"></span>
         <span class="iconfont icon-icon-man" v-if="userInfo.sex == 1"></span>
       </div>
-      <div class="info">ID: {{ userInfo.id }}</div>
+      <div class="info">Email: {{ userInfo.email }}</div>
       <div class="info">
         <!-- 地区: {{ getAreaInfo(userInfo.areaName) }} -->
         地区: 广州

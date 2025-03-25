@@ -74,6 +74,7 @@ const changeMenu = (item: MenuItem) => {
       <!-- 头像 -->
       <Avatar
         :userId="userStore.userInfo!.id"
+        :email="userStore.userInfo?.email"
         :username="userStore.userInfo!.username"
         :showDetail="true"
       ></Avatar>
