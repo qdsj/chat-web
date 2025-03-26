@@ -50,12 +50,11 @@ const agreeApply = async (applyId: string, username: string) => {
   <ContentPanel :showTopBorder="true"
     ><div>
       <div class="apply-item" v-for="item in applyList">
-        <Avatar
+        <AvatarBase
           :width="50"
-          :userId="item.id"
-          :email="item.email"
-          :username="item.username"
-        ></Avatar>
+          :avatar="item.avatar"
+          :alt="item.username"
+        ></AvatarBase>
         <div class="contact-info">
           <div class="nickname">{{ item.username }}</div>
           <div class="apply-info">{{ item.friendShip.requestMessage }}</div>

@@ -31,7 +31,7 @@ const props = defineProps({
     type: Number,
     default: 0,
   },
-  showDetail: {
+  showLargeImage: {
     type: Boolean,
     default: false,
   },
@@ -63,7 +63,6 @@ const sendMessage = () => {
   // 跳转到聊天页面
   router.push("/chat");
 };
-
 // TODO 加为好友
 const addContact = () => {};
 </script>

@@ -80,7 +80,7 @@ const changeMenu = (item: MenuItem) => {
         :userId="userStore.userInfo!.id"
         :email="userStore.userInfo?.email"
         :username="userStore.userInfo!.username"
-        :showDetail="true"
+        :showLargeImage="true"
       ></Avatar>
       <!-- 菜单列表 -->
       <div class="menu-list">

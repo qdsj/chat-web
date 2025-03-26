@@ -1,23 +1,37 @@
 <script setup lang="ts">
-defineProps({
+import AvatarBase from "@/components/AvatarBase.vue";
+import { formatTime } from "@/util/utils";
+
+const props = defineProps({
+  avatar: {
+    type: String,
+    default: "",
+  },
   data: {
     type: Object,
     default: () => {},
   },
 });
+const hasMessages = computed(() => props.data?.messages?.length > 0);
 </script>
 
 <template>
   <div :class="['chat-session-item']">
     <div class="contact-tag" v-if="data.contactType == 1">群</div>
     <!-- 头像 -->
-    <el-avatar :size="50" />
+    <AvatarBase :avatar="avatar" :alt="`${data.name}`" :width="50"></AvatarBase>
     <div class="user-info">
       <div class="user-name-panel">
         <div class="user-name">{{ data.name }}</div>
-        <div class="message-time">{{ data.time }}</div>
+        <div class="message-time" v-if="hasMessages">
+          {{ formatTime(Number(data.messages.at().time)) }}
+        </div>
       </div>
-      <div class="last-message" v-html="data.lastMessage"></div>
+      <div
+        class="last-message"
+        v-if="hasMessages"
+        v-html="data.messages.at().content"
+      ></div>
     </div>
     <!-- 置顶 -->
     <div class="chat-top iconfont icon-icon-top" v-if="data.topType == 1"></div>

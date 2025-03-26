@@ -15,6 +15,7 @@ const chatSessionClickHandle = (conversationId: string) => {
     <div :class="{ active: chatStore.currentConversation?.id === item.id }">
       <ChatSession
         :data="item"
+        :avatar="item.avatar"
         @click="chatSessionClickHandle(item.id)"
       ></ChatSession>
     </div>

@@ -60,12 +60,13 @@ onMounted(() => {
     }
   });
 });
-// 显示群聊详情
-const showGroupDetail = () => {};
 
 const isSelf = (sender: string) => {
   return sender === userStore.userInfo!.id;
 };
+
+// 显示群聊详情
+const showGroupDetail = () => {};
 </script>
 
 <template>
@@ -125,9 +126,18 @@ const isSelf = (sender: string) => {
                       isSelf(msg.sender) ? 'message-self' : 'message-other',
                     ]"
                   >
-                    <el-avatar size="small">{{
-                      isSelf(msg.sender) ? "Me" : msg.sender
-                    }}</el-avatar>
+                    <AvatarBase
+                      :avatar="
+                        isSelf(msg.sender)
+                          ? userStore.userInfo?.avatar
+                          : chatStore.currentConversation?.avatar
+                      "
+                      :alt="
+                        isSelf(msg.sender)
+                          ? userStore.userInfo?.username
+                          : chatStore.currentConversation?.name
+                      "
+                    ></AvatarBase>
                     <div class="message-content" shadow="never">
                       {{ msg.content }}
                     </div>
@@ -229,7 +239,7 @@ const isSelf = (sender: string) => {
 
     .message {
       display: flex;
-      align-items: flex-start;
+      align-items: flex-end;
       margin-bottom: 20px;
 
       &.message-self {

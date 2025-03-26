@@ -150,10 +150,10 @@ export const useChatStore = defineStore(
           avatar: "",
           messages: [_message],
         });
-      } else {
-        // 如果在，追加消息到对应会话
-        appendMessageToConversation(message.senderId, _message);
       }
+      // 设置当前会话对象，并追加聊天记录
+      setCurrentConversation(message.senderId);
+      appendMessageToConversation(message.senderId, _message);
     };
 
     return {

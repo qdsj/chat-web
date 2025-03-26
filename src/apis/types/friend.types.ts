@@ -42,6 +42,7 @@ export interface I_GetRequestListApiResult {
       id: "string";
       username: "string";
       email: "string";
+      avatar?: "string";
       friendShip: {
         id: "string";
         userId: "string";

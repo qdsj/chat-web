@@ -41,15 +41,12 @@ const gotoPage = () => {
 
 <template>
   <div class="list-item part-item" @click="gotoPage">
-    <Avatar
+    <AvatarBase
       v-if="type == 'friend'"
       :avatar="avatar"
-      :userId="data.id"
-      :email="data.email"
-      :username="data.name"
+      :alt="data.name"
       :width="35"
-      :showDetail="false"
-    ></Avatar>
+    ></AvatarBase>
     <component v-else :is="avatarMap[type as keyof typeof avatarMap]" />
 
     <div class="text">
