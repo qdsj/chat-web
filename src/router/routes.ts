@@ -17,8 +17,8 @@ export default [
       {
         path: "/contact",
         name: "联系人",
-        redirect: "/contact/search",
         component: () => import("@/pages/friend/Layout.vue"),
+        redirect: "/contact/search",
         children: [
           {
             path: "/contact/search",

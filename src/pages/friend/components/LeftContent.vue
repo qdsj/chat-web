@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useFriendStore } from "@/store/useFriendStore";
 import ListGroup from "./ListGroup.vue";
+import { DEFAULT_ACTIVE_ROUTE, SESSION_STORAGE_KEYS } from "@/util/constants";
 
 const friendStore = useFriendStore();
 const searchKey = ref("");
@@ -80,6 +81,16 @@ const friendGroup = computed(() => ({
   })),
   msg: "暂没有好友",
 }));
+
+const activePath = ref<string>(
+  sessionStorage.getItem(SESSION_STORAGE_KEYS.ACTIVE_PATH) ||
+    DEFAULT_ACTIVE_ROUTE
+);
+
+const handleClick = (path: string) => {
+  activePath.value = path;
+  sessionStorage.setItem(SESSION_STORAGE_KEYS.ACTIVE_PATH, path);
+};
 </script>
 
 <template>
@@ -102,17 +113,28 @@ const friendGroup = computed(() => ({
     <ListGroup
       :name="newFriendGroup.name"
       :children="newFriendGroup.children"
+      :activePath="activePath"
+      @select="handleClick"
     />
-    <ListGroup :name="newGroupGroup.name" :children="newGroupGroup.children" />
+    <ListGroup
+      :name="newGroupGroup.name"
+      :children="newGroupGroup.children"
+      :activePath="activePath"
+      @select="handleClick"
+    />
     <ListGroup
       :name="blockGroup.name"
       :children="blockGroup.children"
       :msg="blockGroup.msg"
+      :activePath="activePath"
+      @select="handleClick"
     />
     <ListGroup
       :name="friendGroup.name"
       :children="friendGroup.children"
       :msg="friendGroup.msg"
+      :activePath="activePath"
+      @select="handleClick"
     />
   </div>
 </template>

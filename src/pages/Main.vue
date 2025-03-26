@@ -3,6 +3,7 @@ import Avatar from "@/components/Avatar.vue";
 import { ref } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { useUserStore } from "@/store/useUserStore";
+import { DEFAULT_ACTIVE_ROUTE } from "@/util/constants";
 
 const router = useRouter();
 const route = useRoute();
@@ -57,6 +58,9 @@ watch(
   () => route.path,
   () => {
     updateCurrentMenu();
+    if (route.path.startsWith(DEFAULT_ACTIVE_ROUTE)) {
+      sessionStorage.setItem("active_path", DEFAULT_ACTIVE_ROUTE);
+    }
   },
   { immediate: true }
 );

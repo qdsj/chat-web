@@ -10,6 +10,11 @@ defineProps<{
     data?: { [key: string]: string };
   }[];
   msg?: string;
+  activePath: string;
+}>();
+
+const emit = defineEmits<{
+  (e: "select", path: string): void;
 }>();
 </script>
 
@@ -24,6 +29,8 @@ defineProps<{
           :data="item.data"
           :path="item.path"
           :name="item.name"
+          @click="emit('select', item.path)"
+          :class="{ active: activePath === item.path }"
         ></ListItem>
       </template>
       <div v-if="children.length == 0" class="part-msg">{{ msg }}</div>
@@ -47,6 +54,9 @@ defineProps<{
   }
   .part-list {
     border-bottom: 1px solid #d6d6d6;
+    .active {
+      background-color: #d6d6d6;
+    }
     .part-msg {
       padding: 10px;
     }
