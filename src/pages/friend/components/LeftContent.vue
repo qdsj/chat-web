@@ -130,5 +130,10 @@ const friendGroup = computed(() => ({
 
 .list-group-container {
   height: calc(100vh - 92px);
+  overflow-y: auto;
+}
+::-webkit-scrollbar {
+  width: 10px; /* 滚动条宽度 */
+  height: 10px; /* 滚动条高度 */
 }
 </style>
