@@ -15,12 +15,16 @@ import {
 import { T_Friend } from "@/types/model/friend.types";
 import { ElMessage } from "element-plus";
 import { defineStore } from "pinia";
+import { useChatStore } from "./useChatStore";
+import { useRouter } from "vue-router";
 // 具体和api交互的代码，统一放在store中。
 // vue文件只需要考虑和store进行交互即可
 
 export const useFriendStore = defineStore(
   "use-friend-store",
   () => {
+    const chatStore = useChatStore();
+    const router = useRouter();
     const friendList = ref<T_Friend[]>([]);
     const blockList = ref<T_Friend[]>([]);
 
@@ -82,11 +86,16 @@ export const useFriendStore = defineStore(
     // 同意好友请求
     const agreeFriend = async (friendId: string) => {
       try {
-        await agreeFriendApi({ friendId });
+        const res = await agreeFriendApi({ friendId });
         // 将好友加进会话列表
-        // chatStore.addConversation({})
+        chatStore.addConversation({
+          id: res.data.id,
+          name: res.data.username,
+          avatar: "",
+          messages: [],
+        });
         // 跳转至会话列表，开始聊天
-        // router.push("/chat");
+        router.push("/chat");
       } catch (error) {
         ElMessage.warning(error || "获取好友申请列表失败");
       }
