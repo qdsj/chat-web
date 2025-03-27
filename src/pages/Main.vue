@@ -77,6 +77,7 @@ const changeMenu = (item: MenuItem) => {
     <div class="left-sider">
       <!-- 头像 -->
       <Avatar
+        v-if="userStore.userInfo !== null"
         :userId="userStore.userInfo!.id"
         :email="userStore.userInfo?.email"
         :username="userStore.userInfo!.username"

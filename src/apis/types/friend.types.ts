@@ -75,6 +75,7 @@ export interface I_GetFriendListApiResult {
       id: "string";
       username: "string";
       email: "string";
+      avatar?: "string";
       friendShip: {
         id: "string";
         userId: "string";

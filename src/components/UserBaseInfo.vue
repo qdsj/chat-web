@@ -20,7 +20,7 @@ defineProps({
 </script>
 
 <template>
-  <div class="user-panel">
+  <div class="user-panel" v-if="userInfo !== null">
     <AvatarBase
       :width="width"
       :alt="`${userInfo.username}`"

@@ -1,16 +1,24 @@
 <script setup lang="ts">
+import { useRouter } from "vue-router";
 import UserInfoEdit from "./UserInfoEdit.vue";
 import UserInfoPassword from "./UserInfoPassword.vue";
 import { useUserStore } from "@/store/useUserStore";
 
 const userStore = useUserStore();
+const router = useRouter();
 
 const showType = ref(0);
 const changePart = (part: number) => {
   showType.value = part;
 };
 // 退出登录
-const logout = () => {};
+const logout = async () => {
+  localStorage.removeItem("auth-token");
+  localStorage.removeItem("refresh-token");
+  localStorage.removeItem("user-info-store");
+  router.push("/chat");
+  await userStore.getUserInfo();
+};
 
 // 编辑返回
 const editBack = () => {

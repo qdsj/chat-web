@@ -12,13 +12,21 @@ defineProps({
     type: Number,
     default: 40,
   },
+  borderRadius: {
+    type: Number,
+    default: 0,
+  },
 });
 </script>
 
 <template>
   <div
     class="user-avatar-container"
-    :style="{ width: width + 'px', height: width + 'px' }"
+    :style="{
+      width: width + 'px',
+      height: width + 'px',
+      borderRadius: borderRadius + 'px',
+    }"
   >
     <img v-if="avatar" class="user-avatar" :src="avatar" :alt="alt" />
     <div v-else class="user-avatar-alt">
