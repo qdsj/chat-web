@@ -4,12 +4,12 @@ import { useChatStore } from "@/store/useChatStore";
 import { useSocketStore } from "@/store/useSocketStore";
 import { ref } from "vue";
 import MessageSend from "./MessageSend.vue";
-
 import { useUserStore } from "@/store/useUserStore";
 import { Pane, Splitpanes } from "splitpanes";
 import "splitpanes/dist/splitpanes.css";
 import SessionList from "./SessionList.vue";
 import { formatTime } from "@/util/utils";
+import CreateGroup from "../group/CreateGroup.vue";
 
 const socketStore = useSocketStore();
 const chatStore = useChatStore();
@@ -65,6 +65,11 @@ const isSelf = (sender: string) => {
   return sender === userStore.userInfo!.id;
 };
 
+const dialogListVisible = ref(false);
+const updateDialogListVisible = (data: boolean) => {
+  dialogListVisible.value = data;
+};
+
 // 显示群聊详情
 const showGroupDetail = () => {};
 </script>
@@ -86,6 +91,16 @@ const showGroupDetail = () => {};
             <span class="iconfont icon-search"></span>
           </template>
         </el-input>
+        <div
+          class="iconfont icon-style icon-plus"
+          @click="dialogListVisible = true"
+        ></div>
+      </div>
+      <div class="friendList-box">
+        <CreateGroup
+          :dialogListVisible="dialogListVisible"
+          @update-dialog-list-visible="updateDialogListVisible"
+        ></CreateGroup>
       </div>
       <!-- 会话列表 -->
       <SessionList />
@@ -170,7 +185,29 @@ const showGroupDetail = () => {};
   .iconfont {
     font-size: 18px;
   }
+  .icon-style {
+    background: #d2d2d2;
+    margin-left: 10px;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    color: #a2a2a2;
+    border-radius: 3px;
+    &:hover {
+      background: #c2c2c2;
+    }
+  }
 }
+
+.friendList-box {
+  position: absolute;
+  top: 5%;
+  left: 15%;
+}
+
 .chat-container {
   height: 100vh;
   border: 1px solid #dcdfe6;
