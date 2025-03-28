@@ -2,8 +2,11 @@
 import { useFriendStore } from "@/store/useFriendStore";
 import ListGroup from "./ListGroup.vue";
 import { DEFAULT_ACTIVE_ROUTE, SESSION_STORAGE_KEYS } from "@/util/constants";
+import { useGroupStore } from "@/store/userGroupStore";
 
 const friendStore = useFriendStore();
+const groupStore = useGroupStore();
+
 const searchKey = ref("");
 const defaultAvatar =
   "https://th.bing.com/th/id/OIP.-I18fiU0rmHiiS5FtMDyHgHaHa?w=207&h=207&c=7&r=0&o=5&dpr=1.5&pid=1.7";
@@ -11,6 +14,10 @@ const defaultAvatar =
 const search = () => {
   console.log(searchKey.value);
 };
+
+onMounted(async () => {
+  await groupStore.getGroupChatList();
+});
 
 const newFriendGroup = {
   name: "新朋友",
@@ -30,24 +37,16 @@ const newFriendGroup = {
 
 const newGroupGroup = {
   name: "群聊",
-  children: [
-    {
-      name: "新建群聊",
-      path: "/contact/createGroup",
-      type: "group",
+  children: (groupStore.groupList || []).map((item) => ({
+    name: item.name,
+    path: `/contact/groupDetail?id=${item.id}&username=${item.name}`,
+    type: "friend",
+    avatar: defaultAvatar,
+    data: {
+      id: item.id,
+      name: item.name,
     },
-    {
-      name: "相亲相爱一家人",
-      path: "/contact/groupDetail?id=group@qq.com&name=相亲相爱一家人",
-      type: "friend",
-      avatar: defaultAvatar,
-      data: {
-        id: "gruopId",
-        email: "group@qq.com",
-        name: "相亲相爱一家人",
-      },
-    },
-  ],
+  })),
 };
 
 const blockGroup = computed(() => ({
