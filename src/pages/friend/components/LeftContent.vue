@@ -15,10 +15,6 @@ const search = () => {
   console.log(searchKey.value);
 };
 
-onMounted(async () => {
-  await groupStore.getGroupChatList();
-});
-
 const newFriendGroup = {
   name: "新朋友",
   children: [

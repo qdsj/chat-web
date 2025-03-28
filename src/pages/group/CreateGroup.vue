@@ -2,7 +2,11 @@
 import { useFriendStore } from "@/store/useFriendStore";
 // @ts-ignore
 import ContactInfo from "./ContactInfo.vue";
+import { useChatStore } from "@/store/useChatStore";
+import { useGroupStore } from "@/store/userGroupStore";
 const friendStore = useFriendStore();
+const chatStore = useChatStore();
+const groupStore = useGroupStore();
 
 defineProps({
   dialogListVisible: {
@@ -20,7 +24,7 @@ const search = () => {
   console.log(searchKey.value);
 };
 
-const selectedIds = ref<(string | number)[]>([]);
+const selectedIds = ref<string[]>([]);
 const selectedContacts = computed(() => {
   return friendStore.friendList.filter((contact) =>
     selectedIds.value.includes(contact.id)
@@ -35,8 +39,17 @@ const handleDialogClose = () => {
   selectedIds.value = [];
 };
 
-const handleConfirm = () => {
+const handleConfirm = async () => {
+  const data = await groupStore.createGroupChat(selectedIds.value);
+  await groupStore.getGroupChatList();
   handleDialogClose();
+  chatStore.addConversation({
+    id: data.id,
+    name: data.name,
+    avatar: data.avatar,
+    messages: [],
+  });
+  chatStore.setCurrentConversation(data.id);
 };
 </script>
 
