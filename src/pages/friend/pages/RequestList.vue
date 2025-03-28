@@ -62,15 +62,23 @@ const agreeApply = async (applyId: string, username: string) => {
         </div>
         <div class="op-btn">
           <div v-if="item.friendShip.status == 'pending'">
-            <el-dropdown placement="bottom-end" trigger="click">
-              <span class="el-dropdown-link">
-                <el-button
-                  type="primary"
-                  @click="agreeApply(item.id, item.username)"
-                  >接受</el-button
-                >
-              </span>
-            </el-dropdown>
+            <div
+              v-if="item.id !== item.friendShip.requesterId"
+              class="result-name"
+            >
+              {{ "等待对方同意好友申请" }}
+            </div>
+            <div v-else>
+              <el-dropdown placement="bottom-end" trigger="click">
+                <span class="el-dropdown-link">
+                  <el-button
+                    type="primary"
+                    @click="agreeApply(item.id, item.username)"
+                    >接受</el-button
+                  >
+                </span>
+              </el-dropdown>
+            </div>
           </div>
           <div v-else class="result-name">{{ item.friendShip.status }}</div>
         </div>
@@ -119,7 +127,7 @@ const agreeApply = async (applyId: string, username: string) => {
     background: #08bf61;
   }
   .contact-info {
-    width: 410px;
+    width: 400px;
     margin-left: 10px;
     .nick-name {
       color: #000;
@@ -134,8 +142,8 @@ const agreeApply = async (applyId: string, username: string) => {
     }
   }
   .op-btn {
-    width: 50px;
     text-align: center;
+    margin: 0 auto;
     .result-name {
       color: #999;
       font-size: 12px;

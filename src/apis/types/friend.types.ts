@@ -61,9 +61,13 @@ export interface I_AgreeFriendApiResult {
   status: number;
   message: "string";
   data: {
+    blockerId: "string";
+    createdAt: "string";
     id: "string";
-    username: "string";
-    email: "string";
+    receiverId: "string";
+    requestMessage: "string";
+    requesterId: "string";
+    status: I_FriendShipStatus;
   };
 }
 

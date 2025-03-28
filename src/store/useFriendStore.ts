@@ -28,6 +28,12 @@ export const useFriendStore = defineStore(
     const friendList = ref<T_Friend[]>([]);
     const blockList = ref<T_Friend[]>([]);
 
+    const getFriendById = (id: string) => {
+      const friend = friendList.value.find((friend) => friend.id === id);
+      if (friend) return friend;
+      return blockList.value.find((blockFriend) => blockFriend.id === id);
+    };
+
     // 获取所有好友列表
     const getAllFriend = async () => {
       const list = await getFriendListApi();
@@ -87,13 +93,16 @@ export const useFriendStore = defineStore(
     const agreeFriend = async (friendId: string) => {
       try {
         const res = await agreeFriendApi({ friendId });
+        await getAllFriend();
+        const friend = await getFriendById(res.data.requesterId);
         // 将好友加进会话列表
         chatStore.addConversation({
-          id: res.data.id,
-          name: res.data.username,
+          id: friend!.id,
+          name: friend!.username,
           avatar: "",
           messages: [],
         });
+        chatStore.setCurrentConversation(friend!.id);
         // 跳转至会话列表，开始聊天
         router.push("/chat");
       } catch (error) {
@@ -121,12 +130,6 @@ export const useFriendStore = defineStore(
       } catch (error) {
         ElMessage.warning(error || "拉黑好友失败");
       }
-    };
-
-    const getFriendById = (id: string) => {
-      const friend = friendList.value.find((friend) => friend.id === id);
-      if (friend) return friend;
-      return blockList.value.find((blockFriend) => blockFriend.id === id);
     };
 
     return {
