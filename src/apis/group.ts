@@ -2,6 +2,8 @@ import { postFetch } from "./http";
 import {
   I_CreateGroupChatApiResult,
   I_GetGroupListApiResult,
+  I_GetGroupMemberInfoApiResult,
+  I_UpdateGroupChatInfoApiResult,
 } from "./types/group.type";
 
 // 创建群聊
@@ -14,4 +16,21 @@ export const createGroupChatApi = (data: {
 // 获取群聊列表
 export const getGroupChatListApi = (): Promise<I_GetGroupListApiResult> => {
   return postFetch("/chat/getGroupList", {});
+};
+
+// 修改群聊信息
+export const updateGroupChatInfoApi = (data: {
+  roomId: string;
+  description: string;
+  type: string;
+}): Promise<I_UpdateGroupChatInfoApiResult> => {
+  return postFetch("/chat/updateGroupChatInfo", data);
+};
+
+// 获取群成员信息
+export const getGroupMemberInfoApi = (data: {
+  roomId: string;
+  type: string;
+}): Promise<I_GetGroupMemberInfoApiResult> => {
+  return postFetch("/chat/getGroupMemberInfo", data);
 };

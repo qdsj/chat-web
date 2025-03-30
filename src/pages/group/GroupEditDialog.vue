@@ -32,7 +32,7 @@ defineExpose({
     :show="dialogConfig.show"
     :title="dialogConfig.title"
     :buttons="dialogConfig.buttons"
-    width="400px"
+    width="600px"
     @close="dialogConfig.show = false"
     :showCancel="false"
   >

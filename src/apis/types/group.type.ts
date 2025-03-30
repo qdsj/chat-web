@@ -37,3 +37,29 @@ export interface I_GetGroupListApiResult {
     }
   ];
 }
+
+export interface I_UpdateGroupChatInfoApiResult {
+  status: number;
+  message: "string";
+  data: null;
+}
+
+export interface I_GetGroupMemberInfoApiResult {
+  status: number;
+  message: "string";
+  data: [
+    {
+      chatRoomShipInfo: {
+        id: "string";
+        roomId: "string";
+        userId: "string";
+        status: "string";
+        userType: "string";
+        createdAt: "string";
+      };
+      id: "string";
+      username: "string";
+      email: "string";
+    }
+  ];
+}

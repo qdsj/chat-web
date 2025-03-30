@@ -1,15 +1,15 @@
 <script setup lang="ts">
-import { ElMessage } from "element-plus";
+import { useGroupStore } from "@/store/userGroupStore";
+
+const groupStore = useGroupStore();
 
 const formDataRef = ref();
 const formData = ref({
   groupId: "",
-  groupOwnerId: "blue123",
-  groupName: "群组",
+  groupName: "",
   avatarFile: "",
-  numberCount: 0,
-  joinType: 0,
-  groupNotice: "群公告",
+  groupDescription: "",
+  type: "",
 });
 
 const rules = ref({
@@ -27,32 +27,28 @@ const rules = ref({
   //     trigger: "change",
   //   },
   // ],
-  joinType: [
+  groupDescription: [
     {
       required: true,
-      message: "请选择加入权限",
-      trigger: "change",
+      message: "请输入群聊描述",
+      trigger: "blur",
     },
   ],
 });
 
 const emits = defineEmits(["editBack"]);
 const submit = () => {
-  formDataRef.value.validate((valid: any) => {
+  formDataRef.value.validate(async (valid: any) => {
     if (!valid) return;
-  });
-
-  if (formData.value.groupId) {
-    ElMessage.success("群组修改成功");
+    const { groupId, groupDescription, type } = formData.value;
+    await groupStore.updateGroupChatInfo(groupId, groupDescription, type);
+    await groupStore.getGroupChatList();
+    formDataRef.value.resetFields();
     emits("editBack");
-  } else {
-    ElMessage.success("群组创建成功");
-  }
-  formDataRef.value.resetFields();
+  });
 };
 
 const showFun = (data: any) => {
-  formDataRef.value.resetFields();
   formData.value = data;
   formData.value.avatarFile = data.groupId;
 };
@@ -63,12 +59,7 @@ defineExpose({
 </script>
 
 <template>
-  <el-form
-    ref="formDataRef"
-    :model="formData"
-    :rules="rules"
-    label-width="80px"
-  >
+  <el-form ref="formDataRef" :model="formData" :rules="rules">
     <el-form-item label="群名称" prop="groupName">
       <el-input
         maxLength="150"
@@ -77,23 +68,11 @@ defineExpose({
         v-model.trim="formData.groupName"
       ></el-input>
     </el-form-item>
-    <el-form-item label="封面" prop="avatarFile">
-      <AvatarUpload
-        v-model="formData.avatarFile"
-        ref="avatarUploadRef"
-      ></AvatarUpload>
-    </el-form-item>
-    <el-form-item label="加入权限" prop="joinType">
-      <el-radio-group v-model="formData.joinType">
-        <el-radio :value="0">直接添加</el-radio>
-        <el-radio :value="1">管理员同意后加入</el-radio>
-      </el-radio-group>
-    </el-form-item>
-    <el-form-item label="公告" prop="groupNotice">
+    <el-form-item label="群聊描述" prop="groupDescription">
       <el-input
         clearable
-        placeholder="请输入群公告"
-        v-model.trim="formData.groupNotice"
+        placeholder="请输入群聊描述"
+        v-model.trim="formData.groupDescription"
         type="textarea"
         :rows="5"
         maxlength="300"
@@ -102,10 +81,14 @@ defineExpose({
     </el-form-item>
     <el-form-item>
       <el-button type="primary" @click="submit">
-        {{ formData.groupId ? "修改群组" : "创建群组" }}
+        {{ "修改群聊信息" }}
       </el-button>
     </el-form-item>
   </el-form>
 </template>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+:deep(.el-form-item__content) {
+  justify-content: center;
+}
+</style>

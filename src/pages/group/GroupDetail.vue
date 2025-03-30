@@ -2,20 +2,14 @@
 import { useUserStore } from "@/store/useUserStore";
 import GroupEditDialog from "./GroupEditDialog.vue";
 import { ElMessage, ElMessageBox } from "element-plus";
-import { useRouter } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
+import { useGroupStore } from "@/store/userGroupStore";
+import { I_GetGroupMemberInfoApiResult } from "@/apis/types/group.type";
 
 const router = useRouter();
+const route = useRoute();
 const useStore = useUserStore();
-
-const groupInfo = ref({
-  groupId: "",
-  groupOwnerId: "blue123",
-  groupName: "",
-  avatarFile: "",
-  numberCount: 0,
-  joinType: 0,
-  groupNotice: "",
-});
+const groupStore = useGroupStore();
 
 const groupEditDialogRef = ref();
 const editGroupInfo = () => {
@@ -52,33 +46,72 @@ const sendMessage = () => {
   });
 };
 
-onMounted(() => {
-  getGroupInfo();
+const groupInfo = ref({
+  groupId: "",
+  groupOwnerId: "",
+  groupName: "",
+  avatar: "",
+  userType: "",
+  groupDescription: "",
+  type: "",
 });
 
-const getGroupInfo = () => {
+const updateGroupInfo = () => {
+  const group = groupStore.getGroupById(route.query.id as string);
+  if (!group) return;
+  const {
+    id,
+    name,
+    avatar,
+    description,
+    type,
+    roomShip: { userId, userType },
+  } = group;
   groupInfo.value = {
-    groupId: "群ID",
-    groupOwnerId: "blue123",
-    groupName: "群组",
-    avatarFile: "",
-    numberCount: 0,
-    joinType: 0,
-    groupNotice: "群公告",
+    groupId: id,
+    groupOwnerId: userId,
+    groupName: name,
+    avatar: avatar,
+    userType: userType,
+    groupDescription: description,
+    type: type,
   };
 };
+
+const groupMemberList = ref<I_GetGroupMemberInfoApiResult["data"]>();
+const getGroupMember = async () => {
+  const [_, data] = await groupStore.getGroupMemberInfo(
+    groupInfo.value.groupId,
+    groupInfo.value.type
+  );
+  groupMemberList.value = data;
+};
+
+onMounted(async () => {
+  updateGroupInfo();
+  getGroupMember();
+});
+
+// 监听 route.query.id 的变化
+watch(
+  () => route.query.id,
+  () => {
+    updateGroupInfo();
+    getGroupMember();
+  }
+);
+
+const searchMember = ref();
 </script>
 
 <template>
   <ContentPanel>
-    <div class="group-info-item">
-      <div class="group-title">封面:</div>
-      <div class="group-value">
-        <Avatar
-          :userId="groupInfo.groupId"
-          :username="groupInfo.groupName"
-        ></Avatar>
-      </div>
+    <div class="group-info-input">
+      <el-input v-model="searchMember" placeholder="搜索群成员">
+        <template #prefix>
+          <span class="iconfont icon-search"></span>
+        </template>
+      </el-input>
       <el-dropdown placement="bottom-end" trigger="click">
         <span class="el-dropdown-link">
           <div class="iconfont icon-icon_more"></div>
@@ -100,53 +133,83 @@ const getGroupInfo = () => {
         </template>
       </el-dropdown>
     </div>
+
     <div class="group-info-item">
-      <div class="group-title">群ID:</div>
-      <div class="group-value">{{ groupInfo.groupId }}</div>
+      <div
+        class="grid-container"
+        v-for="item in groupMemberList"
+        :key="item.id"
+      >
+        <Avatar
+          :userId="item.id"
+          :username="item.username"
+          :width="50"
+        ></Avatar>
+        <div class="nickname">{{ item.username }}</div>
+      </div>
     </div>
     <div class="group-info-item">
       <div class="group-title">群名称:</div>
       <div class="group-value">{{ groupInfo.groupName }}</div>
     </div>
-    <div class="group-info-item">
-      <div class="group-title">群成员:</div>
-      <div class="group-value">{{ groupInfo.numberCount }}</div>
+    <div class="group-info-item notice" v-if="groupInfo.groupDescription">
+      <div class="group-title">群聊描述:</div>
+      <div class="group-value">{{ groupInfo.groupDescription }}</div>
     </div>
     <div class="group-info-item">
-      <div class="group-title">加入权限:</div>
-      <div class="group-value">
-        {{ groupInfo.joinType == 0 ? "直接加入" : "管理员同意后加入" }}
-      </div>
-    </div>
-    <div class="group-info-item notice">
-      <div class="group-title">公告:</div>
-      <div class="group-value">{{ groupInfo.groupNotice || "-" }}</div>
-    </div>
-    <div class="group-info-item">
-      <div class="group-title"></div>
-      <div class="group-value">
+      <div class="group-button">
         <el-button type="primary" @click="sendMessage">发送群消息</el-button>
       </div>
     </div>
   </ContentPanel>
   <GroupEditDialog
     ref="groupEditDialogRef"
-    @reloadGroupInfo="getGroupInfo"
+    @reloadGroupInfo="updateGroupInfo"
   ></GroupEditDialog>
 </template>
 
 <style scoped lang="scss">
+.group-info-input {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 30px;
+  .el-input {
+    width: 80%;
+  }
+}
 .group-info-item {
   display: flex;
   align-items: center;
   margin: 15px 0px;
+  .grid-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    margin-right: 30px;
+    &:last-child {
+      margin-right: 0;
+    }
+  }
   .group-title {
-    width: 100px;
     text-align: right;
     margin-right: 10px;
+    font-size: 18px;
   }
   .group-value {
     flex: 1;
+    color: #a2a2a2;
+    font-size: 18px;
+    .nickname {
+      color: #000;
+    }
+  }
+  .group-button {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
   }
 }
 
