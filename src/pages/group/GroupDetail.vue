@@ -4,6 +4,7 @@ import GroupEditDialog from "./GroupEditDialog.vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { useRoute, useRouter } from "vue-router";
 import { useGroupStore } from "@/store/userGroupStore";
+import CreateGroup from "./CreateGroup.vue";
 import { I_GetGroupMemberInfoApiResult } from "@/apis/types/group.type";
 
 const router = useRouter();
@@ -79,27 +80,42 @@ const updateGroupInfo = () => {
 };
 
 const groupMemberList = ref<I_GetGroupMemberInfoApiResult["data"]>();
+
 const getGroupMember = async () => {
-  const [_, data] = await groupStore.getGroupMemberInfo(
+  await groupStore.getGroupMemberByList(
     groupInfo.value.groupId,
     groupInfo.value.type
   );
-  groupMemberList.value = data;
+  groupStore.groupList.forEach((item) => {
+    if (item.id == groupInfo.value.groupId) {
+      groupMemberList.value = item.member;
+    }
+  });
 };
 
 onMounted(async () => {
-  updateGroupInfo();
-  getGroupMember();
+  await groupStore.getGroupChatList();
+  await updateGroupInfo();
+  await getGroupMember();
 });
 
 // 监听 route.query.id 的变化
 watch(
   () => route.query.id,
-  () => {
-    updateGroupInfo();
-    getGroupMember();
+  async () => {
+    await updateGroupInfo();
+    await getGroupMember();
   }
 );
+
+const addMemberDialog = ref(false);
+const updateMemberDialog = (data: boolean) => {
+  addMemberDialog.value = data;
+};
+const handleAddmember = async () => {
+  addMemberDialog.value = true;
+  // await getGroupMember();
+};
 
 const searchMember = ref();
 </script>
@@ -147,7 +163,15 @@ const searchMember = ref();
         ></Avatar>
         <div class="nickname">{{ item.username }}</div>
       </div>
+      <div class="grid-container">
+        <div class="iconfont icon-add" @click="handleAddmember"></div>
+        <div class="nickname">{{ "添加" }}</div>
+      </div>
     </div>
+    <CreateGroup
+      :dialogListVisible="addMemberDialog"
+      @updateDialogListVisible="updateMemberDialog"
+    ></CreateGroup>
     <div class="group-info-item">
       <div class="group-title">群名称:</div>
       <div class="group-value">{{ groupInfo.groupName }}</div>
@@ -182,14 +206,18 @@ const searchMember = ref();
   display: flex;
   align-items: center;
   margin: 15px 0px;
+  flex-wrap: wrap;
   .grid-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    margin-right: 30px;
-    &:last-child {
-      margin-right: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    margin-bottom: 30px;
+    .iconfont {
+      width: 50px;
+      height: 50px;
+      border: 1px solid #ddd;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
   }
   .group-title {

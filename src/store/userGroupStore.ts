@@ -64,6 +64,17 @@ export const useGroupStore = defineStore(
       }
     };
 
+    const getGroupMemberByList = async (roomId: string, type: string) => {
+      // 通过find匹配具体群组对象
+      const targetGroup = groupList.value.find(
+        (obj) => obj.id === roomId && obj.type === type
+      );
+
+      if (targetGroup && !targetGroup.member) {
+        const [_, data] = await getGroupMemberInfo(roomId, type);
+        targetGroup.member = data;
+      }
+    };
     return {
       groupList,
       getGroupById,
@@ -71,6 +82,7 @@ export const useGroupStore = defineStore(
       getGroupChatList,
       updateGroupChatInfo,
       getGroupMemberInfo,
+      getGroupMemberByList,
     };
   },
   {

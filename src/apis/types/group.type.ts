@@ -34,6 +34,7 @@ export interface I_GetGroupListApiResult {
         userType: "string";
         createdAt: "string";
       };
+      member: I_GetGroupMemberInfoApiResult["data"];
     }
   ];
 }
