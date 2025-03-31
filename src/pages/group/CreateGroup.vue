@@ -8,10 +8,14 @@ const friendStore = useFriendStore();
 const chatStore = useChatStore();
 const groupStore = useGroupStore();
 
-defineProps({
+const props = defineProps({
   dialogListVisible: {
     type: Boolean,
     default: false,
+  },
+  selectedIds: {
+    type: Array,
+    default: [],
   },
 });
 
@@ -24,23 +28,50 @@ const search = () => {
   console.log(searchKey.value);
 };
 
-const selectedIds = ref<string[]>([]);
+const originalIds = ref<string[]>(props.selectedIds as string[]);
+const newSelectedIds = ref<string[]>([]);
+
+watch(
+  () => props.selectedIds,
+  (newVal) => {
+    originalIds.value = newVal as string[];
+  }
+);
+
+const isOriginalMember = (id: string) => originalIds.value.includes(id);
+const isNewSelected = (id: string) => newSelectedIds.value.includes(id);
+
+const handleCheckboxChange = (id: string, event: Event) => {
+  const isChecked = (event.target as HTMLInputElement).checked;
+  if (isChecked) {
+    newSelectedIds.value = [...newSelectedIds.value, id];
+  } else {
+    newSelectedIds.value = newSelectedIds.value.filter((item) => item !== id);
+  }
+};
+
 const selectedContacts = computed(() => {
-  return friendStore.friendList.filter((contact) =>
-    selectedIds.value.includes(contact.id)
+  return friendStore.friendList.filter(
+    (contact) =>
+      newSelectedIds.value.includes(contact.id) &&
+      !originalIds.value.includes(contact.id)
   );
 });
-const removeContact = (id: string | number) => {
-  selectedIds.value = selectedIds.value.filter((item) => item !== id);
+const removeContact = (id: string) => {
+  if (!originalIds.value.includes(id)) {
+    newSelectedIds.value = newSelectedIds.value.filter((item) => item !== id);
+  }
 };
+
+// const finalSelectedIds = ref([...originalIds.value, ...newSelectedIds.value]);
 
 const handleDialogClose = () => {
   emits("updateDialogListVisible", false);
-  selectedIds.value = [];
+  newSelectedIds.value = [];
 };
 
 const handleConfirm = async () => {
-  const data = await groupStore.createGroupChat(selectedIds.value);
+  const data = await groupStore.createGroupChat(newSelectedIds.value);
   await groupStore.getGroupChatList();
   handleDialogClose();
   chatStore.addConversation({
@@ -83,10 +114,13 @@ const handleConfirm = async () => {
             class="contact-item"
           >
             <input
-              type="checkbox"
-              :value="contact.id"
-              v-model="selectedIds"
               class="circle-checkbox"
+              type="checkbox"
+              :checked="
+                isOriginalMember(contact.id) || isNewSelected(contact.id)
+              "
+              :disabled="isOriginalMember(contact.id)"
+              @change="handleCheckboxChange(contact.id, $event)"
             />
             <ContactInfo :contact="contact" />
           </li>

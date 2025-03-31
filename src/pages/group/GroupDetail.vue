@@ -108,13 +108,15 @@ watch(
   }
 );
 
+const selectedIds = ref<string[]>([]);
 const addMemberDialog = ref(false);
 const updateMemberDialog = (data: boolean) => {
   addMemberDialog.value = data;
 };
 const handleAddmember = async () => {
   addMemberDialog.value = true;
-  // await getGroupMember();
+  await getGroupMember();
+  selectedIds.value = groupMemberList.value!.map((item) => item.id);
 };
 
 const searchMember = ref();
@@ -169,8 +171,10 @@ const searchMember = ref();
       </div>
     </div>
     <CreateGroup
+      v-if="selectedIds.length"
       :dialogListVisible="addMemberDialog"
       @updateDialogListVisible="updateMemberDialog"
+      :selectedIds="selectedIds"
     ></CreateGroup>
     <div class="group-info-item">
       <div class="group-title">群名称:</div>
