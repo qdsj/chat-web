@@ -6,7 +6,7 @@ export interface Message {
   receiverId: string;
   content: string;
   isSelf?: boolean;
-  createAt: string;
+  createdAt: string;
   msgType?: string;
 }
 

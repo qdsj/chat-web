@@ -116,7 +116,7 @@ export const useChatStore = defineStore(
         senderId,
         receiverId,
         content,
-        createAt: Date.now().toString(), // 时间戳
+        createdAt: new Date(Date.now()).toISOString(), // 时间戳
         msgType,
       };
     };

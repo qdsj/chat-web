@@ -9,7 +9,7 @@ import { Pane, Splitpanes } from "splitpanes";
 import "splitpanes/dist/splitpanes.css";
 import SessionList from "./SessionList.vue";
 import CreateGroup from "../group/CreateGroup.vue";
-import { formatTime } from "@/util/utils";
+import { formatMessageTime } from "@/util/utils";
 
 const socketStore = useSocketStore();
 const chatStore = useChatStore();
@@ -133,7 +133,9 @@ const showGroupDetail = () => {};
                   :key="msg"
                 >
                   <div class="message-time">
-                    <span>{{ formatTime(Number(msg.createAt)) }}</span>
+                    <span>{{
+                      formatMessageTime(new Date(msg.createdAt).getTime())
+                    }}</span>
                   </div>
                   <div
                     :class="[

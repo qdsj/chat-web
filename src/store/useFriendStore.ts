@@ -110,7 +110,7 @@ export const useFriendStore = defineStore(
               senderId: friend!.id,
               receiverId: userStore.userInfo!.id,
               content: res.data.requestMessage,
-              createAt: Date.now().toString(),
+              createdAt: new Date(Date.now()).toISOString(),
               msgType: "text",
             },
           ],

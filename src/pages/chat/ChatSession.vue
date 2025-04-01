@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import AvatarBase from "@/components/AvatarBase.vue";
-import { formatTime } from "@/util/utils";
+import { formatChatTime } from "@/util/utils";
 
 const props = defineProps({
   avatar: {
@@ -24,7 +24,9 @@ const hasMessages = computed(() => props.data?.messages?.length > 0);
       <div class="user-name-panel">
         <div class="user-name">{{ data.name }}</div>
         <div class="message-time" v-if="hasMessages">
-          {{ formatTime(Number(data.messages.at(-1).time)) }}
+          {{
+            formatChatTime(new Date(data.messages.at(-1).createdAt).getTime())
+          }}
         </div>
       </div>
       <div
@@ -84,7 +86,7 @@ const hasMessages = computed(() => props.data?.messages?.length > 0);
         white-space: nowrap;
       }
       .message-time {
-        width: 55px;
+        width: 60px;
         color: #b6b6b6;
         font-size: 14px;
         text-align: right;
