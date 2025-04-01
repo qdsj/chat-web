@@ -24,13 +24,13 @@ const hasMessages = computed(() => props.data?.messages?.length > 0);
       <div class="user-name-panel">
         <div class="user-name">{{ data.name }}</div>
         <div class="message-time" v-if="hasMessages">
-          {{ formatTime(Number(data.messages.at().time)) }}
+          {{ formatTime(Number(data.messages.at(-1).time)) }}
         </div>
       </div>
       <div
         class="last-message"
         v-if="hasMessages"
-        v-html="data.messages.at().content"
+        v-html="data.messages.at(-1).content"
       ></div>
     </div>
     <!-- 置顶 -->

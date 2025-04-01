@@ -5,6 +5,7 @@ import { useFriendStore } from "./useFriendStore";
 import { useSocketStore } from "./useSocketStore";
 import { useUserStore } from "./useUserStore";
 import { Conversation, Message, SocketMessage } from "@/types/model/chat.type";
+import { getChatHistoryApi } from "@/apis/chat";
 
 export const useChatStore = defineStore(
   "chat",
@@ -17,11 +18,31 @@ export const useChatStore = defineStore(
     // 当前会话对象
     const currentConversation = ref<Conversation | null>(null);
 
+    const getChatHistory = async (roomId: string) => {
+      try {
+        const res = await getChatHistoryApi({ roomId });
+        return [null, res.data] as any;
+      } catch (error) {
+        return [error, null] as any;
+      }
+    };
+
+    const getChatHistoryByRoomId = async (roomId: string) => {
+      const targetGroup = conversationsList.value.find(
+        (obj) => obj.id === roomId
+      );
+      if (targetGroup && targetGroup.messages.length == 0) {
+        const [_, result] = await getChatHistory(roomId);
+        targetGroup!.messages = result.flat(2).reverse();
+      }
+    };
+
     // 设置当前会话
-    const setCurrentConversation = (conversationId: string) => {
+    const setCurrentConversation = async (conversationId: string) => {
       const targetConversation = conversationsList.value.find(
         (conv) => conv.id === conversationId
       );
+      await getChatHistoryByRoomId(conversationId);
       currentConversation.value = targetConversation || null;
     };
 
@@ -34,8 +55,9 @@ export const useChatStore = defineStore(
         (conv) => conv.id === conversationId
       );
       if (targetConversation) {
-        targetConversation.messages ??= [];
+        // targetConversation.messages ??= [];
         targetConversation.messages.push(message);
+
         if (currentConversation.value?.id === conversationId) {
           currentConversation.value = targetConversation;
         }
@@ -82,43 +104,45 @@ export const useChatStore = defineStore(
     };
 
     const createMessage = (params: {
-      sender: string;
-      receiver: string;
+      senderId: string;
+      receiverId: string;
       content: string;
-      type: string;
+      msgType: string;
     }): Message => {
-      const { sender, receiver, content, type = "text" } = params;
+      const { senderId, receiverId, content, msgType = "text" } = params;
       return {
         id: uuidv4(),
-        sender,
-        receiver,
+        roomId: currentConversation.value!.id,
+        senderId,
+        receiverId,
         content,
-        time: Date.now().toString(), // 时间戳
-        type,
+        createAt: Date.now().toString(), // 时间戳
+        msgType,
       };
     };
 
     const sendMessage = (params: {
-      sender?: string;
-      receiver?: string;
+      senderId?: string;
+      receiverId?: string;
       content: string;
-      type?: string;
+      msgType?: string;
       conversationId?: string;
     }) => {
       const {
-        sender = userStore.userInfo!.id,
-        receiver = currentConversation.value!.id,
+        senderId = userStore.userInfo!.id,
+        receiverId = currentConversation.value!.id,
         conversationId = currentConversation.value!.id,
-        type = "text",
+        msgType = "text",
         content,
       } = params;
 
       const message = createMessage({
-        sender,
-        receiver,
+        senderId,
+        receiverId,
         content,
-        type,
+        msgType,
       });
+
       appendMessageToConversation(conversationId, message);
 
       // told socket
@@ -136,10 +160,10 @@ export const useChatStore = defineStore(
         (conv) => conv.id === message.senderId
       );
       const _message = createMessage({
-        sender: message.senderId,
-        receiver: message.receiverId,
+        senderId: message.senderId,
+        receiverId: message.receiverId,
         content: message.msg,
-        type: message.msgType,
+        msgType: message.msgType,
       });
       // 如果不在，添加新的会话
       if (!isSenderInConversations) {
@@ -157,6 +181,7 @@ export const useChatStore = defineStore(
     };
 
     return {
+      getChatHistory,
       conversationsList,
       currentConversation,
       setCurrentConversation,

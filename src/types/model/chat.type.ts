@@ -1,12 +1,13 @@
 // 聊天记录
 export interface Message {
   id: string;
-  sender: string;
-  receiver: string;
+  roomId: string;
+  senderId: string;
+  receiverId: string;
   content: string;
   isSelf?: boolean;
-  time: string;
-  type?: string;
+  createAt: string;
+  msgType?: string;
 }
 
 export interface SocketMessage {
@@ -23,7 +24,7 @@ export interface Conversation {
   avatar: string; // 群聊头像/好友头像
   contactType?: number; // 0: 好友，1: 群聊
   memberCount?: number; // 群聊成员数量
-  // lastMessage?: string; // 最后一条消息
+  lastMessage?: string; // 最后一条消息
   // time?: string; // 最后一条消息时间
   topType?: number; // 置顶类型
   messages: Message[]; // 消息列表

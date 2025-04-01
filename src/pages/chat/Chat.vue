@@ -8,8 +8,8 @@ import { useUserStore } from "@/store/useUserStore";
 import { Pane, Splitpanes } from "splitpanes";
 import "splitpanes/dist/splitpanes.css";
 import SessionList from "./SessionList.vue";
-import { formatTime } from "@/util/utils";
 import CreateGroup from "../group/CreateGroup.vue";
+import { formatTime } from "@/util/utils";
 
 const socketStore = useSocketStore();
 const chatStore = useChatStore();
@@ -133,22 +133,22 @@ const showGroupDetail = () => {};
                   :key="msg"
                 >
                   <div class="message-time">
-                    <span>{{ formatTime(Number(msg.time)) }}</span>
+                    <span>{{ formatTime(Number(msg.createAt)) }}</span>
                   </div>
                   <div
                     :class="[
                       'message',
-                      isSelf(msg.sender) ? 'message-self' : 'message-other',
+                      isSelf(msg.senderId) ? 'message-self' : 'message-other',
                     ]"
                   >
                     <AvatarBase
                       :avatar="
-                        isSelf(msg.sender)
+                        isSelf(msg.senderId)
                           ? userStore.userInfo?.avatar
                           : chatStore.currentConversation?.avatar
                       "
                       :alt="
-                        isSelf(msg.sender)
+                        isSelf(msg.senderId)
                           ? userStore.userInfo?.username
                           : chatStore.currentConversation?.name
                       "

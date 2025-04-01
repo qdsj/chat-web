@@ -12,11 +12,13 @@ import {
   I_FindUserByNameApiResult,
   I_GetRequestListApiResult,
 } from "@/apis/types/friend.types";
+import { v4 as uuidv4 } from "uuid";
 import { T_Friend } from "@/types/model/friend.types";
 import { ElMessage } from "element-plus";
 import { defineStore } from "pinia";
 import { useChatStore } from "./useChatStore";
 import { useRouter } from "vue-router";
+import { useUserStore } from "./useUserStore";
 // 具体和api交互的代码，统一放在store中。
 // vue文件只需要考虑和store进行交互即可
 
@@ -24,6 +26,7 @@ export const useFriendStore = defineStore(
   "use-friend-store",
   () => {
     const chatStore = useChatStore();
+    const userStore = useUserStore();
     const router = useRouter();
     const friendList = ref<T_Friend[]>([]);
     const blockList = ref<T_Friend[]>([]);
@@ -100,7 +103,20 @@ export const useFriendStore = defineStore(
           id: friend!.id,
           name: friend!.username,
           avatar: "",
-          messages: [],
+          messages: [
+            {
+              id: uuidv4(),
+              roomId: userStore.userInfo!.id,
+              senderId: friend!.id,
+              receiverId: userStore.userInfo!.id,
+              content: res.data.requestMessage,
+              createAt: Date.now().toString(),
+              msgType: "text",
+            },
+          ],
+        });
+        chatStore.sendMessage({
+          content: res.data.requestMessage,
         });
         chatStore.setCurrentConversation(friend!.id);
         // 跳转至会话列表，开始聊天
