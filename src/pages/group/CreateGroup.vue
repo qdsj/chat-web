@@ -79,6 +79,7 @@ const handleConfirm = async () => {
     name: data.name,
     avatar: data.avatar,
     messages: [],
+    type: "group",
   });
   chatStore.setCurrentConversation(data.id);
 };
