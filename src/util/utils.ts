@@ -16,7 +16,7 @@ const formatMessageTime = (timestamp: number) => {
   if (days === 0) {
     return timestampTime.format("HH:mm");
   } else if (days === 1) {
-    return "昨天" + timestampTime.format("HH:mm");
+    return "昨天" + timestampTime.format(" HH:mm");
   } else if (days >= 2 && days <= 7) {
     return `星期${weekdays[dayNumber]} ${timestampTime.format("HH:mm")}`;
   } else if (days > 7) {

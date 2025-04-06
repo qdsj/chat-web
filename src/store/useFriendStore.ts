@@ -103,6 +103,7 @@ export const useFriendStore = defineStore(
           id: friend!.id,
           name: friend!.username,
           avatar: "",
+          type: "person",
           messages: [
             {
               id: uuidv4(),

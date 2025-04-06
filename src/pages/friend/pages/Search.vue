@@ -62,6 +62,7 @@ const sendMessage = () => {
     id: searchResult.value.id,
     name: searchResult.value.username,
     avatar: "",
+    type: searchResult.value.type,
   });
 
   // 跳转到聊天页面

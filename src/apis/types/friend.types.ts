@@ -1,3 +1,5 @@
+import { ConversationType } from "@/types/model/chat.type";
+
 export interface I_ErrorApiResult {
   status: number;
   message: "string";
@@ -11,6 +13,7 @@ export interface I_FindUserByNameApiResult {
     id: "string";
     username: "string";
     email: "string";
+    type?: ConversationType;
     friendShip: {
       id: "string";
       userId: "string";

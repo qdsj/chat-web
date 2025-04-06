@@ -1,3 +1,5 @@
+import { ConversationType } from "@/types/model/chat.type";
+
 export interface I_CreateGroupChatApiResult {
   status: number;
   message: "string";
@@ -22,7 +24,7 @@ export interface I_GetGroupListApiResult {
       name: "string";
       description: "string";
       avatar: "string";
-      type: "string";
+      type: ConversationType;
       deleted: boolean;
       deletedAt: null;
       createdAt: "string";
@@ -35,6 +37,7 @@ export interface I_GetGroupListApiResult {
         createdAt: "string";
       };
       member: I_GetGroupMemberInfoApiResult["data"];
+      memberCount: number;
     }
   ];
 }
@@ -63,4 +66,10 @@ export interface I_GetGroupMemberInfoApiResult {
       email: "string";
     }
   ];
+}
+
+export interface I_GetGroupMemberCountApiResult {
+  status: number;
+  message: "success";
+  data: number;
 }

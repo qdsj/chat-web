@@ -4,8 +4,13 @@ import { ref } from "vue";
 import { useFriendStore } from "./useFriendStore";
 import { useSocketStore } from "./useSocketStore";
 import { useUserStore } from "./useUserStore";
-import { Conversation, Message, SocketMessage } from "@/types/model/chat.type";
-import { getChatHistoryApi } from "@/apis/chat";
+import {
+  Conversation,
+  ConversationType,
+  Message,
+  SocketMessage,
+} from "@/types/model/chat.type";
+import { getGroupChatHistoryApi, getSingleChatHistoryApi } from "@/apis/chat";
 
 export const useChatStore = defineStore(
   "chat",
@@ -18,9 +23,18 @@ export const useChatStore = defineStore(
     // 当前会话对象
     const currentConversation = ref<Conversation | null>(null);
 
-    const getChatHistory = async (roomId: string) => {
+    const getSingleChatHistory = async (roomId: string) => {
       try {
-        const res = await getChatHistoryApi({ roomId });
+        const res = await getSingleChatHistoryApi({ roomId });
+        return [null, res.data] as any;
+      } catch (error) {
+        return [error, null] as any;
+      }
+    };
+
+    const getGroupChatHistory = async (roomId: string) => {
+      try {
+        const res = await getGroupChatHistoryApi({ roomId });
         return [null, res.data] as any;
       } catch (error) {
         return [error, null] as any;
@@ -32,8 +46,12 @@ export const useChatStore = defineStore(
         (obj) => obj.id === roomId
       );
       if (targetGroup && targetGroup.messages.length == 0) {
-        const [_, result] = await getChatHistory(roomId);
-        targetGroup!.messages = result.flat(2).reverse();
+        const fetchHistory =
+          targetGroup.type === "group"
+            ? getGroupChatHistory
+            : getSingleChatHistory;
+        const [_, result] = await fetchHistory(roomId);
+        targetGroup.messages = result.flat(2).reverse();
       }
     };
 
@@ -55,7 +73,7 @@ export const useChatStore = defineStore(
         (conv) => conv.id === conversationId
       );
       if (targetConversation) {
-        // targetConversation.messages ??= [];
+        targetConversation.messages ??= [];
         targetConversation.messages.push(message);
 
         if (currentConversation.value?.id === conversationId) {
@@ -85,6 +103,7 @@ export const useChatStore = defineStore(
       id: string;
       name: string;
       avatar?: string;
+      type?: ConversationType;
     }) => {
       // 检查是否是否在会话列表中
       const conversation = conversationsList.value.filter((item) => {
@@ -98,6 +117,7 @@ export const useChatStore = defineStore(
           name: params.name,
           avatar: params.avatar || "",
           messages: [],
+          type: params.type || "person",
         });
       }
       setCurrentConversation(params.id);
@@ -147,9 +167,10 @@ export const useChatStore = defineStore(
 
       // told socket
       socketStore.socketSend({
-        type: "person",
+        type: currentConversation.value!.type,
         roomId: conversationId,
         msg: content,
+        senderId: userStore.userInfo!.id,
       });
     };
 
@@ -173,15 +194,15 @@ export const useChatStore = defineStore(
             friendStore.getFriendById(message.senderId)?.username || "未知用户",
           avatar: "",
           messages: [_message],
+          type: message.type,
         });
       }
       // 设置当前会话对象，并追加聊天记录
-      setCurrentConversation(message.senderId);
-      appendMessageToConversation(message.senderId, _message);
+      setCurrentConversation(message.receiverId);
+      appendMessageToConversation(message.receiverId, _message);
     };
 
     return {
-      getChatHistory,
       conversationsList,
       currentConversation,
       setCurrentConversation,

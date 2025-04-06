@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useChatStore } from "@/store/useChatStore";
 import { useFriendStore } from "@/store/useFriendStore";
+import { ConversationType } from "@/types/model/chat.type";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { useRouter, useRoute } from "vue-router";
 
@@ -10,11 +11,20 @@ const route = useRoute();
 
 const chatStore = useChatStore();
 
-const friendInfo = ref({
+interface FriendInfo {
+  id: string;
+  username: string;
+  type: ConversationType;
+  avatar: string;
+  email: string;
+}
+
+const friendInfo = ref<FriendInfo>({
   id: "",
   username: "",
   avatar: "",
   email: "",
+  type: "person",
 });
 
 // 更新 userInfo 的函数
@@ -24,6 +34,7 @@ function updateUserInfo() {
     username: (route.query.username as string) || "",
     avatar: "",
     email: friendStore.getFriendById(route.query.id as string)?.email as string,
+    type: "person",
   };
 }
 
@@ -74,6 +85,7 @@ const sendmessage = () => {
     id: friendInfo.value.id,
     name: friendInfo.value.username,
     avatar: "",
+    type: friendInfo.value.type,
   });
 
   // 跳转到聊天页面

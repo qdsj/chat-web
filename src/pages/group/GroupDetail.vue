@@ -6,11 +6,14 @@ import { useRoute, useRouter } from "vue-router";
 import { useGroupStore } from "@/store/userGroupStore";
 import CreateGroup from "./CreateGroup.vue";
 import { I_GetGroupMemberInfoApiResult } from "@/apis/types/group.type";
+import { useChatStore } from "@/store/useChatStore";
+import { ConversationType } from "@/types/model/chat.type";
 
 const router = useRouter();
 const route = useRoute();
 const useStore = useUserStore();
 const groupStore = useGroupStore();
+const chatStore = useChatStore();
 
 const groupEditDialogRef = ref();
 const editGroupInfo = () => {
@@ -40,21 +43,24 @@ const dissolutionGroup = () => {
 
 const leaveGroup = () => {};
 
-const sendMessage = () => {
-  router.push({
-    path: "/chat",
-    query: { chatId: groupInfo.value.groupId, timestamp: new Date().getTime() },
-  });
-};
+interface GroupInfo {
+  groupId: string;
+  groupOwnerId: string;
+  groupName: string;
+  avatar: string;
+  userType: string;
+  groupDescription: string;
+  type: ConversationType;
+}
 
-const groupInfo = ref({
+const groupInfo = ref<GroupInfo>({
   groupId: "",
   groupOwnerId: "",
   groupName: "",
   avatar: "",
   userType: "",
   groupDescription: "",
-  type: "",
+  type: "group",
 });
 
 const updateGroupInfo = () => {
@@ -107,6 +113,18 @@ watch(
     await getGroupMember();
   }
 );
+
+const sendMessage = () => {
+  chatStore.handleConversation({
+    id: groupInfo.value.groupId,
+    name: groupInfo.value.groupName,
+    avatar: "",
+    type: groupInfo.value.type,
+  });
+
+  // 跳转到聊天页面
+  router.push("/chat");
+};
 
 const selectedIds = ref<string[]>([]);
 const addMemberDialog = ref(false);

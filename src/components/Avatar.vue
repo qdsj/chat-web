@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useChatStore } from "@/store/useChatStore";
 import { useUserStore } from "@/store/useUserStore";
+import { ConversationType } from "@/types/model/chat.type";
 import { useRouter } from "vue-router";
 const userStroe = useUserStore();
 const chatStore = useChatStore();
@@ -37,10 +38,18 @@ const props = defineProps({
   },
 });
 
-const friendInfo = ref({
+interface FriendInfo {
+  id: string;
+  username: string;
+  type: ConversationType;
+  avatar: string;
+  email: string;
+}
+
+const friendInfo = ref<FriendInfo>({
   id: "",
   username: "",
-  contactType: 1,
+  type: "person",
   avatar: "",
   email: "",
 });
@@ -58,6 +67,7 @@ const sendMessage = () => {
     id: friendInfo.value.id,
     name: friendInfo.value.username,
     avatar: "",
+    type: friendInfo.value.type || "person",
   });
 
   // 跳转到聊天页面
@@ -89,7 +99,7 @@ const addContact = () => {};
       <UserBaseInfo :userInfo="friendInfo"></UserBaseInfo>
       <div class="op-btn" v-if="userId !== userStroe.userInfo?.id">
         <el-button
-          v-if="friendInfo.contactType == 1"
+          v-if="friendInfo.type == 'group'"
           type="primary"
           @click="sendMessage"
         >
