@@ -1,4 +1,5 @@
 import {
+  addGroupMemberApi,
   createGroupChatApi,
   getGroupChatListApi,
   getGroupMemberCountApi,
@@ -6,6 +7,7 @@ import {
   updateGroupChatInfoApi,
 } from "@/apis/group";
 import {
+  I_AddGroupMemberApiResult,
   I_CreateGroupChatApiResult,
   I_GetGroupMemberCountApiResult,
   I_GetGroupMemberInfoApiResult,
@@ -104,6 +106,21 @@ export const useGroupStore = defineStore(
       return [null, targetGroup.memberCount] as any;
     };
 
+    const addGroupMember = async (
+      roomId: string,
+      userId: string,
+      type: string
+    ): Promise<I_AddGroupMemberApiResult["data"]> => {
+      try {
+        const res = await addGroupMemberApi({ roomId, userId, type });
+        ElMessage.success(res.message);
+        return [null, true] as any;
+      } catch (error) {
+        ElMessage.warning(error || "添加群成员失败");
+        return [error, false] as any;
+      }
+    };
+
     return {
       groupList,
       getGroupById,
@@ -112,6 +129,7 @@ export const useGroupStore = defineStore(
       updateGroupChatInfo,
       getGroupMemberByList,
       getGroupMemberCountByList,
+      addGroupMember,
     };
   },
   {

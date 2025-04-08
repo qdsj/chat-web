@@ -73,3 +73,19 @@ export interface I_GetGroupMemberCountApiResult {
   message: "success";
   data: number;
 }
+
+export interface I_AddGroupMemberApiResult {
+  status: number;
+  message: "string";
+  data: [
+    {
+      userId: "string";
+      roomId: "string";
+      type: "string";
+      status: "string";
+      userType: "string";
+      id: "string";
+      createdAt: "string";
+    }
+  ];
+}
