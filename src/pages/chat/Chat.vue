@@ -38,7 +38,7 @@ watch(
 		}
 	},
 	{
-		immediate: true, // 立即执行一次回调函数
+		immediate: true,
 	}
 );
 
