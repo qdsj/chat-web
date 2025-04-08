@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { useFriendStore } from "@/store/useFriendStore";
+import { ConversationType } from "@/types/model/chat.type";
 // @ts-ignore
 import ContactInfo from "./ContactInfo.vue";
 import { useChatStore } from "@/store/useChatStore";
 import { useGroupStore } from "@/store/userGroupStore";
+import router from "@/router";
 const friendStore = useFriendStore();
 const chatStore = useChatStore();
 const groupStore = useGroupStore();
@@ -16,6 +18,14 @@ const props = defineProps({
   selectedIds: {
     type: Array,
     default: [],
+  },
+  roomId: {
+    type: String,
+    default: "",
+  },
+  type: {
+    type: String as PropType<ConversationType>,
+    default: "group",
   },
 });
 
@@ -63,25 +73,42 @@ const removeContact = (id: string) => {
   }
 };
 
-// const finalSelectedIds = ref([...originalIds.value, ...newSelectedIds.value]);
-
 const handleDialogClose = () => {
   emits("updateDialogListVisible", false);
   newSelectedIds.value = [];
 };
-
+const finallySelectIds = computed(() => [
+  ...originalIds.value,
+  ...newSelectedIds.value,
+]);
 const handleConfirm = async () => {
-  const data = await groupStore.createGroupChat(newSelectedIds.value);
-  await groupStore.getGroupChatList();
+  let data = null;
+  if (props.selectedIds.length > 0) {
+    await groupStore.addGroupMember(
+      props.roomId,
+      newSelectedIds.value,
+      props.type
+    );
+    data = await groupStore.getGroupById(props.roomId);
+    await groupStore.getGroupMemberByList(data!.id, props.type);
+  } else {
+    data = await groupStore.createGroupChat(newSelectedIds.value);
+    await groupStore.getGroupChatList();
+  }
+  if (!data) {
+    throw new Error("Failed to retrieve group data");
+  }
   handleDialogClose();
-  chatStore.addConversation({
+  chatStore.handleConversation({
     id: data.id,
     name: data.name,
-    avatar: data.avatar,
-    messages: [],
-    type: "group",
+    avatar: data.avatar || "",
+    type: props.type,
+    memberCount: finallySelectIds.value.length,
   });
-  chatStore.setCurrentConversation(data.id);
+
+  // 跳转到聊天页面
+  router.push("/chat");
 };
 </script>
 

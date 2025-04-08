@@ -48,7 +48,7 @@ export const getGroupMemberCountApi = (data: {
 // 添加群成员
 export const addGroupMemberApi = (data: {
   roomId: string;
-  userId: string;
+  userId: string[];
   type: string;
 }): Promise<I_AddGroupMemberApiResult> => {
   return postFetch("/chat/addGroupMember", data);

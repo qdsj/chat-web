@@ -26,10 +26,25 @@ export const useGroupStore = defineStore(
     };
 
     const createGroupChat = async (
-      data: string[]
+      userId: string[]
     ): Promise<I_CreateGroupChatApiResult["data"]> => {
-      const result = await createGroupChatApi({ userId: data });
+      const result = await createGroupChatApi({ userId: userId });
       return result.data;
+    };
+
+    const addGroupMember = async (
+      roomId: string,
+      userId: string[],
+      type: string
+    ): Promise<I_AddGroupMemberApiResult["data"]> => {
+      try {
+        const res = await addGroupMemberApi({ roomId, userId, type });
+        ElMessage.success(res.message);
+        return [null, true] as any;
+      } catch (error) {
+        ElMessage.warning(error || "添加群成员失败");
+        return [error, false] as any;
+      }
     };
 
     const getGroupChatList = async () => {
@@ -68,9 +83,6 @@ export const useGroupStore = defineStore(
       if (!group) {
         return ["targetGroup is null", null] as any;
       }
-      if (Object.prototype.hasOwnProperty.call(group, "member")) {
-        return [null, group.member!]; // 非空断言（假设已有数据是合法的）
-      }
       try {
         const result = await getGroupMemberInfoApi({ roomId, type });
         group.member = result.data;
@@ -104,21 +116,6 @@ export const useGroupStore = defineStore(
       }
 
       return [null, targetGroup.memberCount] as any;
-    };
-
-    const addGroupMember = async (
-      roomId: string,
-      userId: string,
-      type: string
-    ): Promise<I_AddGroupMemberApiResult["data"]> => {
-      try {
-        const res = await addGroupMemberApi({ roomId, userId, type });
-        ElMessage.success(res.message);
-        return [null, true] as any;
-      } catch (error) {
-        ElMessage.warning(error || "添加群成员失败");
-        return [error, false] as any;
-      }
     };
 
     return {

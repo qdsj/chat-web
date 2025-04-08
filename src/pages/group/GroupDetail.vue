@@ -88,15 +88,19 @@ const updateGroupInfo = () => {
 const groupMemberList = ref<I_GetGroupMemberInfoApiResult["data"]>();
 
 const getGroupMember = async () => {
-  await groupStore.getGroupMemberByList(
-    groupInfo.value.groupId,
-    groupInfo.value.type
+  let currentGroup = groupStore.groupList.find(
+    (item) => item.id === groupInfo.value.groupId
   );
-  groupStore.groupList.forEach((item) => {
-    if (item.id == groupInfo.value.groupId) {
-      groupMemberList.value = item.member;
-    }
-  });
+  if (currentGroup && !currentGroup.member) {
+    await groupStore.getGroupMemberByList(
+      groupInfo.value.groupId,
+      groupInfo.value.type
+    );
+  }
+
+  if (currentGroup && currentGroup.id === groupInfo.value.groupId) {
+    groupMemberList.value = currentGroup.member;
+  }
 };
 
 onMounted(async () => {
@@ -194,6 +198,8 @@ const searchMember = ref();
       :dialogListVisible="addMemberDialog"
       @updateDialogListVisible="updateMemberDialog"
       :selectedIds="selectedIds"
+      :roomId="groupInfo.groupId"
+      :type="groupInfo.type"
     ></CreateGroup>
     <div class="group-info-item">
       <div class="group-title">群名称:</div>
