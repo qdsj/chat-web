@@ -1,17 +1,15 @@
 <script setup lang="ts">
 import Blank from "@/components/Blank.vue";
 import { useChatStore } from "@/store/useChatStore";
-import { useSocketStore } from "@/store/useSocketStore";
-import { ref } from "vue";
-import MessageSend from "./MessageSend.vue";
 import { useUserStore } from "@/store/useUserStore";
+import { formatMessageTime } from "@/util/utils";
 import { Pane, Splitpanes } from "splitpanes";
 import "splitpanes/dist/splitpanes.css";
-import SessionList from "./SessionList.vue";
+import { ref } from "vue";
 import CreateGroup from "../group/CreateGroup.vue";
-import { formatMessageTime } from "@/util/utils";
+import MessageSend from "./MessageSend.vue";
+import SessionList from "./SessionList.vue";
 
-const socketStore = useSocketStore();
 const chatStore = useChatStore();
 const userStore = useUserStore();
 
@@ -21,26 +19,6 @@ const searchKey = ref("");
 const search = () => {
 	console.log(searchKey.value);
 };
-
-// 当client连接成功时，添加消息回调
-watch(
-	() => socketStore.client,
-	(client) => {
-		console.log("client", client);
-		if (client) {
-			socketStore.addMsgCallbacks([
-				(data: any) => {
-					console.log(data);
-					// 将消息保存到会话列表中
-					chatStore.addMessage(data);
-				},
-			]);
-		}
-	},
-	{
-		immediate: true,
-	}
-);
 
 const messageContainer = ref<HTMLElement | null>(null);
 
