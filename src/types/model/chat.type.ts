@@ -8,7 +8,7 @@ export interface Message {
 	content: string;
 	isSelf?: boolean;
 	createdAt: string;
-	msgType?: string;
+	msgType?: MsgType;
 }
 
 export interface SocketMessage {

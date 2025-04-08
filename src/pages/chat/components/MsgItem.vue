@@ -28,6 +28,12 @@
       return chatStore.currentConversation?.name;
     }
   });
+
+  const Compo = {
+    text: defineAsyncComponent(() => import("./MsgText.vue")),
+    image: defineAsyncComponent(() => import("./MsgImage.vue")),
+  }
+
 </script>
 
 <template>
@@ -40,7 +46,8 @@
                 :alt="alt"></AvatarBase>
     <div class="message-content"
          shadow="never">
-      {{ msg.content }}
+      <component :is="Compo[msg.msgType! as keyof typeof Compo]"
+                 :msg="msg"></component>
     </div>
   </div>
 </template>
@@ -60,7 +67,7 @@
         margin-right: 12px;
         margin-left: 0;
         background-color: #daebff;
-        border-radius: 12px 16px 4px 12px;
+        border-radius: 8px 16px 4px 8px;
       }
     }
 
@@ -78,7 +85,7 @@
       white-space: normal;
       background: #e0e0e0;
       color: #000;
-      border-radius: 16px 12px 12px 4px;
+      border-radius: 16px 8px 8px 4px;
       box-shadow: 0 3px 3px rgba(0, 0, 0, 0.199);
     }
   }
