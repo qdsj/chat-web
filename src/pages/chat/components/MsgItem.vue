@@ -32,6 +32,7 @@
   const Compo = {
     text: defineAsyncComponent(() => import("./MsgText.vue")),
     image: defineAsyncComponent(() => import("./MsgImage.vue")),
+    pdf: defineAsyncComponent(() => import("./MsgPdf.vue")),
   }
 
 </script>

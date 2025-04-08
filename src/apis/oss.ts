@@ -44,7 +44,7 @@ export const uploadFile = async (params: { file: File }): Promise<I_UploadFileAp
 			url: `${res.url}${filename}`,
 			status: res.status,
 			statusText: res.statusText,
-			type: res.type,
+			type: file.type,
 		};
 	} catch (error) {
 		console.error("上传文件失败", error);

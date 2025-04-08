@@ -1,5 +1,5 @@
 export type ConversationType = "person" | "group";
-export type MsgType = "text" | "image" | "video" | "audio";
+export type MsgType = "text" | "image" | "video" | "audio" | "pdf";
 // 聊天记录
 export interface Message {
 	id: string;
