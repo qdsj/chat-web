@@ -2,6 +2,7 @@ import { postFetch } from "./http";
 import {
   I_CreateGroupChatApiResult,
   I_GetGroupListApiResult,
+  I_GetGroupMemberCountApiResult,
   I_GetGroupMemberInfoApiResult,
   I_UpdateGroupChatInfoApiResult,
 } from "./types/group.type";
@@ -33,4 +34,12 @@ export const getGroupMemberInfoApi = (data: {
   type: string;
 }): Promise<I_GetGroupMemberInfoApiResult> => {
   return postFetch("/chat/getGroupMemberInfo", data);
+};
+
+// 获取群成员数量
+export const getGroupMemberCountApi = (data: {
+  roomId: string;
+  type: string;
+}): Promise<I_GetGroupMemberCountApiResult> => {
+  return postFetch("/chat/getGroupMemberCount", data);
 };

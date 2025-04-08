@@ -104,6 +104,7 @@ export const useChatStore = defineStore(
       name: string;
       avatar?: string;
       type?: ConversationType;
+      memberCount?: number;
     }) => {
       // 检查是否是否在会话列表中
       const conversation = conversationsList.value.filter((item) => {
@@ -118,6 +119,7 @@ export const useChatStore = defineStore(
           avatar: params.avatar || "",
           messages: [],
           type: params.type || "person",
+          memberCount: params.memberCount,
         });
       }
       setCurrentConversation(params.id);
@@ -191,15 +193,16 @@ export const useChatStore = defineStore(
         addConversation({
           id: message.senderId,
           name:
-            friendStore.getFriendById(message.senderId)?.username || "未知用户",
+            friendStore.getFriendById(message.receiverId)?.username ||
+            "未知用户",
           avatar: "",
           messages: [_message],
           type: message.type,
         });
       }
       // 设置当前会话对象，并追加聊天记录
-      setCurrentConversation(message.receiverId);
-      appendMessageToConversation(message.receiverId, _message);
+      setCurrentConversation(message.senderId);
+      appendMessageToConversation(message.senderId, _message);
     };
 
     return {

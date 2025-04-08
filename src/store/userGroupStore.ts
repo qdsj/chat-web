@@ -1,11 +1,13 @@
 import {
   createGroupChatApi,
   getGroupChatListApi,
+  getGroupMemberCountApi,
   getGroupMemberInfoApi,
   updateGroupChatInfoApi,
 } from "@/apis/group";
 import {
   I_CreateGroupChatApiResult,
+  I_GetGroupMemberCountApiResult,
   I_GetGroupMemberInfoApiResult,
 } from "@/apis/types/group.type";
 import { T_GroupList } from "@/types/model/group.type";
@@ -52,37 +54,64 @@ export const useGroupStore = defineStore(
       }
     };
 
-    const getGroupMemberInfo = async (
+    const getGroupMemberByList = async (
       roomId: string,
       type: string
-    ): Promise<[string | null, I_GetGroupMemberInfoApiResult["data"]]> => {
+    ): Promise<
+      [string | null, I_GetGroupMemberInfoApiResult["data"] | null]
+    > => {
+      const group = groupList.value.find(
+        (item) => item.id === roomId && item.type === "group"
+      );
+      if (!group) {
+        return ["targetGroup is null", null] as any;
+      }
+      if (Object.prototype.hasOwnProperty.call(group, "member")) {
+        return [null, group.member!]; // 非空断言（假设已有数据是合法的）
+      }
       try {
         const result = await getGroupMemberInfoApi({ roomId, type });
+        group.member = result.data;
         return [null, result.data];
       } catch (error) {
-        return [error, false] as any;
+        return [error, null] as any;
       }
     };
 
-    const getGroupMemberByList = async (roomId: string, type: string) => {
-      // 通过find匹配具体群组对象
+    const getGroupMemberCountByList = async (
+      roomId: string,
+      type: string
+    ): Promise<
+      [string | null, I_GetGroupMemberCountApiResult["data"] | null]
+    > => {
       const targetGroup = groupList.value.find(
         (obj) => obj.id === roomId && obj.type === type
       );
-
-      if (targetGroup && !targetGroup.member) {
-        const [_, data] = await getGroupMemberInfo(roomId, type);
-        targetGroup.member = data;
+      if (!targetGroup) {
+        return ["targetGroup is null", null] as any;
       }
+
+      if (targetGroup.memberCount === undefined) {
+        try {
+          const result = await getGroupMemberCountApi({ roomId, type });
+          targetGroup.memberCount = result.data;
+          return [null, result.data];
+        } catch (error) {
+          return [error, null] as any;
+        }
+      }
+
+      return [null, targetGroup.memberCount] as any;
     };
+
     return {
       groupList,
       getGroupById,
       createGroupChat,
       getGroupChatList,
       updateGroupChatInfo,
-      getGroupMemberInfo,
       getGroupMemberByList,
+      getGroupMemberCountByList,
     };
   },
   {

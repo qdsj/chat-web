@@ -120,6 +120,7 @@ const sendMessage = () => {
     name: groupInfo.value.groupName,
     avatar: "",
     type: groupInfo.value.type,
+    memberCount: groupMemberList.value!.length,
   });
 
   // 跳转到聊天页面

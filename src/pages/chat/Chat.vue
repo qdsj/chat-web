@@ -114,13 +114,13 @@ const showGroupDetail = () => {};
             <div class="title">
               <span>{{ chatStore.currentConversation.name }}</span>
               <!-- 群聊 -->
-              <span v-if="chatStore.currentConversation.contactType == 1">
+              <span v-if="chatStore.currentConversation.type == 'group'">
                 ({{ chatStore.currentConversation.memberCount }})
               </span>
             </div>
             <!-- 群聊 -->
             <div
-              v-if="chatStore.currentConversation.contactType == 1"
+              v-if="chatStore.currentConversation.type == 'group'"
               class="iconfont icon-icon_more"
               @click="showGroupDetail"
             ></div>
