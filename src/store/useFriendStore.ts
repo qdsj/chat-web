@@ -109,7 +109,6 @@ export const useFriendStore = defineStore(
               id: uuidv4(),
               roomId: userStore.userInfo!.id,
               senderId: friend!.id,
-              receiverId: userStore.userInfo!.id,
               content: res.data.requestMessage,
               createdAt: new Date(Date.now()).toISOString(),
               msgType: "text",
