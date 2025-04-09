@@ -189,6 +189,14 @@ export const useChatStore = defineStore(
 
       // 如果不在，添加新的会话
       if (!isSenderInConversations) {
+        let memberCount = null;
+        if (message.type === "group") {
+          const [_, res] = await groupStore.getGroupMemberCountByList(
+            message.roomId,
+            message.type
+          );
+          memberCount = res;
+        }
         addConversation({
           id: message.roomId,
           name: await getChatNameByRoomId({
@@ -198,6 +206,7 @@ export const useChatStore = defineStore(
           avatar: "",
           messages: [_message],
           type: message.type,
+          memberCount: memberCount || undefined,
         });
       }
       // 追加聊天记录
