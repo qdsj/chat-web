@@ -11,7 +11,11 @@ import {
   MsgType,
   SocketMessage,
 } from "@/types/model/chat.type";
-import { getGroupChatHistoryApi, getSingleChatHistoryApi } from "@/apis/chat";
+import {
+  getChatWindowsTimeApi,
+  getGroupChatHistoryApi,
+  getSingleChatHistoryApi,
+} from "@/apis/chat";
 import { useGroupStore } from "./userGroupStore";
 
 export const useChatStore = defineStore(
@@ -175,7 +179,7 @@ export const useChatStore = defineStore(
 
     // 用来处理接收到的消息
     const addMessage = async (message: SocketMessage) => {
-      // 发送消息的人是否在会话列表中
+      // 接收消息的人是否在会话列表中
       const isSenderInConversations = conversationsList.value.some(
         (conv) => conv.id === message.roomId
       );
@@ -207,10 +211,21 @@ export const useChatStore = defineStore(
           messages: [_message],
           type: message.type,
           memberCount: memberCount || undefined,
+          unreadCount: 0,
         });
       }
       // 追加聊天记录
       appendMessageToConversation(message.roomId, _message);
+      // 若消息所属会话非当前活跃会话，增加未读计数
+      if (currentConversation.value?.id !== message.roomId) {
+        const targetConversation = conversationsList.value.find(
+          (conv) => conv.id === message.roomId
+        );
+        if (targetConversation) {
+          targetConversation.unreadCount =
+            (targetConversation.unreadCount || 0) + 1;
+        }
+      }
     };
 
     const getChatNameByRoomId = async (params: {
@@ -227,6 +242,14 @@ export const useChatStore = defineStore(
       }
     };
 
+    const getChatWindowsTime = async () => {
+      const apiParams = conversationsList.value.map((item) => ({
+        roomId: item.id,
+        type: item.type,
+      }));
+      await getChatWindowsTimeApi(apiParams);
+    };
+
     return {
       conversationsList,
       currentConversation,
@@ -237,6 +260,7 @@ export const useChatStore = defineStore(
       handleConversation,
       sendMessage,
       addMessage,
+      getChatWindowsTime,
     };
   },
   {
