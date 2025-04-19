@@ -4,10 +4,12 @@
 	import { useSocketStore } from "./store/useSocketStore";
 	import { useFriendStore } from "./store/useFriendStore";
 	import { useGroupStore } from "./store/userGroupStore";
+	import { useChatStore } from "./store/useChatStore";
 	const userStore = useUserStore();
 	const friendStore = useFriendStore();
 	const groupStore = useGroupStore();
 	const socketStore = useSocketStore();
+	const chatStore = useChatStore();
 	onMounted(async () => {
 		setThemeColor("#08bf61", "#129611");
 		// app initial
@@ -16,8 +18,7 @@
 		friendStore.getAllFriend(); // 请求好友列表
 		groupStore.getGroupChatList(); // 请求群聊列表
 		socketStore.socketInitial();
-
-		// test git push
+		chatStore.getChatWindowsTime();
 	});
 </script>
 

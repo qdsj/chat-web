@@ -30,3 +30,28 @@ export interface I_GetGroupChatHistoryResultApi {
     }
   ];
 }
+
+export interface I_getChatWindowsTimeResultApi {
+  status: number;
+  message: "string";
+  data: [
+    {
+      type: "string";
+      id: "string";
+      userId: "string";
+      roomId: "string";
+      openTime: "string";
+      createAt: "string";
+      roomInfo: {
+        id: "string";
+        name: "string";
+        description: "string";
+        avatar: "string";
+        type: "string";
+        deleted: boolean;
+        deletedAt: "string";
+        createdAt: "string";
+      };
+    }
+  ];
+}
