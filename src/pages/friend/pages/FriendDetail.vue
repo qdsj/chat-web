@@ -37,18 +37,13 @@ function updateUserInfo() {
     type: "person",
   };
 }
-
-// 初始化 userInfo
-onMounted(() => {
-  updateUserInfo();
-});
-
 // 监听 route.query.id 的变化
 watch(
   () => route.query.id,
   () => {
     updateUserInfo();
-  }
+  },
+  { immediate: true }
 );
 
 const handleBlockFriend = () => {

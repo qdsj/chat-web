@@ -1,75 +1,86 @@
-<script setup lang="ts">
-defineProps({
-  modelValue: {
+<script lang="ts" setup>
+import { ref } from "vue";
+import { ElMessage } from "element-plus";
+import { Plus } from "@element-plus/icons-vue";
+import { uploadFile } from "@/apis/oss";
+
+import type { UploadProps } from "element-plus";
+
+const props = defineProps({
+  avatar: {
     type: String,
+    default: "",
   },
 });
+
+const emit = defineEmits(["updateAvatar"]);
+const imageUrl = ref(props.avatar);
+watch(
+  () => props.avatar,
+  (newVal) => {
+    imageUrl.value = newVal;
+  }
+);
+
+const onSuccess = (res: any) => {
+  if (res?.url) {
+    imageUrl.value = res.url;
+    emit("updateAvatar", res.url);
+  }
+};
+
+const beforeAvatarUpload: UploadProps["beforeUpload"] = (rawFile) => {
+  if (rawFile.type !== "image/jpeg") {
+    ElMessage.error("Avatar picture must be JPG format!");
+    return false;
+  } else if (rawFile.size / 1024 / 1024 > 2) {
+    ElMessage.error("Avatar picture size can not exceed 2MB!");
+    return false;
+  }
+  return true;
+};
 </script>
 
 <template>
-  <div class="avatar-upload">
-    <div class="avatar-show">
-      <template v-if="modelValue">
-        <ShowLocalImage
-          :fileId="modelValue"
-          partType="avatar"
-          :width="40"
-        ></ShowLocalImage>
-      </template>
-      <template v-else>
-        <el-upload
-          :show-file-list="false"
-          accept=".png,.PNG,.jpeg,.JPEG,.jpg,.JPG,.gif,.GIF"
-        >
-          <span class="iconfont icon-add"></span>
-        </el-upload>
-      </template>
-    </div>
-    <div class="select-btn">
-      <el-upload
-        :show-file-list="false"
-        accept=".png,.PNG,.jpeg,.JPEG,.jpg,.JPG,.gif,.GIF"
-      >
-        <el-button type="primary" size="small">选择</el-button>
-      </el-upload>
-    </div>
-  </div>
+  <el-upload
+    class="avatar-uploader"
+    :show-file-list="false"
+    :http-request="uploadFile"
+    :on-success="onSuccess"
+    :before-upload="beforeAvatarUpload"
+  >
+    <img v-if="imageUrl" :src="imageUrl" class="avatar" />
+    <el-icon v-else class="avatar-uploader-icon"><Plus /></el-icon>
+  </el-upload>
 </template>
 
-<style scoped lang="scss">
-.avatar-upload {
-  display: flex;
-  justify-content: center;
-  align-items: end;
-  .avatar-show {
-    background: #ededed;
-    width: 60px;
-    height: 60px;
-    display: flex;
-    justify-content: center;
-    overflow: hidden;
-    position: relative;
-    .icon-add {
-      font-size: 30px;
-      color: #b9b9b9;
-      width: 60px;
-      height: 60px;
-      text-align: center;
-      line-height: 60px;
-    }
-    img {
-      width: 100%;
-      height: 100%;
-    }
-    .op {
-      position: absolute;
-      color: #0e8aef;
-      top: 80px;
-    }
-  }
-  .select-btn {
-    vertical-align: bottom;
-    margin-left: 5px;
-  }
+<style scoped>
+.avatar-uploader .avatar {
+  width: 178px;
+  height: 178px;
+  display: block;
+}
+</style>
+
+<style>
+.avatar-uploader .el-upload {
+  border: 1px dashed var(--el-border-color);
+  border-radius: 6px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: var(--el-transition-duration-fast);
+}
+
+.avatar-uploader .el-upload:hover {
+  border-color: var(--el-color-primary);
+}
+
+.el-icon.avatar-uploader-icon {
+  font-size: 28px;
+  color: #8c939d;
+  width: 150px;
+  height: 150px;
+  text-align: center;
 }
 </style>

@@ -31,7 +31,6 @@ const editBack = () => {
     <!-- 个人信息详情 -->
     <div class="show-info" v-if="showType == 0">
       <div class="user-info">
-        <!-- :showArea="userStore.userInfo.contactType == 'USER'" -->
         <!-- TODO 个人用户信息-->
         <UserBaseInfo :userInfo="userStore.userInfo!"></UserBaseInfo>
         <div class="more-op">
@@ -53,19 +52,9 @@ const editBack = () => {
         </div>
       </div>
       <div class="part-item">
-        <div class="part-title">朋友权限</div>
-        <div class="part-content">
-          <!-- {{
-            userStore.userInfo.joinType == 0
-              ? "直接添加为好友"
-              : "加我为好友时需要验证"
-          }} -->
-        </div>
-      </div>
-      <div class="part-item">
         <div class="part-title">个性签名</div>
         <div class="part-content">
-          <!-- {{ userStore.userInfo.personalSignature || "-" }} -->
+          {{ userStore.userInfo?.description || "-" }}
         </div>
       </div>
       <div class="logout">
