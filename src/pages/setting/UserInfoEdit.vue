@@ -1,24 +1,43 @@
 <script setup lang="ts">
+import { useUserStore } from "@/store/useUserStore";
+import { describe } from "node:test";
+
+const userStore = useUserStore();
+
 const props = defineProps({
   data: {
-    type: Object,
+    type: Object as PropType<{
+      id: string;
+      username: string;
+      email: string;
+      avatar: string;
+      sex: string;
+      description: string;
+    }>,
+    required: true,
+    default: () => ({
+      id: "",
+      username: "",
+      email: "",
+      avatar: "",
+      sex: "",
+      description: "",
+    }),
   },
 });
 const emits = defineEmits(["editBack"]);
-const formDaraRef = ref();
-const formData = computed(() => {
-  return props.data!;
-});
+const formDataRef = ref();
+const formData = ref({ ...props.data });
 
 const rules = reactive({
-  // avatarFile: [
-  //   {
-  //     required: true,
-  //     message: "请上传头像",
-  //     trigger: "blur",
-  //   },
-  // ],
-  nickName: [
+  avatar: [
+    {
+      required: true,
+      message: "请上传头像",
+      trigger: "blur",
+    },
+  ],
+  username: [
     {
       required: true,
       message: "请输入昵称",
@@ -31,12 +50,33 @@ const rules = reactive({
       trigger: "blur",
     },
   ],
+  sex: [
+    {
+      required: true,
+      message: "请选择性别",
+      trigger: "blur",
+    },
+  ],
+  description: [
+    {
+      required: true,
+      message: "请选择地区",
+      trigger: "blur",
+    },
+  ],
 });
+
+const updateAvatar = (avatar: string) => {
+  formData.value.avatar = avatar;
+};
 
 // 保存个人信息
 const saveUserInfo = () => {
-  formDaraRef.value.validate((valid: any) => {
+  formDataRef.value.validate(async (valid: any) => {
     if (!valid) return;
+    const { avatar, sex, description } = formData.value;
+    await userStore.updateUserInfo(avatar, sex, description);
+    await userStore.getUserInfo();
     emits("editBack");
   });
 };
@@ -51,42 +91,36 @@ const cancel = () => {
     <el-form
       :model="formData"
       :rules="rules"
-      ref="formDaraRef"
+      ref="formDataRef"
       label-width="100px"
       @submit.prevent
     >
-      <el-form-item label="头像" prop="avatarFile">
-        <AvatarUpload v-model="formData.avatarFile"></AvatarUpload>
+      <el-form-item label="头像" prop="avatar">
+        <AvatarUpload
+          :avatar="formData.avatar"
+          @updateAvatar="updateAvatar"
+        ></AvatarUpload>
       </el-form-item>
-      <el-form-item label="昵称" prop="nickName">
+      <el-form-item label="昵称" prop="username">
         <el-input
           maxlength="150"
           clearable
           placeholder="请输入昵称"
-          v-model.trim="formData.nickName"
+          v-model.trim="formData.username"
         ></el-input>
       </el-form-item>
       <el-form-item label="性别" prop="sex">
         <el-radio-group v-model="formData.sex">
-          <el-radio :value="1">男</el-radio>
-          <el-radio :value="0">女</el-radio>
+          <el-radio :value="'male'">男</el-radio>
+          <el-radio :value="'female'">女</el-radio>
         </el-radio-group>
       </el-form-item>
-      <el-form-item label="朋友权限" prop="joinType">
-        <el-switch
-          v-model="formData.joinType"
-          :active-value="1"
-          :inactive-value="0"
-        >
-        </el-switch>
-        <div class="info">加我为好友时需要验证</div>
-      </el-form-item>
-      <el-form-item label="地区" prop="area"></el-form-item>
-      <el-form-item label="个性签名" prop="personalSignature">
+      <el-form-item label="地区" prop="area">{{ "广州" }}</el-form-item>
+      <el-form-item label="个性签名" prop="description">
         <el-input
           clearable
           placeholder="请输入个性签名"
-          v-model="formData.personalSignature"
+          v-model="formData.description"
           type="textarea"
           :rows="5"
           maxlength="30"

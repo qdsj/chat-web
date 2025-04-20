@@ -1,4 +1,5 @@
-import { fetchUserInfo } from "@/apis/auth";
+import { fetchUpdateUserInfo, fetchUserInfo } from "@/apis/auth";
+import { ElMessage } from "element-plus";
 import { defineStore } from "pinia";
 
 export const useUserStore = defineStore(
@@ -8,7 +9,9 @@ export const useUserStore = defineStore(
       id: string;
       username: string;
       email: string;
-      avatar?: string;
+      avatar: string;
+      sex: string;
+      description: string;
     }>(null);
 
     const getUserInfo = async () => {
@@ -16,9 +19,25 @@ export const useUserStore = defineStore(
       userInfo.value = info;
     };
 
+    const updateUserInfo = async (
+      avatar: string,
+      sex: string,
+      description: string
+    ) => {
+      try {
+        const res = await fetchUpdateUserInfo({ avatar, sex, description });
+        ElMessage.success(res.data);
+        return [null, res.data];
+      } catch (error) {
+        ElMessage.warning(error || "更新消息失败");
+        return [error, null];
+      }
+    };
+
     return {
       userInfo,
       getUserInfo,
+      updateUserInfo,
     };
   },
   {

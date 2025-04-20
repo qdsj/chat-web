@@ -83,6 +83,8 @@ export interface I_GetFriendListApiResult {
       username: "string";
       email: "string";
       avatar?: "string";
+      description: "string";
+      sex: "string";
       friendShip: {
         id: "string";
         userId: "string";

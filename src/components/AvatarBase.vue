@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import { AvatarCircle } from "@zenos-chen/avatar/vue";
 defineProps({
   avatar: {
     type: String,
@@ -28,13 +29,10 @@ defineProps({
       borderRadius: borderRadius + 'px',
     }"
   >
-    <img v-if="avatar" class="user-avatar" :src="avatar" :alt="alt" />
+    <img v-if="avatar !== ''" class="user-avatar" :src="avatar" :alt="alt" />
     <div v-else class="user-avatar-alt">
-      <svg :viewBox="`0 0 ${width} ${width}`" preserveAspectRatio="none">
-        <text x="0%" y="50%">
-          {{ alt.substring(0, 2) }}
-        </text>
-      </svg>
+      <!-- <AvatarCircle :str="alt" :height="width" /> -->
+      <AvatarCircle str="H" :height="width" />
     </div>
   </div>
 </template>
