@@ -1,7 +1,5 @@
 <script setup lang="ts">
 import { useUserStore } from "@/store/useUserStore";
-import { describe } from "node:test";
-
 const userStore = useUserStore();
 
 const props = defineProps({
