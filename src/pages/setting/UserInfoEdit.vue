@@ -58,7 +58,7 @@ const rules = reactive({
   description: [
     {
       required: true,
-      message: "请选择地区",
+      message: "请选择个性签名",
       trigger: "blur",
     },
   ],
