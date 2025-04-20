@@ -17,6 +17,7 @@ interface FriendInfo {
   type: ConversationType;
   avatar: string;
   email: string;
+  description: string;
 }
 
 const friendInfo = ref<FriendInfo>({
@@ -24,16 +25,19 @@ const friendInfo = ref<FriendInfo>({
   username: "",
   avatar: "",
   email: "",
+  description: "",
   type: "person",
 });
 
 // 更新 userInfo 的函数
 function updateUserInfo() {
+  const friend = friendStore.getFriendById(route.query.id as string);
   friendInfo.value = {
     id: (route.query.id as string) || "",
     username: (route.query.username as string) || "",
-    avatar: "",
-    email: friendStore.getFriendById(route.query.id as string)?.email as string,
+    avatar: friend?.avatar ?? "",
+    email: friend?.email ?? "",
+    description: friend?.description ?? "",
     type: "person",
   };
 }
@@ -79,7 +83,7 @@ const sendmessage = () => {
   chatStore.handleConversation({
     id: friendInfo.value.id,
     name: friendInfo.value.username,
-    avatar: "",
+    avatar: friendInfo.value.avatar,
     type: friendInfo.value.type,
   });
 
@@ -126,10 +130,10 @@ const friendStatus = computed(() => {
         </el-dropdown>
       </div>
     </div>
-    <!-- <div class="part-item">
+    <div class="part-item">
       <div class="part-title">个性签名</div>
-      <div class="part-content">{{ userInfo.personalSignature || "-" }}</div>
-    </div> -->
+      <div class="part-content">{{ friendInfo.description || "-" }}</div>
+    </div>
     <div class="send-message" @click="sendmessage">
       <div class="iconfont icon-icon_chat"></div>
       <div class="text">发消息</div>

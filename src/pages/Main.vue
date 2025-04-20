@@ -82,6 +82,7 @@ const changeMenu = (item: MenuItem) => {
         :email="userStore.userInfo?.email"
         :username="userStore.userInfo!.username"
         :showLargeImage="true"
+        :avatar="userStore.userInfo!.avatar"
       ></Avatar>
       <!-- 菜单列表 -->
       <div class="menu-list">
