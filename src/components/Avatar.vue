@@ -66,7 +66,7 @@ const sendMessage = () => {
   chatStore.handleConversation({
     id: friendInfo.value.id,
     name: friendInfo.value.username,
-    avatar: "",
+    avatar: friendInfo.value.avatar,
     type: friendInfo.value.type || "person",
   });
 
