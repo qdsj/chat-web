@@ -14,6 +14,7 @@ export interface I_FindUserByNameApiResult {
     username: "string";
     email: "string";
     type?: ConversationType;
+    avatar?: "string";
     friendShip: {
       id: "string";
       userId: "string";

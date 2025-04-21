@@ -61,7 +61,7 @@ const sendMessage = () => {
   chatStore.handleConversation({
     id: searchResult.value.id,
     name: searchResult.value.username,
-    avatar: "",
+    avatar: searchResult.value.avatar,
     type: searchResult.value.type,
   });
 

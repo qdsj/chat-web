@@ -103,26 +103,21 @@ const getGroupMember = async () => {
   }
 };
 
-onMounted(async () => {
-  await groupStore.getGroupChatList();
-  await updateGroupInfo();
-  await getGroupMember();
-});
-
 // 监听 route.query.id 的变化
 watch(
   () => route.query.id,
   async () => {
     await updateGroupInfo();
     await getGroupMember();
-  }
+  },
+  { immediate: true }
 );
 
 const sendMessage = () => {
   chatStore.handleConversation({
     id: groupInfo.value.groupId,
     name: groupInfo.value.groupName,
-    avatar: "",
+    avatar: groupInfo.value.avatar,
     type: groupInfo.value.type,
     memberCount: groupMemberList.value!.length,
   });
@@ -136,6 +131,8 @@ const addMemberDialog = ref(false);
 const updateMemberDialog = (data: boolean) => {
   addMemberDialog.value = data;
 };
+
+// 添加群成员
 const handleAddmember = async () => {
   addMemberDialog.value = true;
   await getGroupMember();

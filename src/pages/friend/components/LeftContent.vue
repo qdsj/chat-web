@@ -8,8 +8,6 @@ const friendStore = useFriendStore();
 const groupStore = useGroupStore();
 
 const searchKey = ref("");
-const defaultAvatar =
-  "https://th.bing.com/th/id/OIP.-I18fiU0rmHiiS5FtMDyHgHaHa?w=207&h=207&c=7&r=0&o=5&dpr=1.5&pid=1.7";
 // 搜索好友 or 群聊
 const search = () => {
   console.log(searchKey.value);
@@ -37,7 +35,7 @@ const newGroupGroup = {
     name: item.name,
     path: `/contact/groupDetail?id=${item.id}&username=${item.name}`,
     type: "friend",
-    avatar: defaultAvatar,
+    avatar: item.avatar,
     data: {
       id: item.id,
       name: item.name,
@@ -51,7 +49,7 @@ const blockGroup = computed(() => ({
     name: item.username,
     path: `/contact/userDetail?id=${item.id}&username=${item.username}`,
     type: "friend",
-    avatar: defaultAvatar,
+    avatar: item.avatar,
     data: {
       id: item.id,
       email: item.email,
