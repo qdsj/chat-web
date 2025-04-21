@@ -18,7 +18,7 @@
 		friendStore.getAllFriend(); // 请求好友列表
 		groupStore.getGroupChatList(); // 请求群聊列表
 		socketStore.socketInitial();
-		chatStore.getChatWindowsTime();
+		chatStore.getSessionList();
 	});
 </script>
 
