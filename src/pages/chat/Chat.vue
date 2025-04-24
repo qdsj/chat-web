@@ -31,25 +31,13 @@ watch(
       }
     });
   },
-  { deep: true } // 深度监听，确保每次消息变化都触发滚动操作
+  { deep: true, immediate: true } // 深度监听，确保每次消息变化都触发滚动操作
 );
-
-// 初始化时也滚动到底部
-onMounted(() => {
-  nextTick(() => {
-    if (messageContainer.value) {
-      messageContainer.value.scrollTop = messageContainer.value.scrollHeight;
-    }
-  });
-});
 
 const dialogListVisible = ref(false);
 const updateDialogListVisible = (data: boolean) => {
   dialogListVisible.value = data;
 };
-
-// 显示群聊详情
-const showGroupDetail = () => {};
 </script>
 
 <template>
@@ -97,11 +85,6 @@ const showGroupDetail = () => {};
                 ({{ chatStore.currentConversation.memberCount }})
               </span>
             </div>
-            <div
-              v-if="chatStore.currentConversation.type == 'group'"
-              class="iconfont icon-icon_more"
-              @click="showGroupDetail"
-            ></div>
           </div>
           <el-container class="chat-container">
             <el-main class="chat-box" v-show="chatStore.currentConversation">
