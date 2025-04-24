@@ -2,9 +2,12 @@ import { getFetch, postFetch } from "./http.ts";
 import {
   I_AddFriendApiResult,
   I_AgreeFriendApiResult,
+  I_BlockFriendResultApi,
   I_FindUserByNameApiResult,
+  I_GetBlockListResultApi,
   I_GetFriendListApiResult,
   I_GetRequestListApiResult,
+  I_UnblockFriendResultApi,
 } from "./types/friend.types.ts";
 
 // 通过名字查找用户
@@ -40,16 +43,20 @@ export const getFriendListApi = (): Promise<I_GetFriendListApiResult> => {
 };
 
 // 获取拉黑好友列表
-export const getBlockListApi = () => {
+export const getBlockListApi = (): Promise<I_GetBlockListResultApi> => {
   return getFetch("/user/getBlockList");
 };
 
 // 拉黑好友
-export const blockFriendApi = (data: { friendId: string }) => {
+export const blockFriendApi = (data: {
+  friendId: string;
+}): Promise<I_BlockFriendResultApi> => {
   return postFetch("/user/blockFriend", data);
 };
 
 // 恢复好友关系
-export const unblockFriendApi = (data: object) => {
+export const unblockFriendApi = (data: {
+  friendId: string;
+}): Promise<I_UnblockFriendResultApi> => {
   return postFetch("/user/unblockFriend", data);
 };

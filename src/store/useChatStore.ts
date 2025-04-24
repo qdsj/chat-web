@@ -228,16 +228,6 @@ export const useChatStore = defineStore(
       }
       // 追加聊天记录
       appendMessageToConversation(message.roomId, _message);
-      // 若消息所属会话非当前活跃会话，增加未读计数
-      if (currentConversation.value?.id !== message.roomId) {
-        const targetConversation = conversationsList.value.find(
-          (conv) => conv.id === message.roomId
-        );
-        if (targetConversation) {
-          targetConversation.unreadCount =
-            (targetConversation.unreadCount || 0) + 1;
-        }
-      }
     };
 
     const getChatNameByRoomId = async (params: {
