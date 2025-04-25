@@ -116,7 +116,7 @@ export const useChatStore = defineStore(
     };
 
     // 通用会话处理逻辑
-    const handleConversation = (params: {
+    const handleConversation = async (params: {
       id: string;
       name: string;
       avatar?: string;
@@ -131,11 +131,15 @@ export const useChatStore = defineStore(
 
       // 如果不存在，则添加到会话列表中
       if (conversation.length == 0) {
+        const messages = await getChatHistoryByRoomId(
+          params.id,
+          params.type || "person"
+        );
         addConversation({
           id: params.id,
           name: params.name,
           avatar: params.avatar || "",
-          messages: [],
+          messages: messages,
           type: params.type || "person",
           memberCount: params.memberCount,
         });
