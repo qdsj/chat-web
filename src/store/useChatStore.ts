@@ -13,12 +13,14 @@ import {
 } from "@/types/model/chat.type";
 import {
   addSessionApi,
+  deleteSessionApi,
   getGroupChatHistoryApi,
   getSessionListApi,
   getSingleChatHistoryApi,
   updateChatWindowsTimeApi,
 } from "@/apis/chat";
 import { useGroupStore } from "./userGroupStore";
+import { ElMessage } from "element-plus";
 
 export const useChatStore = defineStore(
   "chat",
@@ -244,6 +246,7 @@ export const useChatStore = defineStore(
       }
     };
 
+    // 获取会话列表
     const getSessionList = async () => {
       const sessionList = await getSessionListApi();
 
@@ -279,6 +282,19 @@ export const useChatStore = defineStore(
       }
     };
 
+    // 删除会话记录
+    const deleteSession = async (data: {
+      roomId: string;
+      type: ConversationType;
+    }) => {
+      try {
+        const res = await deleteSessionApi(data);
+        ElMessage.success(res.message);
+      } catch (error) {
+        ElMessage.warning(error || "删除会话失败");
+      }
+    };
+
     return {
       conversationsList,
       currentConversation,
@@ -290,6 +306,7 @@ export const useChatStore = defineStore(
       sendMessage,
       addMessage,
       getSessionList,
+      deleteSession,
     };
   },
   {
