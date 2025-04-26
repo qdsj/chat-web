@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { useUserStore } from "@/store/useUserStore";
 import GroupEditDialog from "./GroupEditDialog.vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { useRoute, useRouter } from "vue-router";
@@ -12,7 +11,6 @@ import AvatarBase from "@/components/AvatarBase.vue";
 
 const router = useRouter();
 const route = useRoute();
-const useStore = useUserStore();
 const groupStore = useGroupStore();
 const chatStore = useChatStore();
 
