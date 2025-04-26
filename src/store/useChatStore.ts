@@ -90,15 +90,6 @@ export const useChatStore = defineStore(
       });
       currentConversation.value!.openTime = res.data.openTime;
       currentConversation.value!.unreadCount = 0;
-
-      // currentConversation.value!.unreadCount =
-      //   currentConversation.value!.messages.filter((msg) => {
-      //     const msgTime = new Date(msg.createdAt).getTime();
-      //     const openTime = new Date(
-      //       currentConversation.value!.openTime!
-      //     ).getTime();
-      //     return msgTime > openTime;
-      //   }).length;
     };
 
     // 追加聊天记录到指定会话
