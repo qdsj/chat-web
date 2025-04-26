@@ -14,6 +14,7 @@ declare module 'vue' {
     ContentPanel: typeof import('./components/ContentPanel.vue')['default']
     Dialog: typeof import('./components/Dialog.vue')['default']
     ElAvatar: typeof import('element-plus/es')['ElAvatar']
+    ElBadge: typeof import('element-plus/es')['ElBadge']
     ElButton: typeof import('element-plus/es')['ElButton']
     ElContainer: typeof import('element-plus/es')['ElContainer']
     ElDialog: typeof import('element-plus/es')['ElDialog']
