@@ -16,6 +16,7 @@ const logout = async () => {
   localStorage.removeItem("auth-token");
   localStorage.removeItem("refresh-token");
   localStorage.removeItem("user-info-store");
+  localStorage.removeItem("chat");
   router.push("/chat");
   await userStore.getUserInfo();
 };

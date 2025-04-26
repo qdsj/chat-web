@@ -84,14 +84,21 @@ export const useChatStore = defineStore(
 
       currentConversation.value = targetConversation || null;
 
-      currentConversation.value!.unreadCount =
-        currentConversation.value!.messages.filter((msg) => {
-          const msgTime = new Date(msg.createdAt).getTime();
-          const openTime = new Date(
-            currentConversation.value!.openTime!
-          ).getTime();
-          return msgTime > openTime;
-        }).length;
+      const res = await updateChatWindowsTimeApi({
+        roomId: currentConversation.value!.id,
+        type: currentConversation.value!.type,
+      });
+      currentConversation.value!.openTime = res.data.openTime;
+      currentConversation.value!.unreadCount = 0;
+
+      // currentConversation.value!.unreadCount =
+      //   currentConversation.value!.messages.filter((msg) => {
+      //     const msgTime = new Date(msg.createdAt).getTime();
+      //     const openTime = new Date(
+      //       currentConversation.value!.openTime!
+      //     ).getTime();
+      //     return msgTime > openTime;
+      //   }).length;
     };
 
     // 追加聊天记录到指定会话
@@ -255,13 +262,6 @@ export const useChatStore = defineStore(
         message.roomId !== currentConversation.value?.id
       ) {
         targetSession.unreadCount! += 1;
-      }
-      if (targetSession) {
-        const res = await updateChatWindowsTimeApi({
-          roomId: message.roomId,
-          type: message.type,
-        });
-        targetSession!.openTime = res.data.openTime;
       }
       // 追加聊天记录
       appendMessageToConversation(message.roomId, _message);
