@@ -22,6 +22,8 @@ export const getGroupChatListApi = (): Promise<I_GetGroupListApiResult> => {
 
 // 修改群聊信息
 export const updateGroupChatInfoApi = (data: {
+  avatar: string;
+  name: string;
   roomId: string;
   description: string;
   type: string;

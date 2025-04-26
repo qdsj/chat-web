@@ -39,6 +39,7 @@ const newGroupGroup = {
     data: {
       id: item.id,
       name: item.name,
+      avatar: item.avatar,
     },
   })),
 };

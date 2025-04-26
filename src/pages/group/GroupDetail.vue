@@ -8,6 +8,7 @@ import CreateGroup from "./CreateGroup.vue";
 import { I_GetGroupMemberInfoApiResult } from "@/apis/types/group.type";
 import { useChatStore } from "@/store/useChatStore";
 import { ConversationType } from "@/types/model/chat.type";
+import AvatarBase from "@/components/AvatarBase.vue";
 
 const router = useRouter();
 const route = useRoute();
@@ -155,9 +156,7 @@ const searchMember = ref();
           <div class="iconfont icon-icon_more"></div>
         </span>
         <template #dropdown>
-          <el-dropdown-menu
-            v-if="groupInfo.groupOwnerId == useStore.userInfo!.id"
-          >
+          <el-dropdown-menu v-if="groupInfo.userType === 'owner'">
             <el-dropdown-item @click="editGroupInfo"
               >修改群聊信息</el-dropdown-item
             >
@@ -178,11 +177,11 @@ const searchMember = ref();
         v-for="item in groupMemberList"
         :key="item.id"
       >
-        <Avatar
-          :userId="item.id"
-          :username="item.username"
+        <AvatarBase
+          :avatar="item.avatar"
+          :alt="`${item.username}`"
           :width="50"
-        ></Avatar>
+        ></AvatarBase>
         <div class="nickname">{{ item.username }}</div>
       </div>
       <div class="grid-container">

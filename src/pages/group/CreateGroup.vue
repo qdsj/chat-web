@@ -6,9 +6,11 @@ import ContactInfo from "./ContactInfo.vue";
 import { useChatStore } from "@/store/useChatStore";
 import { useGroupStore } from "@/store/userGroupStore";
 import router from "@/router";
+import { useUserStore } from "@/store/useUserStore";
 const friendStore = useFriendStore();
 const chatStore = useChatStore();
 const groupStore = useGroupStore();
+const userStore = useUserStore();
 
 const props = defineProps({
   dialogListVisible: {
@@ -45,7 +47,8 @@ watch(
   () => props.selectedIds,
   (newVal) => {
     originalIds.value = newVal as string[];
-  }
+  },
+  { immediate: true }
 );
 
 const isOriginalMember = (id: string) => originalIds.value.includes(id);
@@ -80,10 +83,13 @@ const handleDialogClose = () => {
 const finallySelectIds = computed(() => [
   ...originalIds.value,
   ...newSelectedIds.value,
+  ...(originalIds.value.includes(userStore.userInfo!.id)
+    ? []
+    : [userStore.userInfo!.id]),
 ]);
 const handleConfirm = async () => {
   let data = null;
-  if (props.selectedIds.length > 0) {
+  if (props.selectedIds.length > 0 && newSelectedIds.value.length > 0) {
     await groupStore.addGroupMember(
       props.roomId,
       newSelectedIds.value,
@@ -91,21 +97,20 @@ const handleConfirm = async () => {
     );
     data = await groupStore.getGroupById(props.roomId);
     await groupStore.getGroupMemberByList(data!.id, props.type);
-  } else {
+  } else if (newSelectedIds.value.length > 0) {
     data = await groupStore.createGroupChat(newSelectedIds.value);
     await groupStore.getGroupChatList();
   }
-  if (!data) {
-    throw new Error("Failed to retrieve group data");
+  if (data) {
+    chatStore.handleConversation({
+      id: data.id,
+      name: data.name,
+      avatar: data.avatar || "",
+      type: props.type,
+      memberCount: finallySelectIds.value.length,
+    });
   }
   handleDialogClose();
-  chatStore.handleConversation({
-    id: data.id,
-    name: data.name,
-    avatar: data.avatar || "",
-    type: props.type,
-    memberCount: finallySelectIds.value.length,
-  });
 
   // 跳转到聊天页面
   router.push("/chat");

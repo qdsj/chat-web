@@ -64,6 +64,9 @@ export interface I_GetGroupMemberInfoApiResult {
       id: string;
       username: string;
       email: string;
+      avatar: string;
+      description: string;
+      sex: string;
     }
   ];
 }

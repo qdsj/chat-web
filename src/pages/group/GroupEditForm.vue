@@ -7,7 +7,7 @@ const formDataRef = ref();
 const formData = ref({
   groupId: "",
   groupName: "",
-  avatarFile: "",
+  avatar: "",
   groupDescription: "",
   type: "",
 });
@@ -20,13 +20,6 @@ const rules = ref({
       trigger: "blur",
     },
   ],
-  // avatarFile: [
-  //   {
-  //     required: true,
-  //     message: "请上传封面图片",
-  //     trigger: "change",
-  //   },
-  // ],
   groupDescription: [
     {
       required: true,
@@ -40,8 +33,15 @@ const emits = defineEmits(["editBack"]);
 const submit = () => {
   formDataRef.value.validate(async (valid: any) => {
     if (!valid) return;
-    const { groupId, groupDescription, type } = formData.value;
-    await groupStore.updateGroupChatInfo(groupId, groupDescription, type);
+    const { avatar, groupName, groupId, groupDescription, type } =
+      formData.value;
+    await groupStore.updateGroupChatInfo(
+      avatar,
+      groupName,
+      groupId,
+      groupDescription,
+      type
+    );
     await groupStore.getGroupChatList();
     formDataRef.value.resetFields();
     emits("editBack");
@@ -50,7 +50,11 @@ const submit = () => {
 
 const showFun = (data: any) => {
   formData.value = data;
-  formData.value.avatarFile = data.groupId;
+  formData.value.avatar = data.avatar;
+};
+
+const updateAvatar = (avatar: string) => {
+  formData.value.avatar = avatar;
 };
 
 defineExpose({
@@ -59,7 +63,18 @@ defineExpose({
 </script>
 
 <template>
-  <el-form ref="formDataRef" :model="formData" :rules="rules">
+  <el-form
+    ref="formDataRef"
+    :model="formData"
+    :rules="rules"
+    label-width="100px"
+  >
+    <el-form-item label="头像" prop="avatar">
+      <AvatarUpload
+        :avatar="formData.avatar"
+        @updateAvatar="updateAvatar"
+      ></AvatarUpload>
+    </el-form-item>
     <el-form-item label="群名称" prop="groupName">
       <el-input
         maxLength="150"
@@ -87,8 +102,4 @@ defineExpose({
   </el-form>
 </template>
 
-<style scoped lang="scss">
-:deep(.el-form-item__content) {
-  justify-content: center;
-}
-</style>
+<style scoped lang="scss"></style>
