@@ -1,29 +1,41 @@
 {
-  "name": "chat-web",
-  "private": true,
-  "version": "0.0.0",
-  "type": "module",
-  "scripts": {
-    "dev": "vite",
-    "build": "vue-tsc -b && vite build",
-    "preview": "vite preview"
-  },
-  "dependencies": {
-    "@types/node": "^22.10.8",
-    "axios": "^1.7.9",
-    "element-plus": "^2.9.3",
-    "pinia": "^2.3.1",
-    "socket.io-client": "^4.8.1",
-    "vue": "^3.5.12",
-    "vue-router": "^4.5.0"
-  },
-  "devDependencies": {
-    "@vitejs/plugin-vue": "^5.1.4",
-    "sass-embedded": "^1.83.4",
-    "typescript": "~5.6.2",
-    "unplugin-auto-import": "^19.0.0",
-    "unplugin-vue-components": "^28.0.0",
-    "vite": "^5.4.10",
-    "vue-tsc": "^2.1.8"
-  }
+	"name": "chat-web",
+	"private": true,
+	"version": "0.0.0",
+	"type": "module",
+	"scripts": {
+		"dev": "vite",
+		"build": "vue-tsc -b && vite build",
+		"preview": "vite preview"
+	},
+	"dependencies": {
+		"@imengyu/vue3-context-menu": "^1.4.5",
+		"@tailwindcss/vite": "^4.1.3",
+		"@zenos-chen/avatar": "^1.0.12",
+		"axios": "^1.7.9",
+		"color-convert": "^3.0.1",
+		"element-plus": "^2.9.6",
+		"moment": "^2.30.1",
+		"pdf-vue3": "1.0.12",
+		"pinia": "^2.3.1",
+		"pinia-plugin-persistedstate": "^4.2.0",
+		"sass": "^1.85.1",
+		"socket.io-client": "^4.8.1",
+		"splitpanes": "^4.0.2",
+		"tailwindcss": "^4.1.3",
+		"uuid": "^11.1.0",
+		"vue": "^3.5.12",
+		"vue-router": "^4.5.0"
+	},
+	"devDependencies": {
+		"@types/node": "^22.13.5",
+		"@types/splitpanes": "^2.2.6",
+		"@vitejs/plugin-vue": "^5.1.4",
+		"sass-embedded": "^1.83.4",
+		"typescript": "~5.6.2",
+		"unplugin-auto-import": "^19.0.0",
+		"unplugin-vue-components": "^28.0.0",
+		"vite": "^6.2.0",
+		"vue-tsc": "^2.1.8"
+	}
 }

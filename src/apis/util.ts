@@ -37,18 +37,25 @@ const accessAuth = (response: Response) => {
 	window.addEventListener("message", (event: { data: any }) => {
 		if (event.data.type === "auth-token" && event.data.token) {
 			console.log(event.data.type);
+			// 接收登录页面发送过来的token
 			storeRefreshToken(event.data.token);
 			if (openWindow) {
+				// 向登录页面发送关闭消息。让登录页面告诉用户，已经成功登录，并且要关闭当前页面
 				openWindow.postMessage({ type: "close" }, "*");
 				setTimeout(() => {
+					// 关闭登录页面
 					openWindow!.close();
+					// 当前页面刷新
+					window.location.reload();
 				}, 1000);
 			}
 		}
 	});
 
 	setTimeout(() => {
-		openWindow = window.open(redirectUrl!, "_blank");
+		// _blank 表示在新窗口打开
+		// openwindow 为打开的窗口的window对象
+		openWindow = window.open(import.meta.env.VITE_AUTH_URL + redirectUrl!, "_blank");
 	}, 1000);
 };
 

@@ -1,33 +1,52 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+  import { Splitpanes, Pane } from "splitpanes";
+  import "splitpanes/dist/splitpanes.css";
+</script>
 
 <template>
-  <div class="layout-container">
-    <!-- 左边 -->
-    <div class="left-side-inner">
+  <splitpanes class="layout-container">
+    <pane min-size="20"
+          size="30"
+          max-size="50"
+          class="left-side-inner">
       <slot name="left-content"></slot>
-    </div>
-    <!-- 右边 -->
-    <div class="right-content">
+    </pane>
+    <pane min-size="50"
+          size="70"
+          class="right-content">
       <slot name="right-content"></slot>
-    </div>
-  </div>
+    </pane>
+  </splitpanes>
 </template>
 
 <style scoped lang="scss">
-.layout-container {
-  display: flex;
-  .left-side-inner {
-    width: 450px;
-    background: #e6e5e5;
-    border-color: #ddd;
-    border-style: solid;
-    border-width: 0px 1px 0px 0px;
+  .splitpanes__pane {
+    transition: none;
+    /* 禁用过渡效果 */
   }
-  .right-content {
-    flex: 1;
-    height: calc(100vh - 2px);
-    background-color: #f5f5f5;
-    width: 100%;
+
+
+
+  .layout-container {
+    display: flex;
+
+    &> :deep(.splitpanes__splitter) {
+      width: 5px;
+    }
+
+    .left-side-inner {
+      width: 450px;
+      background: #e6e5e5;
+      border-color: #ddd;
+      border-style: solid;
+      border-width: 0px 1px 0px 0px;
+    }
+
+    .right-content {
+      flex: 1;
+      height: calc(100vh - 2px);
+      background-color: #f5f5f5;
+      width: 100%;
+    }
   }
-}
 </style>

@@ -1,7 +1,14 @@
 <script setup lang="ts">
+import Avatar from "@/components/Avatar.vue";
 import { ref } from "vue";
-import { useRouter } from "vue-router";
+import { useRouter, useRoute } from "vue-router";
+import { useUserStore } from "@/store/useUserStore";
+import { DEFAULT_ACTIVE_ROUTE } from "@/util/constants";
+
 const router = useRouter();
+const route = useRoute();
+const userStore = useUserStore();
+
 // 图标菜单列表
 const menuList = ref([
   {
@@ -34,7 +41,30 @@ interface MenuItem {
   countKey?: string;
   position: string;
 }
-const currentMenu = ref(menuList.value[0]);
+const currentMenu = ref<MenuItem | null>(null);
+
+const updateCurrentMenu = () => {
+  const foundMenu = menuList.value.find((item) =>
+    route.path.startsWith(item.path)
+  );
+  currentMenu.value = foundMenu || menuList.value[0];
+};
+
+onMounted(() => {
+  updateCurrentMenu();
+});
+
+watch(
+  () => route.path,
+  () => {
+    updateCurrentMenu();
+    if (route.path.startsWith(DEFAULT_ACTIVE_ROUTE)) {
+      sessionStorage.setItem("active_path", DEFAULT_ACTIVE_ROUTE);
+    }
+  },
+  { immediate: true }
+);
+
 const changeMenu = (item: MenuItem) => {
   currentMenu.value = item;
   router.push(item.path);
@@ -46,7 +76,14 @@ const changeMenu = (item: MenuItem) => {
     <!-- 左边 -->
     <div class="left-sider">
       <!-- 头像 -->
-      <div></div>
+      <Avatar
+        v-if="userStore.userInfo !== null"
+        :userId="userStore.userInfo!.id"
+        :email="userStore.userInfo?.email"
+        :username="userStore.userInfo!.username"
+        :showLargeImage="true"
+        :avatar="userStore.userInfo!.avatar"
+      ></Avatar>
       <!-- 菜单列表 -->
       <div class="menu-list">
         <template v-for="item in menuList">
@@ -54,13 +91,11 @@ const changeMenu = (item: MenuItem) => {
             :class="[
               'tab-item iconfont',
               item.icon,
-              item.path == currentMenu.path ? 'active' : '',
+              currentMenu!.path.startsWith(item.path) ? 'active' : '',
             ]"
             v-if="item.position == 'top'"
             @click="changeMenu(item)"
-          >
-            <template v-if="item.name == 'chat'"> </template>
-          </div>
+          ></div>
         </template>
       </div>
       <div class="menu-list menu-bottom">
@@ -69,7 +104,7 @@ const changeMenu = (item: MenuItem) => {
             :class="[
               'tab-item iconfont',
               item.icon,
-              item.path == currentMenu.path ? 'active' : '',
+              currentMenu!.path.startsWith(item.path) ? 'active' : '',
             ]"
             v-if="item.position == 'bottom'"
             @click="changeMenu(item)"

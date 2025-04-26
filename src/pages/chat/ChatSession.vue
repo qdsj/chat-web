@@ -1,27 +1,39 @@
 <script setup lang="ts">
-defineProps({
+import AvatarBase from "@/components/AvatarBase.vue";
+import { formatChatTime } from "@/util/utils";
+
+const props = defineProps({
+  avatar: {
+    type: String,
+    default: "",
+  },
   data: {
     type: Object,
     default: () => {},
   },
-  currentSession: {
-    type: Boolean,
-    default: false,
-  },
 });
+const hasMessages = computed(() => props.data?.messages?.length > 0);
 </script>
 
 <template>
-  <div :class="['chat-session-item', currentSession ? 'active' : '']">
+  <div :class="['chat-session-item']">
     <div class="contact-tag" v-if="data.contactType == 1">群</div>
     <!-- 头像 -->
-    <el-avatar :size="50" />
+    <AvatarBase :avatar="avatar" :alt="`${data.name}`" :width="50"></AvatarBase>
     <div class="user-info">
       <div class="user-name-panel">
         <div class="user-name">{{ data.name }}</div>
-        <div class="message-time">{{ data.time }}</div>
+        <div class="message-time" v-if="hasMessages">
+          {{
+            formatChatTime(new Date(data.messages.at(-1).createdAt).getTime())
+          }}
+        </div>
       </div>
-      <div class="last-message" v-html="data.lastMessage"></div>
+      <div
+        class="last-message"
+        v-if="hasMessages"
+        v-html="data.messages.at(-1).content"
+      ></div>
     </div>
     <!-- 置顶 -->
     <div class="chat-top iconfont icon-icon-top" v-if="data.topType == 1"></div>
@@ -53,14 +65,18 @@ defineProps({
       color: #9a9898 !important;
     }
   }
+  &:active {
+    background: #d8d8d7;
+  }
   .user-info {
     flex: 1;
-    margin-left: 10px;
+    margin: 0 15px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
     .user-name-panel {
       display: flex;
+      justify-content: space-between;
       .user-name {
         width: 280px;
         color: #000;
@@ -70,14 +86,14 @@ defineProps({
         white-space: nowrap;
       }
       .message-time {
-        width: 55px;
+        width: 60px;
         color: #b6b6b6;
         font-size: 14px;
         text-align: right;
       }
     }
     .last-message {
-      width: 280px;
+      max-width: 95%;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
