@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import AvatarBase from "@/components/AvatarBase.vue";
+import { Conversation } from "@/types/model/chat.type";
 import { formatChatTime } from "@/util/utils";
 
 const props = defineProps({
@@ -8,7 +9,7 @@ const props = defineProps({
     default: "",
   },
   data: {
-    type: Object,
+    type: Object as PropType<Conversation>,
     default: () => {},
   },
 });
@@ -17,22 +18,29 @@ const hasMessages = computed(() => props.data?.messages?.length > 0);
 
 <template>
   <div :class="['chat-session-item']">
-    <div class="contact-tag" v-if="data.contactType == 1">群</div>
     <!-- 头像 -->
-    <AvatarBase :avatar="avatar" :alt="`${data.name}`" :width="50"></AvatarBase>
+    <el-badge :value="data.unreadCount" :show-zero="false" :max="99">
+      <AvatarBase
+        :avatar="avatar"
+        :alt="`${data.name}`"
+        :width="50"
+      ></AvatarBase>
+    </el-badge>
     <div class="user-info">
       <div class="user-name-panel">
         <div class="user-name">{{ data.name }}</div>
         <div class="message-time" v-if="hasMessages">
           {{
-            formatChatTime(new Date(data.messages.at(-1).createdAt).getTime())
+            formatChatTime(
+              new Date(data.messages.at(-1)?.createdAt ?? Date.now()).getTime()
+            )
           }}
         </div>
       </div>
       <div
         class="last-message"
         v-if="hasMessages"
-        v-html="data.messages.at(-1).content"
+        v-html="data.messages.at(-1)?.content ?? ''"
       ></div>
     </div>
     <!-- 置顶 -->

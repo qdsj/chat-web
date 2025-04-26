@@ -69,16 +69,29 @@ export const useChatStore = defineStore(
         currentConversation.value &&
         currentConversation.value.id !== conversationId
       ) {
-        updateChatWindowsTimeApi({
+        const res = await updateChatWindowsTimeApi({
           roomId: currentConversation.value.id,
           type: currentConversation.value!.type || "person",
         });
+        const lastSession = conversationsList.value.find(
+          (session) => session.id === currentConversation.value!.id
+        );
+        lastSession!.openTime = res.data.openTime;
       }
       const targetConversation = conversationsList.value.find(
         (conv) => conv.id === conversationId
       );
 
       currentConversation.value = targetConversation || null;
+
+      currentConversation.value!.unreadCount =
+        currentConversation.value!.messages.filter((msg) => {
+          const msgTime = new Date(msg.createdAt).getTime();
+          const openTime = new Date(
+            currentConversation.value!.openTime!
+          ).getTime();
+          return msgTime > openTime;
+        }).length;
     };
 
     // 追加聊天记录到指定会话
@@ -232,6 +245,24 @@ export const useChatStore = defineStore(
           unreadCount: 0,
         });
       }
+      const targetSession = conversationsList.value.find(
+        (session) => session.id === message.roomId
+      );
+
+      if (
+        targetSession &&
+        message.senderId !== userStore.userInfo?.id &&
+        message.roomId !== currentConversation.value?.id
+      ) {
+        targetSession.unreadCount! += 1;
+      }
+      if (targetSession) {
+        const res = await updateChatWindowsTimeApi({
+          roomId: message.roomId,
+          type: message.type,
+        });
+        targetSession!.openTime = res.data.openTime;
+      }
       // 追加聊天记录
       appendMessageToConversation(message.roomId, _message);
     };
@@ -283,9 +314,15 @@ export const useChatStore = defineStore(
             isSelf: msg.senderId === userStore.userInfo?.id,
           };
         });
+
+        // 计算未读消息数（createAt晚于openTime的消息数量）
+        item.unreadCount = item.messages.filter((msg) => {
+          const msgTime = new Date(msg.createdAt).getTime();
+          const openTime = new Date(item.openTime!).getTime();
+          return msgTime > openTime;
+        }).length;
       }
     };
-
     // 删除会话记录
     const deleteSession = async (data: {
       roomId: string;

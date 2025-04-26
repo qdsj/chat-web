@@ -113,7 +113,7 @@ const cancel = () => {
           <el-radio :value="'female'">女</el-radio>
         </el-radio-group>
       </el-form-item>
-      <el-form-item label="地区" prop="area">{{ "广州" }}</el-form-item>
+      <!-- <el-form-item label="地区" prop="area">{{ "广州" }}</el-form-item> -->
       <el-form-item label="个性签名" prop="description">
         <el-input
           clearable
