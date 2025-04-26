@@ -144,6 +144,9 @@ export const useChatStore = defineStore(
 				});
 			}
 			setCurrentConversation(params.id);
+
+			// 关闭好友列表的搜索状态
+			friendStore.isSearching = false;
 		};
 
 		const createMessage = (params: Omit<Message, "id" | "createdAt">): Message => {
@@ -285,6 +288,11 @@ export const useChatStore = defineStore(
 		};
 
 		const searchSession = async (name: string) => {
+			if (name.trim()) {
+				isSearching.value = false;
+				return;
+			}
+
 			const session = conversationsList.value.filter((session) => {
 				return session.name.toLowerCase().includes(name.toLowerCase());
 			});

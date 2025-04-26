@@ -1,17 +1,14 @@
 import {
-  addFriendApi,
-  agreeFriendApi,
-  blockFriendApi,
-  findUserByNameApi,
-  getBlockListApi,
-  getFriendListApi,
-  getRequestListApi,
-  unblockFriendApi,
+	addFriendApi,
+	agreeFriendApi,
+	blockFriendApi,
+	findUserByNameApi,
+	getBlockListApi,
+	getFriendListApi,
+	getRequestListApi,
+	unblockFriendApi,
 } from "@/apis/friend";
-import {
-  I_FindUserByNameApiResult,
-  I_GetRequestListApiResult,
-} from "@/apis/types/friend.types";
+import { I_FindUserByNameApiResult, I_GetRequestListApiResult } from "@/apis/types/friend.types";
 import { v4 as uuidv4 } from "uuid";
 import { T_Friend } from "@/types/model/friend.types";
 import { ElMessage } from "element-plus";
@@ -19,152 +16,191 @@ import { defineStore } from "pinia";
 import { useChatStore } from "./useChatStore";
 import { useRouter } from "vue-router";
 import { useUserStore } from "./useUserStore";
+import { useGroupStore } from "./userGroupStore";
+import { T_GroupList } from "@/types/model/group.type";
 // 具体和api交互的代码，统一放在store中。
 // vue文件只需要考虑和store进行交互即可
 
 export const useFriendStore = defineStore(
-  "use-friend-store",
-  () => {
-    const chatStore = useChatStore();
-    const userStore = useUserStore();
-    const router = useRouter();
-    const friendList = ref<T_Friend[]>([]);
-    const blockList = ref<T_Friend[]>([]);
+	"use-friend-store",
+	() => {
+		const chatStore = useChatStore();
+		const userStore = useUserStore();
+		const groupStore = useGroupStore();
+		const router = useRouter();
+		const friendList = ref<T_Friend[]>([]);
+		const blockList = ref<T_Friend[]>([]);
 
-    const getFriendById = (id: string) => {
-      const friend = friendList.value.find((friend) => friend.id === id);
-      if (friend) return friend;
-      return blockList.value.find((blockFriend) => blockFriend.id === id);
-    };
+		const isSearching = ref(false);
+		const searchValue = ref("");
 
-    // 获取所有好友列表
-    const getAllFriend = async () => {
-      const list = await getFriendListApi();
-      friendList.value = list.data;
-    };
+		const getFriendById = (id: string) => {
+			const friend = friendList.value.find((friend) => friend.id === id);
+			if (friend) return friend;
+			return blockList.value.find((blockFriend) => blockFriend.id === id);
+		};
 
-    // 添加新的好友
-    const addFriend = async (
-      friendId: string,
-      requestMessage: string
-    ): Promise<[string | null, boolean]> => {
-      try {
-        await addFriendApi({
-          friendId,
-          requestMessage,
-        });
-        return [null, true];
-      } catch (error) {
-        return [error, false] as any;
-      }
-    };
+		// 获取所有好友列表
+		const getAllFriend = async () => {
+			const list = await getFriendListApi();
+			friendList.value = list.data;
+		};
 
-    // 搜索好友
-    const searchUserByName = async (
-      username: string
-    ): Promise<[string | null, I_FindUserByNameApiResult["data"]]> => {
-      try {
-        const res = await findUserByNameApi(username);
+		// 添加新的好友
+		const addFriend = async (friendId: string, requestMessage: string): Promise<[string | null, boolean]> => {
+			try {
+				await addFriendApi({
+					friendId,
+					requestMessage,
+				});
+				return [null, true];
+			} catch (error) {
+				return [error, false] as any;
+			}
+		};
 
-        // []表示返回两个值，第一个是error，第二个是data
-        return [null, res.data] as any;
-      } catch (error) {
-        return [error, null] as any;
-      }
-    };
+		// 搜索好友
+		const searchUserByName = async (
+			username: string
+		): Promise<[string | null, I_FindUserByNameApiResult["data"]]> => {
+			try {
+				const res = await findUserByNameApi(username);
 
-    // 获取请求列表
-    const getRequestList = async (): Promise<
-      [string | null, I_GetRequestListApiResult["data"]]
-    > => {
-      try {
-        const res = await getRequestListApi();
-        return [null, res.data] as any;
-      } catch (error) {
-        ElMessage.warning(error || "获取好友申请列表失败");
-        return [error, null] as any;
-      }
-    };
+				// []表示返回两个值，第一个是error，第二个是data
+				return [null, res.data] as any;
+			} catch (error) {
+				return [error, null] as any;
+			}
+		};
 
-    // 获取拉黑列表
-    const getBlackList = async () => {
-      const list = await getBlockListApi();
-      blockList.value = list.data;
-    };
+		// 获取请求列表
+		const getRequestList = async (): Promise<[string | null, I_GetRequestListApiResult["data"]]> => {
+			try {
+				const res = await getRequestListApi();
+				return [null, res.data] as any;
+			} catch (error) {
+				ElMessage.warning(error || "获取好友申请列表失败");
+				return [error, null] as any;
+			}
+		};
 
-    // 同意好友请求
-    const agreeFriend = async (friendId: string) => {
-      try {
-        const res = await agreeFriendApi({ friendId });
-        await getAllFriend();
-        const friend = await getFriendById(res.data.requesterId);
-        // 将好友加进会话列表
-        chatStore.addConversation({
-          id: friend!.id,
-          name: friend!.username,
-          avatar: "",
-          type: "person",
-          messages: [
-            {
-              id: uuidv4(),
-              roomId: userStore.userInfo!.id,
-              senderId: friend!.id,
-              content: res.data.requestMessage,
-              createdAt: new Date(Date.now()).toISOString(),
-              msgType: "text",
-            },
-          ],
-        });
-        chatStore.sendMessage({
-          content: res.data.requestMessage,
-        });
-        chatStore.setCurrentConversation(friend!.id);
-        // 跳转至会话列表，开始聊天
-        router.push("/chat");
-      } catch (error) {
-        ElMessage.warning(error || "获取好友申请列表失败");
-      }
-    };
+		// 获取拉黑列表
+		const getBlackList = async () => {
+			const list = await getBlockListApi();
+			blockList.value = list.data;
+		};
 
-    // 拉黑好友
-    const blockFriend = async (friendId: string) => {
-      try {
-        const res = await blockFriendApi({ friendId });
-        ElMessage.success(res.message);
-        return [null, res.data] as any;
-      } catch (error) {
-        ElMessage.warning(error || "拉黑好友失败");
-        return [error, null] as any;
-      }
-    };
+		// 同意好友请求
+		const agreeFriend = async (friendId: string) => {
+			try {
+				const res = await agreeFriendApi({ friendId });
+				await getAllFriend();
+				const friend = await getFriendById(res.data.requesterId);
+				// 将好友加进会话列表
+				chatStore.addConversation({
+					id: friend!.id,
+					name: friend!.username,
+					avatar: "",
+					type: "person",
+					messages: [
+						{
+							id: uuidv4(),
+							roomId: userStore.userInfo!.id,
+							senderId: friend!.id,
+							content: res.data.requestMessage,
+							createdAt: new Date(Date.now()).toISOString(),
+							msgType: "text",
+						},
+					],
+				});
+				chatStore.sendMessage({
+					content: res.data.requestMessage,
+				});
+				chatStore.setCurrentConversation(friend!.id);
+				// 跳转至会话列表，开始聊天
+				router.push("/chat");
+			} catch (error) {
+				ElMessage.warning(error || "获取好友申请列表失败");
+			}
+		};
 
-    // 恢复好友关系
-    const unblockFriend = async (friendId: string) => {
-      try {
-        const res = await unblockFriendApi({ friendId });
-        ElMessage.success(res.message);
-      } catch (error) {
-        ElMessage.warning(error || "拉黑好友失败");
-      }
-    };
+		// 拉黑好友
+		const blockFriend = async (friendId: string) => {
+			try {
+				const res = await blockFriendApi({ friendId });
+				ElMessage.success(res.message);
+				return [null, res.data] as any;
+			} catch (error) {
+				ElMessage.warning(error || "拉黑好友失败");
+				return [error, null] as any;
+			}
+		};
 
-    return {
-      friendList,
-      getAllFriend,
-      addFriend,
-      searchUserByName,
-      getRequestList,
-      agreeFriend,
-      blockList,
-      getBlackList,
-      blockFriend,
-      unblockFriend,
-      getFriendById,
-    };
-  },
-  {
-    persist: {
-      storage: localStorage,
-    },
-  }
+		// 恢复好友关系
+		const unblockFriend = async (friendId: string) => {
+			try {
+				const res = await unblockFriendApi({ friendId });
+				ElMessage.success(res.message);
+			} catch (error) {
+				ElMessage.warning(error || "拉黑好友失败");
+			}
+		};
+
+		const searchFriend = (value: string) => {
+			if (value.trim() === "") {
+				isSearching.value = false;
+				return;
+			}
+			isSearching.value = true;
+			searchValue.value = value;
+		};
+
+		const searchResult = computed(() => {
+			if (isSearching.value) {
+				// 根据value搜索好友
+				const friends = friendList.value.filter((friend) => {
+					return friend.username.toLowerCase().includes(searchValue.value.toLowerCase());
+				});
+				// 根据value搜索群名
+				const groups = groupStore.groupList.filter((group) => {
+					return group.name.toLowerCase().includes(searchValue.value.toLowerCase());
+				});
+
+				return {
+					searchedFriendList: friends,
+					searchedGroupList: groups,
+				};
+			} else {
+				return {
+					searchedFriendList: [],
+					searchedGroupList: [],
+				};
+			}
+		});
+		const searchedFriendList = computed(() => searchResult.value.searchedFriendList);
+		const searchedGroupList = computed(() => searchResult.value.searchedGroupList);
+
+		return {
+			friendList,
+			isSearching,
+			searchedFriendList,
+			searchedGroupList,
+			getAllFriend,
+			addFriend,
+			searchUserByName,
+			getRequestList,
+			agreeFriend,
+			blockList,
+			getBlackList,
+			blockFriend,
+			unblockFriend,
+			getFriendById,
+			searchFriend,
+		};
+	},
+	{
+		persist: {
+			storage: localStorage,
+		},
+	}
 );
