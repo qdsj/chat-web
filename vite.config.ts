@@ -31,10 +31,16 @@ export default defineConfig({
 	server: {
 		proxy: {
 			"/api": {
-				// target: "http://localhost:3200",
-				target: "https://dev.qdsj.top/server/chatweb",
+				target: "http://localhost:3200",
+				// target: "https://dev.qdsj.top/server/chatweb",
 				changeOrigin: true,
 				rewrite: (path) => path.replace(/^\/api/, ""),
+			},
+			"/server/chatweb/socket": {
+				target: "https://dev.qdsj.top",
+				ws: true,
+				changeOrigin: true,
+				secure: false, // 开发环境可关闭安全验证
 			},
 		},
 	},
