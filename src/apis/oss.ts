@@ -41,7 +41,7 @@ export const uploadFile = async (params: { file: File }): Promise<I_UploadFileAp
 
 		const res = await fetch(data.host, { method: "POST", body: formData });
 		return {
-			url: `${res.url}${filename}`,
+			url: `${import.meta.env.VITE_ALIYUN_OSS_REGION}${filename}`,
 			status: res.status,
 			statusText: res.statusText,
 			type: file.type,
