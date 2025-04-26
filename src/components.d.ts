@@ -39,4 +39,7 @@ declare module 'vue' {
     ShowLocalImage: typeof import('./components/ShowLocalImage.vue')['default']
     UserBaseInfo: typeof import('./components/UserBaseInfo.vue')['default']
   }
+  export interface ComponentCustomProperties {
+    vLoading: typeof import('element-plus/es')['ElLoadingDirective']
+  }
 }
