@@ -25,7 +25,7 @@ const props = defineProps({
   padding-top: 10px;
   .content-inner {
     margin: 0px auto;
-    width: 600px;
+    max-width: 600px;
   }
 }
 </style>

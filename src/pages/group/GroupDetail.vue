@@ -14,6 +14,11 @@ const route = useRoute();
 const groupStore = useGroupStore();
 const chatStore = useChatStore();
 
+const props = defineProps({
+  roomId: {
+    type: String,
+  },
+});
 const groupEditDialogRef = ref();
 const editGroupInfo = () => {
   groupEditDialogRef.value.showFun(groupInfo.value);
@@ -63,7 +68,9 @@ const groupInfo = ref<GroupInfo>({
 });
 
 const updateGroupInfo = () => {
-  const group = groupStore.getGroupById(route.query.id as string);
+  const group = groupStore.getGroupById(
+    (route.query.id || props.roomId) as string
+  );
   if (!group) return;
   const {
     id,
@@ -104,14 +111,14 @@ const getGroupMember = async () => {
 
 // 监听 route.query.id 的变化
 watch(
-  () => route.query.id,
+  () => route.query.id || props.roomId,
   async () => {
     await updateGroupInfo();
     await getGroupMember();
   },
   { immediate: true }
 );
-
+const emit = defineEmits(["closeDrawer"]);
 const sendMessage = () => {
   chatStore.handleConversation({
     id: groupInfo.value.groupId,
@@ -120,7 +127,7 @@ const sendMessage = () => {
     type: groupInfo.value.type,
     memberCount: groupMemberList.value!.length,
   });
-
+  emit("closeDrawer"); // 触发关闭抽屉事件
   // 跳转到聊天页面
   router.push("/chat");
 };
@@ -233,6 +240,8 @@ const searchMember = ref();
   .grid-container {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    justify-items: center; /* 单元格内水平居中 */
+    align-items: center; /* 单元格内垂直居中 */
     margin-bottom: 30px;
     .iconfont {
       width: 50px;
