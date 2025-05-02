@@ -6,12 +6,6 @@ export default [
 		path: "/",
 		name: "默认路径",
 		component: () => import("@/pages/initial/index.vue"),
-		// redirect: "/chat",
-	},
-	{
-		path: "/main",
-		name: "主页面",
-		component: () => import("@/pages/Main.vue"),
 		children: [
 			{
 				path: "/chat",
