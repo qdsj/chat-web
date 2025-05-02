@@ -1,4 +1,4 @@
-import { accessAuth, checkResponseToken, getAuthToken, getRefreshToken } from "./util";
+import { checkResponseToken, getAuthToken, getRefreshToken } from "./util";
 
 const baseUrl = import.meta.env.VITE_BASE_URL;
 
@@ -7,7 +7,6 @@ const getTwoToken = () => {
 	const refreshToken = getRefreshToken();
 	return { token, refreshToken };
 };
-let isGoLogin = false; // 是否已经跳转登录页面
 
 const fetchApi = (url: string, options: RequestInit & { isNeedResponse?: boolean }) => {
 	const { token, refreshToken } = getTwoToken();
