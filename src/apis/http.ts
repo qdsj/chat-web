@@ -32,14 +32,7 @@ const fetchApi = (url: string, options: RequestInit & { isNeedResponse?: boolean
 			return res.json();
 		}
 		if (res.status === 403) {
-			// 跳转登录页面，获取权限
-			if (location.pathname !== "/chatweb/") {
-				if (isGoLogin) return;
-				isGoLogin = true;
-				accessAuth(res);
-			} else {
-				throw res;
-			}
+			throw res;
 		}
 		throw (await res.json()).message;
 	});

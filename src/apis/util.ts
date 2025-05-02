@@ -21,10 +21,6 @@ const getRefreshToken = () => {
 export { storeAuthToken, storeRefreshToken, getAuthToken, getRefreshToken };
 
 const accessAuth = (response: Response) => {
-	ElMessage({
-		message: "登录已过期, 将跳转至登录页面",
-		type: "warning",
-	});
 	const redirectUrl = response.headers.get("redirect");
 	if (!redirectUrl) {
 		ElMessage({
