@@ -8,11 +8,14 @@ import { I_GetGroupMemberInfoApiResult } from "@/apis/types/group.type";
 import { useChatStore } from "@/store/useChatStore";
 import { ConversationType } from "@/types/model/chat.type";
 import AvatarBase from "@/components/AvatarBase.vue";
+import ContextMenu from "../chat/components/ContextMenu.vue";
+import { useUserStore } from "@/store/useUserStore";
 
 const router = useRouter();
 const route = useRoute();
 const groupStore = useGroupStore();
 const chatStore = useChatStore();
+const userStore = useUserStore();
 
 const props = defineProps({
   roomId: {
@@ -49,9 +52,9 @@ const leaveGroup = () => {};
 
 interface GroupInfo {
   groupId: string;
-  groupOwnerId: string;
   groupName: string;
   avatar: string;
+  userId: string;
   userType: string;
   groupDescription: string;
   type: ConversationType;
@@ -59,9 +62,9 @@ interface GroupInfo {
 
 const groupInfo = ref<GroupInfo>({
   groupId: "",
-  groupOwnerId: "",
   groupName: "",
   avatar: "",
+  userId: "",
   userType: "",
   groupDescription: "",
   type: "group",
@@ -82,7 +85,7 @@ const updateGroupInfo = () => {
   } = group;
   groupInfo.value = {
     groupId: id,
-    groupOwnerId: userId,
+    userId: userId,
     groupName: name,
     avatar: avatar,
     userType: userType,
@@ -91,7 +94,7 @@ const updateGroupInfo = () => {
   };
 };
 
-const groupMemberList = ref<I_GetGroupMemberInfoApiResult["data"]>();
+const groupMemberList = ref<I_GetGroupMemberInfoApiResult["data"]>([]);
 
 const getGroupMember = async () => {
   let currentGroup = groupStore.groupList.find(
@@ -146,6 +149,47 @@ const handleAddmember = async () => {
 };
 
 const searchMember = ref();
+
+// 右键菜单状态
+const showMenu = ref(false);
+const menuPosition = ref({ x: 0, y: 0 });
+const selectedMemberId = ref<string | null>(null);
+
+// 右键点击处理
+const handleRightClick = (event: MouseEvent, memberId: string) => {
+  // 权限校验：非群主或点击自己时阻止菜单显示
+  if (
+    userStore.userInfo?.id === memberId ||
+    groupInfo.value.userType !== "owner"
+  ) {
+    showMenu.value = false; // 强制关闭可能残留的菜单[1,3](@ref)
+    return;
+  }
+  nextTick(() => {
+    selectedMemberId.value = memberId;
+    menuPosition.value = {
+      x: event.clientX,
+      y: event.clientY,
+    };
+    showMenu.value = true;
+  });
+};
+
+// 菜单项配置
+const menuItems = [
+  {
+    label: "从群聊中移除",
+    action: () => {
+      console.log(selectedMemberId.value);
+      if (selectedMemberId.value) {
+        groupMemberList.value = groupMemberList.value.filter(
+          (m) => m.id !== selectedMemberId.value
+        );
+        showMenu.value = false;
+      }
+    },
+  },
+];
 </script>
 
 <template>
@@ -186,9 +230,18 @@ const searchMember = ref();
           :avatar="item.avatar"
           :alt="`${item.username}`"
           :width="50"
+          @contextmenu.prevent="handleRightClick($event, item.id)"
         ></AvatarBase>
         <div class="nickname">{{ item.username }}</div>
       </div>
+      <!-- 单例菜单 -->
+      <ContextMenu
+        v-show="showMenu"
+        :menu-items="menuItems"
+        :position="menuPosition"
+        :visible="showMenu"
+        @update:visible="showMenu = $event"
+      />
       <div class="grid-container">
         <div class="iconfont icon-add" @click="handleAddmember"></div>
         <div class="nickname">{{ "添加" }}</div>

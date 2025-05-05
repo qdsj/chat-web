@@ -47,6 +47,17 @@ const adjustPosition = () => {
   };
 };
 
+// 新增对position的监听
+watch(
+  () => props.position,
+  () => {
+    if (props.visible) {
+      adjustPosition();
+    }
+  },
+  { deep: true }
+);
+
 // 监听visible变化
 watch(
   () => props.visible,
