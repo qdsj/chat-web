@@ -20,6 +20,8 @@ export const useGroupStore = defineStore(
   "use-group-store",
   () => {
     const groupList = ref<T_GroupList[]>([]);
+    const isSearching = ref(false);
+    const groupMemberList = ref<I_GetGroupMemberInfoApiResult["data"]>([]);
 
     const getGroupById = (id: string) => {
       return groupList.value.find((group) => group.id === id);
@@ -91,6 +93,7 @@ export const useGroupStore = defineStore(
       try {
         const result = await getGroupMemberInfoApi({ roomId, type });
         group.member = result.data;
+        group.memberAvatar = group.member.map((item) => item.avatar);
         return [null, result.data];
       } catch (error) {
         return [error, null] as any;
@@ -123,8 +126,37 @@ export const useGroupStore = defineStore(
       return [null, targetGroup.memberCount] as any;
     };
 
+    const searchGroupMember = async (roomId: string, name: string) => {
+      if (!name.trim()) {
+        isSearching.value = false;
+        return;
+      }
+
+      const group = groupList.value.find(
+        (item) => item.id === roomId && item.type === "group"
+      );
+
+      // 群组不存在处理
+      if (!group) {
+        return ["targetGroup is null", null];
+      }
+
+      // 检查群成员数据
+      if (!group.member || group.member.length === 0) {
+        return ["group members are empty", null];
+      }
+      const groupMember = group.member.filter((groupMember) => {
+        return groupMember.username.toLowerCase().includes(name.toLowerCase());
+      });
+
+      groupMemberList.value = groupMember;
+      isSearching.value = true;
+    };
+
     return {
       groupList,
+      isSearching,
+      groupMemberList,
       getGroupById,
       createGroupChat,
       getGroupChatList,
@@ -132,6 +164,7 @@ export const useGroupStore = defineStore(
       getGroupMemberByList,
       getGroupMemberCountByList,
       addGroupMember,
+      searchGroupMember,
     };
   },
   {

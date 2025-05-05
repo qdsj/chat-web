@@ -148,8 +148,6 @@ const handleAddmember = async () => {
   selectedIds.value = groupMemberList.value!.map((item) => item.id);
 };
 
-const searchMember = ref();
-
 // 右键菜单状态
 const showMenu = ref(false);
 const menuPosition = ref({ x: 0, y: 0 });
@@ -190,12 +188,37 @@ const menuItems = [
     },
   },
 ];
+
+const searchMember = ref();
+// 搜索好友 or 群聊
+const search = () => {
+  groupStore.searchGroupMember(
+    (route.query.id || props.roomId) as string,
+    searchMember.value
+  );
+};
+
+// 监听搜索状态变化，清空搜索框
+watch(
+  () => groupStore.isSearching,
+  () => {
+    if (groupStore.isSearching === false) {
+      searchMember.value = "";
+    }
+  }
+);
+
+const memberList = computed<I_GetGroupMemberInfoApiResult["data"]>(() => {
+  return groupStore.isSearching
+    ? groupStore.groupMemberList
+    : groupMemberList.value;
+});
 </script>
 
 <template>
   <ContentPanel>
     <div class="group-info-input">
-      <el-input v-model="searchMember" placeholder="搜索群成员">
+      <el-input v-model="searchMember" placeholder="搜索群成员" @keyup="search">
         <template #prefix>
           <span class="iconfont icon-search"></span>
         </template>
@@ -221,11 +244,7 @@ const menuItems = [
     </div>
 
     <div class="group-info-item">
-      <div
-        class="grid-container"
-        v-for="item in groupMemberList"
-        :key="item.id"
-      >
+      <div class="grid-container" v-for="item in memberList" :key="item.id">
         <AvatarBase
           :avatar="item.avatar"
           :alt="`${item.username}`"

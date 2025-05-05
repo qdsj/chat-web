@@ -35,6 +35,9 @@ export const useFriendStore = defineStore(
 
     const isSearching = ref(false);
     const searchValue = ref("");
+    // 搜索中的好友群聊列表
+    const searchGroupFriendList = ref<T_Friend[]>([]);
+    const isSearchingGroupFriend = ref(false);
 
     const getFriendById = (id: string) => {
       const friend = friendList.value.find((friend) => friend.id === id);
@@ -195,11 +198,27 @@ export const useFriendStore = defineStore(
       () => searchResult.value.searchedGroupList
     );
 
+    const searchGroupFriend = async (name: string) => {
+      if (!name.trim()) {
+        isSearchingGroupFriend.value = false;
+        return;
+      }
+
+      const session = friendList.value.filter((session) => {
+        return session.username.toLowerCase().includes(name.toLowerCase());
+      });
+
+      searchGroupFriendList.value = session;
+      isSearchingGroupFriend.value = true;
+    };
+
     return {
       friendList,
       isSearching,
       searchedFriendList,
       searchedGroupList,
+      isSearchingGroupFriend,
+      searchGroupFriendList,
       getAllFriend,
       addFriend,
       searchUserByName,
@@ -211,6 +230,7 @@ export const useFriendStore = defineStore(
       unblockFriend,
       getFriendById,
       searchFriend,
+      searchGroupFriend,
     };
   },
   {

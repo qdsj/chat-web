@@ -37,8 +37,18 @@ const searchKey = ref("");
 
 // 搜索好友 or 群聊
 const search = () => {
-  console.log(searchKey.value);
+  friendStore.searchGroupFriend(searchKey.value);
 };
+
+// 监听搜索状态变化，清空搜索框
+watch(
+  () => friendStore.isSearchingGroupFriend,
+  () => {
+    if (friendStore.isSearchingGroupFriend === false) {
+      searchKey.value = "";
+    }
+  }
+);
 
 const originalIds = ref<string[]>(props.selectedIds as string[]);
 const newSelectedIds = ref<string[]>([]);
@@ -115,6 +125,14 @@ const handleConfirm = async () => {
   // 跳转到聊天页面
   router.push("/chat");
 };
+
+const friendList = computed(() => {
+  if (friendStore.isSearchingGroupFriend) {
+    return friendStore.searchGroupFriendList;
+  } else {
+    return friendStore.friendList;
+  }
+});
 </script>
 
 <template>
@@ -142,7 +160,7 @@ const handleConfirm = async () => {
         </div>
         <ul class="contact-list">
           <li
-            v-for="contact in friendStore.friendList"
+            v-for="contact in friendList"
             :key="contact.id"
             class="contact-item"
           >
