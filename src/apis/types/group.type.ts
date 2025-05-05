@@ -38,6 +38,7 @@ export interface I_GetGroupListApiResult {
       };
       member: I_GetGroupMemberInfoApiResult["data"];
       memberCount: number;
+      memberAvatar: Array<string>;
     }
   ];
 }
@@ -51,24 +52,22 @@ export interface I_UpdateGroupChatInfoApiResult {
 export interface I_GetGroupMemberInfoApiResult {
   status: number;
   message: string;
-  data: [
-    {
-      chatRoomShipInfo: {
-        id: string;
-        roomId: string;
-        userId: string;
-        status: string;
-        userType: string;
-        createdAt: string;
-      };
+  data: Array<{
+    chatRoomShipInfo: {
       id: string;
-      username: string;
-      email: string;
-      avatar: string;
-      description: string;
-      sex: string;
-    }
-  ];
+      roomId: string;
+      userId: string;
+      status: string;
+      userType: string;
+      createdAt: string;
+    };
+    id: string;
+    username: string;
+    email: string;
+    avatar: string;
+    description: string;
+    sex: string;
+  }>;
 }
 
 export interface I_GetGroupMemberCountApiResult {
