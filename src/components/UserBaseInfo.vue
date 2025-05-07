@@ -35,7 +35,7 @@ defineProps({
       <div class="info">Email: {{ userInfo.email }}</div>
       <div class="info">
         <!-- 地区: {{ getAreaInfo(userInfo.areaName) }} -->
-        地区: 广州
+        <!-- 地区: 广州 -->
       </div>
     </div>
   </div>

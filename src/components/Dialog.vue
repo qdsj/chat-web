@@ -1,5 +1,8 @@
 <script setup lang="ts">
+import { useGroupStore } from "@/store/userGroupStore";
 import type { ButtonType as ElButtonType } from "element-plus";
+
+const groupStore = useGroupStore();
 
 // 定义自定义按钮类型
 type CustomButtonType = {
@@ -40,11 +43,13 @@ const props = defineProps({
     default: 15,
   },
 });
+
 // maxHeight = 视口高度 - 某个元素距离视口顶部的距离 - 底部的100像素
 const maxHeight = window.innerHeight - props.top - 100;
 
 const emits = defineEmits(["close"]);
 const close = () => {
+  groupStore.isSearching = false;
   emits("close");
 };
 </script>

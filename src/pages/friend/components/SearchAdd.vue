@@ -4,8 +4,10 @@ import { ElMessage } from "element-plus";
 
 import { useUserStore } from "@/store/useUserStore";
 import { useFriendStore } from "@/store/useFriendStore";
+import { useGroupStore } from "@/store/userGroupStore";
 const userStore = useUserStore();
 const friendStore = useFriendStore();
+const groupStore = useGroupStore();
 
 const emits = defineEmits(["reload"]);
 
@@ -43,7 +45,9 @@ const dialogConfig = ref({
 const showFun = (data?: any) => {
   dialogConfig.value.show = true;
   nextTick(() => {
-    formDataRef.value.resetFields();
+    if (formDataRef.value) {
+      formDataRef.value.resetFields();
+    }
     formData.value = data;
     formData.value.applyInfo = "我是" + userStore.userInfo!.username;
   });
@@ -66,6 +70,7 @@ const submitApply = () => {
     }
   });
   dialogConfig.value.show = false;
+  groupStore.isSearching = false;
   emits("reload");
 };
 
@@ -89,7 +94,7 @@ defineExpose({
         ref="formDataRef"
         @submit.prevent
       >
-        <el-form-item>
+        <el-form-item prop="applyInfo">
           <el-input
             type="textarea"
             :rows="5"

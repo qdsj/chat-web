@@ -10,12 +10,15 @@ import { ConversationType } from "@/types/model/chat.type";
 import AvatarBase from "@/components/AvatarBase.vue";
 import ContextMenu from "../chat/components/ContextMenu.vue";
 import { useUserStore } from "@/store/useUserStore";
+import Avatar from "@/components/Avatar.vue";
 
 const router = useRouter();
 const route = useRoute();
 const groupStore = useGroupStore();
 const chatStore = useChatStore();
 const userStore = useUserStore();
+
+const groupMemberList = ref<I_GetGroupMemberInfoApiResult["data"]>([]);
 
 const props = defineProps({
   roomId: {
@@ -93,9 +96,6 @@ const updateGroupInfo = () => {
     type: type,
   };
 };
-
-const groupMemberList = ref<I_GetGroupMemberInfoApiResult["data"]>([]);
-
 const getGroupMember = async () => {
   let currentGroup = groupStore.groupList.find(
     (item) => item.id === groupInfo.value.groupId
@@ -112,12 +112,19 @@ const getGroupMember = async () => {
   }
 };
 
+const processedList = ref<I_GetGroupMemberInfoApiResult["data"]>([]);
+
 // 监听 route.query.id 的变化
 watch(
   () => route.query.id || props.roomId,
   async () => {
     await updateGroupInfo();
     await getGroupMember();
+    if (groupStore.isSearching) {
+      processedList.value = groupStore.groupMemberList;
+    } else {
+      processedList.value = groupMemberList.value;
+    }
   },
   { immediate: true }
 );
@@ -153,6 +160,10 @@ const showMenu = ref(false);
 const menuPosition = ref({ x: 0, y: 0 });
 const selectedMemberId = ref<string | null>(null);
 
+const currentComponent = computed(() =>
+  groupStore.isSearching ? Avatar : AvatarBase
+);
+
 // 右键点击处理
 const handleRightClick = (event: MouseEvent, memberId: string) => {
   // 权限校验：非群主或点击自己时阻止菜单显示
@@ -178,13 +189,30 @@ const menuItems = [
   {
     label: "从群聊中移除",
     action: () => {
-      console.log(selectedMemberId.value);
-      if (selectedMemberId.value) {
-        groupMemberList.value = groupMemberList.value.filter(
-          (m) => m.id !== selectedMemberId.value
-        );
-        showMenu.value = false;
-      }
+      ElMessageBox.confirm("确定要移除该群成员吗？", "Warning", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      })
+        .then(() => {
+          if (selectedMemberId.value) {
+            groupMemberList.value = groupMemberList.value.filter(
+              (m) => m.id !== selectedMemberId.value
+            );
+            showMenu.value = false;
+          }
+          ElMessage({
+            type: "success",
+            message: "移除群成员成功",
+          });
+        })
+        .catch(() => {
+          ElMessage({
+            type: "info",
+            message: "取消移除该成员",
+          });
+          showMenu.value = false;
+        });
     },
   },
 ];
@@ -205,14 +233,13 @@ watch(
     if (groupStore.isSearching === false) {
       searchMember.value = "";
     }
+    if (groupStore.isSearching) {
+      processedList.value = groupStore.groupMemberList;
+    } else {
+      processedList.value = groupMemberList.value;
+    }
   }
 );
-
-const memberList = computed<I_GetGroupMemberInfoApiResult["data"]>(() => {
-  return groupStore.isSearching
-    ? groupStore.groupMemberList
-    : groupMemberList.value;
-});
 </script>
 
 <template>
@@ -244,23 +271,34 @@ const memberList = computed<I_GetGroupMemberInfoApiResult["data"]>(() => {
     </div>
 
     <div class="group-info-item">
-      <div class="grid-container" v-for="item in memberList" :key="item.id">
-        <AvatarBase
+      <div
+        v-for="item in processedList"
+        :key="item.id"
+        class="grid-container"
+        @contextmenu.prevent="
+          !groupStore.isSearching && handleRightClick($event, item.id)
+        "
+      >
+        <component
+          :is="currentComponent"
           :avatar="item.avatar"
-          :alt="`${item.username}`"
+          :username="item.username"
+          :user-id="item.id"
+          :email="item.email"
           :width="50"
-          @contextmenu.prevent="handleRightClick($event, item.id)"
-        ></AvatarBase>
+        />
         <div class="nickname">{{ item.username }}</div>
       </div>
+
       <!-- 单例菜单 -->
-      <ContextMenu
-        v-show="showMenu"
-        :menu-items="menuItems"
-        :position="menuPosition"
-        :visible="showMenu"
-        @update:visible="showMenu = $event"
-      />
+      <div v-show="showMenu">
+        <ContextMenu
+          :menu-items="menuItems"
+          :position="menuPosition"
+          :visible="showMenu"
+          @update:visible="showMenu = $event"
+        />
+      </div>
       <div class="grid-container">
         <div class="iconfont icon-add" @click="handleAddmember"></div>
         <div class="nickname">{{ "添加" }}</div>
