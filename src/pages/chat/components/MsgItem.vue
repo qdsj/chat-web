@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import { useChatStore } from "@/store/useChatStore";
+import { useGroupStore } from "@/store/userGroupStore";
 import { useUserStore } from "@/store/useUserStore";
 import { Message } from "@/types/model/chat.type";
 
 const chatStore = useChatStore();
 const userStore = useUserStore();
+const groupStore = useGroupStore();
 
 const props = defineProps<{
   msg: Message;
@@ -12,14 +14,37 @@ const props = defineProps<{
 const isSelf = (sender: string) => {
   return sender === userStore.userInfo!.id;
 };
-
-const avatar = computed(() => {
+const avatar = ref("");
+async function fetchAvatar() {
   if (isSelf(props.msg.senderId)) {
-    return userStore.userInfo?.avatar;
+    return userStore.userInfo?.avatar ?? "";
   } else {
-    return chatStore.currentConversation?.avatar;
+    const isGroup = groupStore.groupList.some(
+      (item) => item.id === props.msg.roomId
+    );
+    let targetAvatar = "";
+    if (isGroup) {
+      const roomType = "group";
+      await groupStore.getGroupMemberByList(props.msg.roomId, roomType);
+
+      const matchedMember = groupStore.groupList
+        .flatMap((group) => group.member)
+        .find((member) => member.id === props.msg.senderId);
+      targetAvatar = matchedMember?.avatar ?? "";
+    } else {
+      targetAvatar = chatStore.currentConversation?.avatar ?? "";
+    }
+
+    return targetAvatar;
   }
-});
+}
+watch(
+  () => props.msg,
+  async () => {
+    avatar.value = await fetchAvatar();
+  },
+  { immediate: true }
+);
 
 const alt = computed(() => {
   if (isSelf(props.msg.senderId)) {
