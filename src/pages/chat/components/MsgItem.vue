@@ -19,18 +19,19 @@ async function fetchAvatar() {
   if (isSelf(props.msg.senderId)) {
     return userStore.userInfo?.avatar ?? "";
   } else {
-    const isGroup = groupStore.groupList.some(
+    let targetAvatar = "";
+    let currentGroup = groupStore.groupList.find(
       (item) => item.id === props.msg.roomId
     );
-    let targetAvatar = "";
-    if (isGroup) {
+    if (currentGroup && !currentGroup.member) {
       const roomType = "group";
       await groupStore.getGroupMemberByList(props.msg.roomId, roomType);
 
       const matchedMember = groupStore.groupList
         .flatMap((group) => group.member)
+        .filter((member) => member !== undefined) // 过滤无效成员
         .find((member) => member.id === props.msg.senderId);
-      targetAvatar = matchedMember?.avatar ?? "";
+      targetAvatar = matchedMember ? matchedMember?.avatar : "";
     } else {
       targetAvatar = chatStore.currentConversation?.avatar ?? "";
     }

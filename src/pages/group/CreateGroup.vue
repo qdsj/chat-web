@@ -98,32 +98,41 @@ const finallySelectIds = computed(() => [
     : [userStore.userInfo!.id]),
 ]);
 const handleConfirm = async () => {
-  let data = null;
-  if (props.selectedIds.length > 0 && newSelectedIds.value.length > 0) {
-    await groupStore.addGroupMember(
-      props.roomId,
-      newSelectedIds.value,
-      props.type
-    );
-    data = await groupStore.getGroupById(props.roomId);
-    await groupStore.getGroupMemberByList(data!.id, props.type);
-  } else if (newSelectedIds.value.length > 0) {
-    data = await groupStore.createGroupChat(newSelectedIds.value);
-    await groupStore.getGroupChatList();
-  }
-  if (data) {
-    chatStore.handleConversation({
-      id: data.id,
-      name: data.name,
-      avatar: data.avatar || "",
-      type: props.type,
-      memberCount: finallySelectIds.value.length,
-    });
-  }
-  handleDialogClose();
+  try {
+    let data = null;
+    if (props.selectedIds.length > 0 && newSelectedIds.value.length > 0) {
+      await groupStore.addGroupMember(
+        props.roomId,
+        newSelectedIds.value,
+        props.type
+      );
+      data = await groupStore.getGroupById(props.roomId);
+      await groupStore.getGroupMemberByList(data!.id, props.type);
+    } else if (newSelectedIds.value.length > 0) {
+      data = await groupStore.createGroupChat(newSelectedIds.value);
+      await groupStore.getGroupChatList();
+    }
+    if (data) {
+      chatStore.handleConversation({
+        id: data.id,
+        name: data.name,
+        avatar: data.avatar || "",
+        type: props.type,
+        memberCount: finallySelectIds.value.length,
+      });
+      if (chatStore.currentConversation) {
+        console.log(finallySelectIds.value.length);
+        chatStore.currentConversation.memberCount =
+          finallySelectIds.value.length;
+      }
+    }
+    handleDialogClose();
 
-  // 跳转到聊天页面
-  router.push("/chat");
+    // 跳转到聊天页面
+    router.push("/chat");
+  } catch (error) {
+    console.error("[handleConfirm] 操作失败:", error);
+  }
 };
 
 const friendList = computed(() => {

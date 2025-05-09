@@ -10,7 +10,7 @@ import MessageSend from "./MessageSend.vue";
 import SessionList from "./SessionList.vue";
 import MsgItem from "./components/MsgItem.vue";
 import type { DrawerProps } from "element-plus";
-import GroupDetail from "../group/GroupDetail.vue";
+import GroupInfo from "../group/GroupInfo.vue";
 
 const chatStore = useChatStore();
 
@@ -118,10 +118,10 @@ const showGroupDetail = () => {
                 :direction="direction"
                 :show-close="false"
               >
-                <GroupDetail
+                <GroupInfo
                   :roomId="chatStore.currentConversation?.id"
                   @close-drawer="drawer = false"
-                ></GroupDetail>
+                ></GroupInfo>
               </el-drawer>
               <div class="messages-container" ref="messageContainer">
                 <template

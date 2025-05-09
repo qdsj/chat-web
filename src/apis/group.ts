@@ -5,6 +5,7 @@ import {
   I_GetGroupListApiResult,
   I_GetGroupMemberCountApiResult,
   I_GetGroupMemberInfoApiResult,
+  I_KickMemberApiResult,
   I_UpdateGroupChatInfoApiResult,
 } from "./types/group.type";
 
@@ -54,4 +55,13 @@ export const addGroupMemberApi = (data: {
   type: string;
 }): Promise<I_AddGroupMemberApiResult> => {
   return postFetch("/chat/addGroupMember", data);
+};
+
+// 群组踢除人
+export const kickMemberApi = (data: {
+  roomId: string;
+  userId: string;
+  type: string;
+}): Promise<I_KickMemberApiResult> => {
+  return postFetch("/chat/kickMember", data);
 };

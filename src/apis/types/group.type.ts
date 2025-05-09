@@ -91,3 +91,12 @@ export interface I_AddGroupMemberApiResult {
     }
   ];
 }
+
+export interface I_KickMemberApiResult {
+  status: number;
+  message: string;
+  data: {
+    raw: string[];
+    affected: number;
+  };
+}
