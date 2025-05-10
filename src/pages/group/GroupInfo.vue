@@ -26,12 +26,6 @@ const props = defineProps({
 });
 const emit = defineEmits(["closeDrawer"]);
 
-// 解散群聊
-const dissolutionGroup = () => {};
-
-// 退出群聊
-const leaveGroup = () => {};
-
 const mapGroupInfo = (group: any): GroupInfo => ({
   groupId: group.id,
   groupName: group.name,
@@ -41,7 +35,6 @@ const mapGroupInfo = (group: any): GroupInfo => ({
   groupDescription: group.description,
   type: group.type,
 });
-
 const defaultGroupInfo = (): GroupInfo => ({
   groupId: "",
   groupName: "",
@@ -51,7 +44,6 @@ const defaultGroupInfo = (): GroupInfo => ({
   groupDescription: "",
   type: "group",
 });
-
 // 群组信息逻辑
 const groupInfo = computed(() => {
   const group = groupStore.getGroupById(
@@ -59,6 +51,19 @@ const groupInfo = computed(() => {
   );
   return group ? mapGroupInfo(group) : defaultGroupInfo();
 });
+
+// 退出群聊
+const leaveGroup = async () => {
+  await groupStore.quitGroup(groupInfo.value.groupId, groupInfo.value.type);
+  const [_, res] = await groupStore.getGroupMemberByList(
+    groupInfo.value.groupId,
+    groupInfo.value.type
+  );
+  showMemberList.value = res!;
+};
+
+// 解散群聊
+const dissolutionGroup = () => {};
 
 // 成员管理
 const getGroupMember = async () => {
@@ -119,15 +124,14 @@ const handleRemoveMember = async (selectedMemberId: string) => {
     showMemberList.value = groupMemberList.value.filter(
       (m) => m.id !== selectedMemberId
     );
-    const groupType = "group";
     await groupStore.kickMember(
-      (route.query.id || props.roomId) as string,
+      groupInfo.value.groupId,
       selectedMemberId,
-      groupType
+      groupInfo.value.type
     );
     const [_, res] = await groupStore.getGroupMemberByList(
-      (route.query.id || props.roomId) as string,
-      groupType
+      groupInfo.value.groupId,
+      groupInfo.value.type
     );
     showMemberList.value = res!;
     // 调用子组件方法关闭菜单

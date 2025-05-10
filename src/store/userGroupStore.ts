@@ -5,6 +5,7 @@ import {
   getGroupMemberCountApi,
   getGroupMemberInfoApi,
   kickMemberApi,
+  quitGroupApi,
   updateGroupChatInfoApi,
 } from "@/apis/group";
 import {
@@ -13,6 +14,7 @@ import {
   I_GetGroupMemberCountApiResult,
   I_GetGroupMemberInfoApiResult,
   I_KickMemberApiResult,
+  I_QuitGroupApiResult,
 } from "@/apis/types/group.type";
 import { T_GroupList } from "@/types/model/group.type";
 import { ElMessage } from "element-plus";
@@ -155,7 +157,7 @@ export const useGroupStore = defineStore(
       isSearching.value = true;
     };
 
-    // 群组踢除人
+    // 群主踢除人
     const kickMember = async (
       roomId: string,
       userId: string,
@@ -173,6 +175,23 @@ export const useGroupStore = defineStore(
       }
     };
 
+    // 群成员退出群聊
+    const quitGroup = async (
+      roomId: string,
+      type: string
+    ): Promise<[string | null, I_QuitGroupApiResult | null]> => {
+      try {
+        const res = await quitGroupApi({ roomId, type });
+        ElMessage({
+          type: "success",
+          message: res.message,
+        });
+        return [null, res];
+      } catch (error) {
+        return [error, null] as any;
+      }
+    };
+
     return {
       groupList,
       isSearching,
@@ -186,6 +205,7 @@ export const useGroupStore = defineStore(
       addGroupMember,
       searchGroupMember,
       kickMember,
+      quitGroup,
     };
   },
   {

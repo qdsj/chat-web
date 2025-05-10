@@ -100,3 +100,12 @@ export interface I_KickMemberApiResult {
     affected: number;
   };
 }
+
+export interface I_QuitGroupApiResult {
+  status: number;
+  message: string;
+  data: {
+    raw: string[];
+    affected: number;
+  };
+}
