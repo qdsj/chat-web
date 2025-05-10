@@ -50,6 +50,7 @@
       }
 
     } catch (error: Error | any) {
+      console.log(error)
       if (error instanceof Response && error.status === 403) {
         // Handle 403 Forbidden error
         ElMessage.warning("登录状态已过期，请重新登录");
@@ -83,7 +84,8 @@
                     type="error"
                     show-icon
                     closable />
-          <el-button type="primary"
+          <el-button v-if="authError"
+                     type="primary"
                      class="retry-btn"
                      @click="handleReLogin">
             前往登录页面

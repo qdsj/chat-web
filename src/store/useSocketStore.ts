@@ -4,76 +4,80 @@ import { useUserStore } from "./useUserStore";
 import { getAuthToken } from "@/apis/util";
 import { SocketMessage } from "@/types/model/chat.type";
 import { useChatStore } from "./useChatStore";
+import { ElMessage } from "element-plus";
 
 type SocketOptions = {
-  onConnectCallbacks?: Array<() => void>;
-  onMessageCallbacks?: Array<(msg: string) => void>;
+	onConnectCallbacks?: Array<() => void>;
+	onMessageCallbacks?: Array<(msg: string) => void>;
 };
 
 export const useSocketStore = defineStore("socket-store", () => {
-  const client = ref<Socket | null>(null);
-  const userInfoStore = useUserStore();
-  const chatStore = useChatStore();
-  const msgCallbacks = ref<Set<(msg: string) => void>>(new Set());
+	const client = ref<Socket | null>(null);
+	const userInfoStore = useUserStore();
+	const chatStore = useChatStore();
+	const msgCallbacks = ref<Set<(msg: string) => void>>(new Set());
 
-  const socketInitial = (options: SocketOptions = {}) => {
-    if (client.value) return client.value;
+	const socketInitial = (options: SocketOptions = {}) => {
+		if (client.value) return client.value;
 
-    if (!userInfoStore.userInfo) return;
+		if (!userInfoStore.userInfo) return;
 
-    const connect = io(import.meta.env.VITE_SOCKET_HOST, {
-      path: "/server/chatweb/socket",
-      auth: {
-        authorization: `Bearer ${getAuthToken()}`,
-      },
-    });
-    client.value = connect;
-    connect.on("connect", () => {
-      console.log("socket connected");
-      options.onConnectCallbacks?.forEach((callback) => {
-        callback();
-      });
-    });
+		const connect = io(import.meta.env.VITE_SOCKET_HOST, {
+			path: "/server/chatweb/socket",
+			auth: {
+				authorization: `Bearer ${getAuthToken()}`,
+			},
+		});
+		client.value = connect;
+		connect.on("connect", () => {
+			console.log("socket connected");
+			options.onConnectCallbacks?.forEach((callback) => {
+				callback();
+			});
+		});
 
-    connect.on("message", (msg) => {
-      options.onMessageCallbacks?.forEach((callback) => {
-        callback(msg);
-      });
+		connect.on("message", (msg) => {
+			options.onMessageCallbacks?.forEach((callback) => {
+				callback(msg);
+			});
 
-      chatStore.addMessage(msg);
-    });
+			chatStore.addMessage(msg);
+		});
 
-    return connect;
-  };
+		return connect;
+	};
 
-  const socketSend = (
-    msg: SocketMessage,
-    callback?: (...args: any) => void
-  ) => {
-    if (!msg.msgType) {
-      msg.msgType = "text";
-    }
+	const socketSend = (msg: SocketMessage, callback?: (...args: any) => void) => {
+		if (!msg.msgType) {
+			msg.msgType = "text";
+		}
 
-    client.value?.emit("send", msg, (...args: any) => {
-      callback && callback(...args);
-    });
-  };
+		client.value?.emit("send", msg, (...args: any) => {
+			console.log(args);
+			const msg = args[0];
+			if (typeof msg !== "string" && msg !== "success") {
+				// 告知用户，消息发送失败
+				ElMessage.warning(msg.message);
+			}
+			callback && callback(...args);
+		});
+	};
 
-  const socketJoinRoom = (roomId: string) => {
-    client.value!.emit("join", { roomId });
-  };
+	const socketJoinRoom = (roomId: string) => {
+		client.value!.emit("join", { roomId });
+	};
 
-  const addMsgCallbacks = (callbacks: Array<(msg: string) => void>) => {
-    if (!client.value || !callbacks || !callbacks.length) return;
-    callbacks.forEach((callback) => {
-      msgCallbacks.value.add(callback);
-    });
-  };
-  return {
-    client,
-    socketInitial,
-    socketSend,
-    socketJoinRoom,
-    addMsgCallbacks,
-  };
+	const addMsgCallbacks = (callbacks: Array<(msg: string) => void>) => {
+		if (!client.value || !callbacks || !callbacks.length) return;
+		callbacks.forEach((callback) => {
+			msgCallbacks.value.add(callback);
+		});
+	};
+	return {
+		client,
+		socketInitial,
+		socketSend,
+		socketJoinRoom,
+		addMsgCallbacks,
+	};
 });

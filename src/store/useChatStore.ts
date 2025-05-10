@@ -15,6 +15,7 @@ import {
 } from "@/apis/chat";
 import { useGroupStore } from "./userGroupStore";
 import { ElMessage } from "element-plus";
+import { useRouter } from "vue-router";
 
 export const useChatStore = defineStore(
 	"chat",
@@ -23,6 +24,7 @@ export const useChatStore = defineStore(
 		const socketStore = useSocketStore();
 		const friendStore = useFriendStore();
 		const groupStore = useGroupStore();
+		const router = useRouter();
 		// 会话列表
 		const conversationsList = ref<Conversation[]>([]);
 		// 搜索中的会话列表
@@ -61,17 +63,14 @@ export const useChatStore = defineStore(
 			if (currentConversation.value && currentConversation.value.id !== conversationId) {
 				const res = await updateChatWindowsTimeApi({
 					roomId: currentConversation.value.id,
-					type: currentConversation.value!.type || "person",
+					type: currentConversation.value!.type,
 				});
-				const lastSession = conversationsList.value.find(
-					(session) => session.id === currentConversation.value!.id
-				);
-				lastSession!.openTime = res.data.openTime;
+				currentConversation.value!.openTime = res.data.openTime;
 			}
+
+			// 更新当前窗口的时间
 			const targetConversation = conversationsList.value.find((conv) => conv.id === conversationId);
-
 			currentConversation.value = targetConversation || null;
-
 			const res = await updateChatWindowsTimeApi({
 				roomId: currentConversation.value!.id,
 				type: currentConversation.value!.type,
@@ -81,6 +80,9 @@ export const useChatStore = defineStore(
 
 			// 退出搜索状态
 			isSearching.value = false;
+
+			// 设置query
+			router.push("/chat" + `?id=${currentConversation.value!.id}&username=${currentConversation.value?.name}`);
 		};
 
 		// 追加聊天记录到指定会话
@@ -301,6 +303,15 @@ export const useChatStore = defineStore(
 			isSearching.value = true;
 		};
 
+		const resetCurrentConversation = async () => {
+			// 获取最新的session
+			await getSessionList();
+			// 将currentConversation设置成第一个session，如果没有，就跳过
+			if (conversationsList.value.length > 0) {
+				currentConversation.value = conversationsList.value[0];
+			}
+		};
+
 		return {
 			conversationsList,
 			searchSessionList,
@@ -316,6 +327,7 @@ export const useChatStore = defineStore(
 			getSessionList,
 			deleteSession,
 			searchSession,
+			resetCurrentConversation,
 		};
 	},
 	{
