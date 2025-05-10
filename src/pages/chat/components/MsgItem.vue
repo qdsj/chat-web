@@ -64,7 +64,7 @@ const Compo = {
 
 <template>
   <div
-    class="msg-item-container message flex"
+    class="message flex"
     :class="{
       'flex-row-reverse message-self': isSelf(msg.senderId),
       'message-other': !isSelf(msg.senderId),
@@ -77,6 +77,7 @@ const Compo = {
         :msg="msg"
       ></component>
     </div>
+    <!-- <i v-if="isSelf(msg.senderId)" class="iconfont icon-fail"></i> -->
   </div>
 </template>
 
@@ -85,6 +86,11 @@ const Compo = {
   display: flex;
   align-items: flex-end;
   margin-bottom: 20px;
+
+  .iconfont {
+    font-size: 28px;
+    color: #ff3d3d;
+  }
 
   &.message-self {
     flex-direction: row-reverse;
