@@ -1,5 +1,6 @@
 import {
   addGroupMemberApi,
+  cancelGroupAdminApi,
   createGroupChatApi,
   dissolveGroupApi,
   getGroupChatListApi,
@@ -7,16 +8,19 @@ import {
   getGroupMemberInfoApi,
   kickMemberApi,
   quitGroupApi,
+  setGroupAdminApi,
   updateGroupChatInfoApi,
 } from "@/apis/group";
 import {
   I_AddGroupMemberApiResult,
+  I_CancelGroupAdminApiResult,
   I_CreateGroupChatApiResult,
   I_DissolveGroupApiResult,
   I_GetGroupMemberCountApiResult,
   I_GetGroupMemberInfoApiResult,
   I_KickMemberApiResult,
   I_QuitGroupApiResult,
+  I_SetGroupAdminApiResult,
 } from "@/apis/types/group.type";
 import { T_GroupList } from "@/types/model/group.type";
 import { ElMessage } from "element-plus";
@@ -99,7 +103,6 @@ export const useGroupStore = defineStore(
       try {
         const result = await getGroupMemberInfoApi({ roomId, type });
         group.member = result.data;
-        group.memberAvatar = group.member.map((item) => item.avatar);
         return [null, result.data];
       } catch (error) {
         return [error, null] as any;
@@ -207,6 +210,39 @@ export const useGroupStore = defineStore(
       }
     };
 
+    // 群主设置群管理员
+    const setGroupAdmin = async (
+      roomId: string,
+      type: string,
+      userId: string
+    ): Promise<[string | null, I_SetGroupAdminApiResult["data"] | null]> => {
+      try {
+        const res = await setGroupAdminApi({ roomId, type, userId });
+        ElMessage({
+          type: "success",
+          message: res.message,
+        });
+        return [null, res.data];
+      } catch (error) {
+        return [error, null] as any;
+      }
+    };
+
+    // 群主取消群管理员
+    const cancelGroupAdmin = async (
+      roomId: string,
+      type: string,
+      userId: string
+    ): Promise<[string | null, I_CancelGroupAdminApiResult["data"] | null]> => {
+      try {
+        const res = await cancelGroupAdminApi({ roomId, type, userId });
+        ElMessage.success(res.message);
+        return [null, res.data];
+      } catch (error) {
+        return [error, null] as any;
+      }
+    };
+
     return {
       groupList,
       isSearching,
@@ -222,6 +258,8 @@ export const useGroupStore = defineStore(
       kickMember,
       quitGroup,
       dissolveGroup,
+      setGroupAdmin,
+      cancelGroupAdmin,
     };
   },
   {

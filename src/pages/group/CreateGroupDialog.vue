@@ -2,11 +2,13 @@
 import { useFriendStore } from "@/store/useFriendStore";
 import { ConversationType } from "@/types/model/chat.type";
 // @ts-ignore
-import ContactInfo from "./ContactInfo.vue";
+import ContactInfo from "./components/FriendInfo.vue";
 import { useChatStore } from "@/store/useChatStore";
 import { useGroupStore } from "@/store/userGroupStore";
 import router from "@/router";
 import { useUserStore } from "@/store/useUserStore";
+import ContactListPanel from "./components/LeftFriendList.vue";
+import RightSelectedList from "./components/RightSelectedList.vue";
 const friendStore = useFriendStore();
 const chatStore = useChatStore();
 const groupStore = useGroupStore();
@@ -31,24 +33,12 @@ const props = defineProps({
   },
 });
 
-const emits = defineEmits(["updateDialogListVisible"]);
-
-const searchKey = ref("");
+const emits = defineEmits(["updateDialogListVisible", "update:memberList"]);
 
 // 搜索好友 or 群聊
-const search = () => {
-  friendStore.searchGroupFriend(searchKey.value);
+const handleSearch = (searchKey: string) => {
+  friendStore.searchGroupFriend(searchKey);
 };
-
-// 监听搜索状态变化，清空搜索框
-watch(
-  () => friendStore.isSearchingGroupFriend,
-  () => {
-    if (friendStore.isSearchingGroupFriend === false) {
-      searchKey.value = "";
-    }
-  }
-);
 
 const originalIds = ref<string[]>(props.selectedIds as string[]);
 const newSelectedIds = ref<string[]>([]);
@@ -60,18 +50,6 @@ watch(
   },
   { immediate: true }
 );
-
-const isOriginalMember = (id: string) => originalIds.value.includes(id);
-const isNewSelected = (id: string) => newSelectedIds.value.includes(id);
-
-const handleCheckboxChange = (id: string, event: Event) => {
-  const isChecked = (event.target as HTMLInputElement).checked;
-  if (isChecked) {
-    newSelectedIds.value = [...newSelectedIds.value, id];
-  } else {
-    newSelectedIds.value = newSelectedIds.value.filter((item) => item !== id);
-  }
-};
 
 const selectedContacts = computed(() => {
   return friendStore.friendList.filter(
@@ -97,21 +75,36 @@ const finallySelectIds = computed(() => [
     ? []
     : [userStore.userInfo!.id]),
 ]);
+
 const handleConfirm = async () => {
   try {
     let data = null;
-    if (props.selectedIds.length > 0 && newSelectedIds.value.length > 0) {
-      await groupStore.addGroupMember(
-        props.roomId,
-        newSelectedIds.value,
-        props.type
-      );
-      data = await groupStore.getGroupById(props.roomId);
-      await groupStore.getGroupMemberByList(data!.id, props.type);
-    } else if (newSelectedIds.value.length > 0) {
-      data = await groupStore.createGroupChat(newSelectedIds.value);
-      await groupStore.getGroupChatList();
+
+    // 判断逻辑改为基于 roomId 是否存在
+    if (props.roomId) {
+      // 添加群成员场景：当有 roomId 且选择了新成员
+      if (newSelectedIds.value.length > 0) {
+        await groupStore.addGroupMember(
+          props.roomId,
+          newSelectedIds.value,
+          props.type
+        );
+        data = await groupStore.getGroupById(props.roomId);
+        const [_, res] = await groupStore.getGroupMemberByList(
+          data!.id,
+          props.type
+        );
+        emits("update:memberList", res);
+      }
+    } else {
+      // 创建群聊场景：使用最终合并的成员列表（包含原始+新增+自己）
+      const idsToCreate = finallySelectIds.value;
+      if (idsToCreate.length > 0) {
+        data = await groupStore.createGroupChat(idsToCreate);
+        await groupStore.getGroupChatList();
+      }
     }
+
     if (data) {
       chatStore.handleConversation({
         id: data.id,
@@ -125,9 +118,8 @@ const handleConfirm = async () => {
           finallySelectIds.value.length;
       }
     }
-    handleDialogClose();
 
-    // 跳转到聊天页面
+    handleDialogClose();
     router.push("/chat");
   } catch (error) {
     console.error("[handleConfirm] 操作失败:", error);
@@ -150,56 +142,19 @@ const friendList = computed(() => {
     :close-on-click-modal="false"
   >
     <div class="contact-container">
-      <!-- 修改后的左侧联系人列表 -->
-      <div class="left-panel">
-        <div class="title">选择联系人</div>
-        <div class="search-box">
-          <el-input
-            clearable
-            placeholder="搜索联系人"
-            v-model="searchKey"
-            size="large"
-            @keyup="search"
-          >
-            <template #suffix>
-              <span class="iconfont icon-search"></span>
-            </template>
-          </el-input>
-        </div>
-        <ul class="contact-list">
-          <li
-            v-for="contact in friendList"
-            :key="contact.id"
-            class="contact-item"
-          >
-            <input
-              class="circle-checkbox"
-              type="checkbox"
-              :checked="
-                isOriginalMember(contact.id) || isNewSelected(contact.id)
-              "
-              :disabled="isOriginalMember(contact.id)"
-              @change="handleCheckboxChange(contact.id, $event)"
-            />
-            <ContactInfo :contact="contact" />
-          </li>
-        </ul>
-      </div>
-
-      <!-- 修改后的右侧已选列表 -->
-      <div class="right-panel">
-        <div class="title">已选择 {{ selectedContacts.length }} 个联系人</div>
-        <ul class="selected-list">
-          <li
-            v-for="contact in selectedContacts"
-            :key="contact.id"
-            class="selected-item"
-          >
-            <ContactInfo :contact="contact" />
-            <span class="remove-btn" @click="removeContact(contact.id)">×</span>
-          </li>
-        </ul>
-      </div>
+      <!-- 左侧联系人列表 -->
+      <ContactListPanel
+        :friend-list="friendList"
+        :original-ids="originalIds"
+        :new-selected-ids="newSelectedIds"
+        @update:selected-ids="(ids:string[]) =>  (newSelectedIds = ids) "
+        @search="handleSearch"
+      />
+      <!-- 右侧已选列表 -->
+      <RightSelectedList
+        :selected-contacts="selectedContacts"
+        @remove-contact="removeContact"
+      />
     </div>
     <template #footer>
       <div class="dialog-footer">

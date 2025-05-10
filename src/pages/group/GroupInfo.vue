@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import GroupEditDialog from "./GroupEditDialog.vue";
+import GroupEditDialog from "./components/GroupEditDialog.vue";
 import { useRoute, useRouter } from "vue-router";
 import { useGroupStore } from "@/store/userGroupStore";
-import CreateGroup from "./CreateGroup.vue";
+import CreateGroup from "./CreateGroupDialog.vue";
 import { I_GetGroupMemberInfoApiResult } from "@/apis/types/group.type";
 import { useChatStore } from "@/store/useChatStore";
 import GroupActionsDropdown from "./components/GroupActionsDropdown.vue";
@@ -131,6 +131,23 @@ const handleAddmember = async () => {
   selectedIds.value = groupMemberList.value!.map((item) => item.id);
 };
 
+// 添加群成员之后及时更新列表
+const updateMemberList = (
+  memberList: I_GetGroupMemberInfoApiResult["data"]
+) => {
+  showMemberList.value = memberList;
+};
+
+// 公共方法：刷新成员列表并关闭菜单
+const refreshMemberList = async () => {
+  memberListRef.value?.closeMenu();
+  const [_, res] = await groupStore.getGroupMemberByList(
+    groupInfo.value.groupId,
+    groupInfo.value.type
+  );
+  showMemberList.value = res!;
+};
+
 // 群主踢除群成员
 const memberListRef = ref();
 const handleRemoveMember = async (selectedMemberId: string) => {
@@ -143,14 +160,28 @@ const handleRemoveMember = async (selectedMemberId: string) => {
       selectedMemberId,
       groupInfo.value.type
     );
-    const [_, res] = await groupStore.getGroupMemberByList(
-      groupInfo.value.groupId,
-      groupInfo.value.type
-    );
-    showMemberList.value = res!;
-    // 调用子组件方法关闭菜单
-    memberListRef.value?.closeMenu();
+    await refreshMemberList();
   }
+};
+
+// 群主设置管理员
+const handleSetAdmin = async (selectedMemberId: string) => {
+  await groupStore.setGroupAdmin(
+    groupInfo.value.groupId,
+    groupInfo.value.type,
+    selectedMemberId
+  );
+  await refreshMemberList();
+};
+
+// 群主取消群管理员
+const handleCancelAdmin = async (selectedMemberId: string) => {
+  await groupStore.cancelGroupAdmin(
+    groupInfo.value.groupId,
+    groupInfo.value.type,
+    selectedMemberId
+  );
+  await refreshMemberList();
 };
 
 // 搜索功能
@@ -196,20 +227,22 @@ const handleSearch = () => {
       :group-info="groupInfo"
       @add-member="handleAddmember"
       @remove-member="handleRemoveMember"
+      @set-admin="handleSetAdmin"
+      @cancel-admin="handleCancelAdmin"
     />
+    <CreateGroup
+      v-if="selectedIds.length"
+      :dialogListVisible="addMemberDialog"
+      @updateDialogListVisible="updateMemberDialog"
+      :selectedIds="selectedIds"
+      :roomId="groupInfo.groupId"
+      :type="groupInfo.type"
+      @update:member-list="updateMemberList"
+    ></CreateGroup>
 
     <!-- 群信息展示组件 -->
     <GroupDetails :group-info="groupInfo" @send-message="sendMessage" />
   </ContentPanel>
-
-  <CreateGroup
-    v-if="selectedIds.length"
-    :dialogListVisible="addMemberDialog"
-    @updateDialogListVisible="updateMemberDialog"
-    :selectedIds="selectedIds"
-    :roomId="groupInfo.groupId"
-    :type="groupInfo.type"
-  ></CreateGroup>
 
   <!-- 编辑群信息 -->
   <GroupEditDialog

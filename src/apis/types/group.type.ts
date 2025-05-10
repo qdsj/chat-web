@@ -38,7 +38,6 @@ export interface I_GetGroupListApiResult {
       };
       member: I_GetGroupMemberInfoApiResult["data"];
       memberCount: number;
-      memberAvatar: Array<string>;
     }
   ];
 }
@@ -111,6 +110,28 @@ export interface I_QuitGroupApiResult {
 }
 
 export interface I_DissolveGroupApiResult {
+  status: number;
+  message: string;
+  data: {
+    generatedMaps: string[];
+    raw: string[];
+    affected: number;
+  };
+}
+
+// 群主设置管理员
+export interface I_SetGroupAdminApiResult {
+  status: number;
+  message: string;
+  data: {
+    generatedMaps: string[];
+    raw: string[];
+    affected: number;
+  };
+}
+
+// 群主取消管理员
+export interface I_CancelGroupAdminApiResult {
   status: number;
   message: string;
   data: {

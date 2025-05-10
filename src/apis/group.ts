@@ -1,6 +1,7 @@
 import { postFetch } from "./http";
 import {
   I_AddGroupMemberApiResult,
+  I_CancelGroupAdminApiResult,
   I_CreateGroupChatApiResult,
   I_DissolveGroupApiResult,
   I_GetGroupListApiResult,
@@ -8,6 +9,7 @@ import {
   I_GetGroupMemberInfoApiResult,
   I_KickMemberApiResult,
   I_QuitGroupApiResult,
+  I_SetGroupAdminApiResult,
   I_UpdateGroupChatInfoApiResult,
 } from "./types/group.type";
 
@@ -82,4 +84,22 @@ export const dissolveGroupApi = (data: {
   type: string;
 }): Promise<I_DissolveGroupApiResult> => {
   return postFetch("/chat/dissolveGroup", data);
+};
+
+// 群主设置群管理员
+export const setGroupAdminApi = (data: {
+  roomId: string;
+  type: string;
+  userId: string;
+}): Promise<I_SetGroupAdminApiResult> => {
+  return postFetch("/chat/setGroupAdmin", data);
+};
+
+// 群主取消群管理员
+export const cancelGroupAdminApi = (data: {
+  roomId: string;
+  type: string;
+  userId: string;
+}): Promise<I_CancelGroupAdminApiResult> => {
+  return postFetch("/chat/cancelGroupAdmin", data);
 };

@@ -1,4 +1,3 @@
-<!-- components/group/GroupActionsDropdown.vue -->
 <script setup lang="ts">
 import { GroupInfo } from "@/types/model/group.type";
 import { ElMessage, ElMessageBox } from "element-plus";
@@ -43,7 +42,9 @@ const confirmAction = (message: string, eventName: EventType) => {
       <div class="iconfont icon-icon_more"></div>
     </span>
     <template #dropdown>
-      <el-dropdown-menu v-if="groupInfo.userType === 'owner'">
+      <el-dropdown-menu
+        v-if="groupInfo.userType === 'owner' || groupInfo.userType === 'admin'"
+      >
         <el-dropdown-item @click="handleAction('edit')"
           >修改群聊信息</el-dropdown-item
         >

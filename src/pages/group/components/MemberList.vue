@@ -1,4 +1,3 @@
-<!-- components/group/MemberList.vue -->
 <script setup lang="ts">
 import { computed, ref, nextTick } from "vue";
 import AvatarBase from "@/components/AvatarBase.vue";
@@ -19,7 +18,12 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(["add-member", "remove-member"]);
+const emit = defineEmits([
+  "add-member",
+  "remove-member",
+  "set-admin",
+  "cancel-admin",
+]);
 
 const currentComponent = computed(() =>
   props.isSearching ? Avatar : AvatarBase
@@ -47,14 +51,38 @@ const validateRightClick = (memberId: string) => {
 };
 
 // 菜单操作
-const menuItems = [
-  {
-    label: "从群聊中移除",
-    action: () => emit("remove-member", selectedMemberId.value),
-  },
-];
+const menuItems = computed(() => {
+  const items = [];
+  const currentUser = props.groupInfo;
+  const selectedMember = props.members.find(
+    (m) => m.chatRoomShipInfo.userId === selectedMemberId.value
+  );
 
-// 添加以下代码
+  // 仅群主显示管理菜单
+  if (currentUser.userType === "owner") {
+    // 移除成员始终显示（不能移除自己）
+    items.push({
+      label: "从群聊中移除",
+      action: () => emit("remove-member", selectedMemberId.value),
+    });
+
+    // 根据选中成员身份显示不同操作
+    if (selectedMember?.chatRoomShipInfo.userType === "member") {
+      items.push({
+        label: "设置为管理员",
+        action: () => emit("set-admin", selectedMemberId.value),
+      });
+    } else if (selectedMember?.chatRoomShipInfo.userType === "admin") {
+      items.push({
+        label: "取消管理员",
+        action: () => emit("cancel-admin", selectedMemberId.value),
+      });
+    }
+  }
+
+  return items;
+});
+
 const closeMenu = () => {
   showMenu.value = false;
 };

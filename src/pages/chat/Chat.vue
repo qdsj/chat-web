@@ -5,7 +5,7 @@ import { formatMessageTime } from "@/util/utils";
 import { Pane, Splitpanes } from "splitpanes";
 import "splitpanes/dist/splitpanes.css";
 import { ref } from "vue";
-import CreateGroup from "../group/CreateGroup.vue";
+import CreateGroup from "../group/CreateGroupDialog.vue";
 import MessageSend from "./MessageSend.vue";
 import SessionList from "./SessionList.vue";
 import MsgItem from "./components/MsgItem.vue";

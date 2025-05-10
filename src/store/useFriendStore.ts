@@ -199,11 +199,11 @@ export const useFriendStore = defineStore(
     );
 
     const searchGroupFriend = async (name: string) => {
+      if (typeof name !== "string") return;
       if (!name.trim()) {
         isSearchingGroupFriend.value = false;
         return;
       }
-
       const session = friendList.value.filter((session) => {
         return session.username.toLowerCase().includes(name.toLowerCase());
       });

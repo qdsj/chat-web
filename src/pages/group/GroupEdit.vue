@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import GroupEditForm from "./GroupEditForm.vue";
+import GroupEditForm from "./components/GroupEditForm.vue";
 </script>
 
 <template>

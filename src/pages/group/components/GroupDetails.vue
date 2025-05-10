@@ -1,4 +1,3 @@
-<!-- components/group/GroupDetails.vue -->
 <script setup lang="ts">
 import { GroupInfo } from "@/types/model/group.type";
 
