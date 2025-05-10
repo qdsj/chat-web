@@ -6,7 +6,7 @@
   import { useGroupStore } from "@/store/userGroupStore";
   import { useChatStore } from "@/store/useChatStore";
   import { accessAuth } from "@/apis/util";
-  import { useRouter } from "vue-router";
+  import { useRoute, useRouter } from "vue-router";
   import { ElMessage } from "element-plus";
   import MainPage from "@/pages/Main.vue"
 
@@ -16,6 +16,7 @@
   const socketStore = useSocketStore();
   const chatStore = useChatStore();
   const router = useRouter();
+  const route = useRoute();
 
   const isLoading = ref(true);
   const isInitial = ref(false);
@@ -44,7 +45,9 @@
       await socketStore.socketInitial();
       // 初始化完成
       isInitial.value = true;
-      router.replace("/chat");
+      if (route.path === '/') {
+        router.replace("/chat");
+      }
 
     } catch (error: Error | any) {
       if (error instanceof Response && error.status === 403) {
