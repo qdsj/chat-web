@@ -121,7 +121,6 @@ const handleConfirm = async () => {
         memberCount: finallySelectIds.value.length,
       });
       if (chatStore.currentConversation) {
-        console.log(finallySelectIds.value.length);
         chatStore.currentConversation.memberCount =
           finallySelectIds.value.length;
       }

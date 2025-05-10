@@ -109,3 +109,13 @@ export interface I_QuitGroupApiResult {
     affected: number;
   };
 }
+
+export interface I_DissolveGroupApiResult {
+  status: number;
+  message: string;
+  data: {
+    generatedMaps: string[];
+    raw: string[];
+    affected: number;
+  };
+}

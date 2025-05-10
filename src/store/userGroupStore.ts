@@ -1,6 +1,7 @@
 import {
   addGroupMemberApi,
   createGroupChatApi,
+  dissolveGroupApi,
   getGroupChatListApi,
   getGroupMemberCountApi,
   getGroupMemberInfoApi,
@@ -11,6 +12,7 @@ import {
 import {
   I_AddGroupMemberApiResult,
   I_CreateGroupChatApiResult,
+  I_DissolveGroupApiResult,
   I_GetGroupMemberCountApiResult,
   I_GetGroupMemberInfoApiResult,
   I_KickMemberApiResult,
@@ -179,14 +181,27 @@ export const useGroupStore = defineStore(
     const quitGroup = async (
       roomId: string,
       type: string
-    ): Promise<[string | null, I_QuitGroupApiResult | null]> => {
+    ): Promise<[string | null, I_QuitGroupApiResult["data"] | null]> => {
       try {
         const res = await quitGroupApi({ roomId, type });
         ElMessage({
           type: "success",
           message: res.message,
         });
-        return [null, res];
+        return [null, res.data];
+      } catch (error) {
+        return [error, null] as any;
+      }
+    };
+
+    // 群主解散群聊
+    const dissolveGroup = async (
+      roomId: string,
+      type: string
+    ): Promise<[string | null, I_DissolveGroupApiResult["data"] | null]> => {
+      try {
+        const res = await dissolveGroupApi({ roomId, type });
+        return [null, res.data];
       } catch (error) {
         return [error, null] as any;
       }
@@ -206,6 +221,7 @@ export const useGroupStore = defineStore(
       searchGroupMember,
       kickMember,
       quitGroup,
+      dissolveGroup,
     };
   },
   {

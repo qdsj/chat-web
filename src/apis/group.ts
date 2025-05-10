@@ -2,6 +2,7 @@ import { postFetch } from "./http";
 import {
   I_AddGroupMemberApiResult,
   I_CreateGroupChatApiResult,
+  I_DissolveGroupApiResult,
   I_GetGroupListApiResult,
   I_GetGroupMemberCountApiResult,
   I_GetGroupMemberInfoApiResult,
@@ -73,4 +74,12 @@ export const quitGroupApi = (data: {
   type: string;
 }): Promise<I_QuitGroupApiResult> => {
   return postFetch("/chat/quitGroup", data);
+};
+
+// 群主解散群聊
+export const dissolveGroupApi = (data: {
+  roomId: string;
+  type: string;
+}): Promise<I_DissolveGroupApiResult> => {
+  return postFetch("/chat/dissolveGroup", data);
 };

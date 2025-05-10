@@ -62,8 +62,22 @@ const leaveGroup = async () => {
   showMemberList.value = res!;
 };
 
-// 解散群聊
-const dissolutionGroup = () => {};
+//TODO 解散群聊
+const dissolutionGroup = async () => {
+  chatStore.handleConversation({
+    id: groupInfo.value.groupId,
+    name: groupInfo.value.groupName,
+    avatar: groupInfo.value.avatar,
+    type: groupInfo.value.type,
+    memberCount: groupMemberList.value!.length,
+  });
+  await groupStore.dissolveGroup(groupInfo.value.groupId, groupInfo.value.type);
+  groupStore.groupList = groupStore.groupList.filter(
+    (g) => g.id !== groupInfo.value.groupId
+  );
+  // 跳转到聊天页面
+  router.push("/chat");
+};
 
 // 成员管理
 const getGroupMember = async () => {
