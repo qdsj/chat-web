@@ -1,7 +1,11 @@
 <script setup lang="ts">
+import { useChatStore } from "@/store/useChatStore";
 import { useGroupStore } from "@/store/userGroupStore";
+import { useRoute } from "vue-router";
 
 const groupStore = useGroupStore();
+const chatStore = useChatStore();
+const route = useRoute();
 
 const formDataRef = ref();
 const formData = ref({
@@ -42,7 +46,11 @@ const submit = () => {
       groupDescription,
       type
     );
-    await groupStore.getGroupChatList();
+    if (route.name === "聊天") {
+      await chatStore.getSessionList();
+    } else {
+      await groupStore.getGroupChatList();
+    }
     formDataRef.value.resetFields();
     emits("editBack");
   });

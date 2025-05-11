@@ -1,7 +1,11 @@
 <script setup lang="ts">
 import GroupEditForm from "./GroupEditForm.vue";
 
-const emits = defineEmits(["reloadGroupInfo"]);
+const emits = defineEmits(["reloadGroupInfo", "close-drawer"]);
+
+const props = defineProps({
+  closeDrawer: Function,
+});
 
 const dialogConfig = ref({
   show: false,
@@ -19,7 +23,15 @@ const showFun = (data: any) => {
 
 const editBack = () => {
   dialogConfig.value.show = false;
+  if (props.closeDrawer) {
+    props.closeDrawer();
+  }
   emits("reloadGroupInfo");
+};
+
+const handleClose = () => {
+  dialogConfig.value.show = false;
+  emits("close-drawer", false);
 };
 
 defineExpose({
@@ -33,7 +45,7 @@ defineExpose({
     :title="dialogConfig.title"
     :buttons="dialogConfig.buttons"
     width="600px"
-    @close="dialogConfig.show = false"
+    @close="handleClose"
     :showCancel="false"
   >
     <GroupEditForm ref="groupEditRef" @editBack="editBack"></GroupEditForm>

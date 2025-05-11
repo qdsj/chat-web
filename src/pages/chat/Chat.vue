@@ -51,10 +51,22 @@ const updateDialogListVisible = (data: boolean) => {
   dialogListVisible.value = data;
 };
 
-const drawer = ref(false);
+const drawerVisible = ref(false);
 const direction = ref<DrawerProps["direction"]>("rtl");
 const showGroupDetail = () => {
-  drawer.value = true;
+  drawerVisible.value = true;
+};
+const closeDrawer = () => {
+  drawerVisible.value = false;
+};
+
+const handleCloseDrawer = (value: boolean) => {
+  drawerVisible.value = value;
+  if (value) {
+    drawerVisible.value = value;
+  } else {
+    drawerVisible.value = false;
+  }
 };
 </script>
 
@@ -114,13 +126,14 @@ const showGroupDetail = () => {
           <el-container class="chat-container">
             <el-main class="chat-box" v-show="chatStore.currentConversation">
               <el-drawer
-                v-model="drawer"
+                v-model="drawerVisible"
                 :direction="direction"
-                :show-close="false"
+                :show-close="true"
               >
                 <GroupInfo
                   :roomId="chatStore.currentConversation?.id"
-                  @close-drawer="drawer = false"
+                  :close-drawer="closeDrawer"
+                  @close-drawer="handleCloseDrawer"
                 ></GroupInfo>
               </el-drawer>
               <div class="messages-container" ref="messageContainer">
