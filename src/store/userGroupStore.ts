@@ -26,13 +26,11 @@ import { T_GroupList } from "@/types/model/group.type";
 import { ElMessage } from "element-plus";
 import { defineStore } from "pinia";
 import { useChatStore } from "./useChatStore";
-import { useRoute } from "vue-router";
 
 export const useGroupStore = defineStore(
   "use-group-store",
   () => {
     const chatStore = useChatStore();
-    const route = useRoute();
     const groupList = ref<T_GroupList[]>([]);
     const isSearching = ref(false);
     const groupMemberList = ref<I_GetGroupMemberInfoApiResult["data"]>([]);

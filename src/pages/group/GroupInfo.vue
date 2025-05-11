@@ -178,7 +178,7 @@ const handleSearch = () => {
     : groupMemberList.value;
 };
 const handleCloseDrawer = (value: boolean) => {
-  emit("close-drawer", false);
+  emit("close-drawer", value);
 };
 </script>
 
