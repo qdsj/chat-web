@@ -1,11 +1,9 @@
 <script setup lang="ts">
-import { useRouter } from "vue-router";
 import UserInfoEdit from "./UserInfoEdit.vue";
 import UserInfoPassword from "./UserInfoPassword.vue";
 import { useUserStore } from "@/store/useUserStore";
 
 const userStore = useUserStore();
-const router = useRouter();
 
 const showType = ref(0);
 const changePart = (part: number) => {
@@ -17,8 +15,9 @@ const logout = async () => {
   localStorage.removeItem("refresh-token");
   localStorage.removeItem("user-info-store");
   localStorage.removeItem("chat");
-  router.push("/chat");
-  await userStore.getUserInfo();
+  localStorage.removeItem("use-friend-store");
+  localStorage.removeItem("use-group-store");
+  window.location.href = "/"; // 直接跳转并刷新
 };
 
 // 编辑返回
