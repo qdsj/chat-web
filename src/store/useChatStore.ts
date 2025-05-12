@@ -308,7 +308,21 @@ export const useChatStore = defineStore(
 			await getSessionList();
 			// 将currentConversation设置成第一个session，如果没有，就跳过
 			if (conversationsList.value.length > 0) {
-				currentConversation.value = conversationsList.value[0];
+				// 当前session已经退出，所以要置空。以免在`setCurrentConversation`方法中，更新不存在的session的窗口时间
+				currentConversation.value = null;
+				setCurrentConversation(conversationsList.value[0].id);
+			}
+		};
+
+		const initialSessionPage = async () => {
+			// 获取最新的session
+			await getSessionList();
+
+			// 设置当前会话列表，更新当前会话列表的窗口时间
+			if (currentConversation.value) {
+				setCurrentConversation(currentConversation.value.id);
+			} else {
+				setCurrentConversation(conversationsList.value[0].id);
 			}
 		};
 
@@ -328,6 +342,7 @@ export const useChatStore = defineStore(
 			deleteSession,
 			searchSession,
 			resetCurrentConversation,
+			initialSessionPage,
 		};
 	},
 	{
