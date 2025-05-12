@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { I_GetGroupListApiResult } from "@/apis/types/group.type";
 import { useChatStore } from "@/store/useChatStore";
 import { useGroupStore } from "@/store/userGroupStore";
 import { useUserStore } from "@/store/useUserStore";
