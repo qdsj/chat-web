@@ -92,7 +92,8 @@ const handleConfirm = async () => {
         data = await groupStore.getGroupById(props.roomId);
         const [_, res] = await groupStore.getGroupMemberByList(
           data!.id,
-          props.type
+          props.type,
+          false
         );
         emits("update:memberList", res);
       }

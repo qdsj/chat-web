@@ -92,7 +92,8 @@ export const useGroupStore = defineStore(
 
     const getGroupMemberByList = async (
       roomId: string,
-      type: string
+      type: string,
+      includeBlocked: boolean
     ): Promise<
       [string | null, I_GetGroupMemberInfoApiResult["data"] | null]
     > => {
@@ -103,7 +104,11 @@ export const useGroupStore = defineStore(
         return ["targetGroup is null", null] as any;
       }
       try {
-        const result = await getGroupMemberInfoApi({ roomId, type });
+        const result = await getGroupMemberInfoApi({
+          roomId,
+          type,
+          includeBlocked,
+        });
         group.member = result.data;
         return [null, result.data];
       } catch (error) {

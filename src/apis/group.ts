@@ -40,6 +40,7 @@ export const updateGroupChatInfoApi = (data: {
 export const getGroupMemberInfoApi = (data: {
   roomId: string;
   type: string;
+  includeBlocked: boolean;
 }): Promise<I_GetGroupMemberInfoApiResult> => {
   return postFetch("/chat/getGroupMemberInfo", data);
 };

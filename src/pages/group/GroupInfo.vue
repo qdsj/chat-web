@@ -69,7 +69,8 @@ const getGroupMember = async () => {
   if (currentGroup && !currentGroup.member) {
     await groupStore.getGroupMemberByList(
       groupInfo.value.groupId,
-      groupInfo.value.type
+      groupInfo.value.type,
+      false
     );
   }
   if (currentGroup && currentGroup.id === groupInfo.value.groupId) {
@@ -125,7 +126,8 @@ const refreshMemberList = async () => {
   memberListRef.value?.closeMenu();
   const [_, res] = await groupStore.getGroupMemberByList(
     groupInfo.value.groupId,
-    groupInfo.value.type
+    groupInfo.value.type,
+    false
   );
   showMemberList.value = res!;
 };
