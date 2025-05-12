@@ -86,12 +86,12 @@ export const useChatStore = defineStore(
         (conv) => conv.id === conversationId
       );
       currentConversation.value = targetConversation || null;
+      currentConversation.value!.unreadCount = 0;
       const res = await updateChatWindowsTimeApi({
         roomId: currentConversation.value!.id,
         type: currentConversation.value!.type,
       });
       currentConversation.value!.openTime = res.data.openTime;
-      currentConversation.value!.unreadCount = 0;
 
       // 退出搜索状态
       isSearching.value = false;
