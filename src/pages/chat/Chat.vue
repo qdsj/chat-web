@@ -59,15 +59,6 @@ const showGroupDetail = () => {
 const closeDrawer = () => {
   drawerVisible.value = false;
 };
-
-const handleCloseDrawer = (value: boolean) => {
-  drawerVisible.value = value;
-  if (value) {
-    drawerVisible.value = value;
-  } else {
-    drawerVisible.value = false;
-  }
-};
 </script>
 
 <template>
@@ -133,7 +124,6 @@ const handleCloseDrawer = (value: boolean) => {
                 <GroupInfo
                   :roomId="chatStore.currentConversation?.id"
                   :close-drawer="closeDrawer"
-                  @close-drawer="handleCloseDrawer"
                 ></GroupInfo>
               </el-drawer>
               <div class="messages-container" ref="messageContainer">

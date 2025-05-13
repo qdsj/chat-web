@@ -23,7 +23,7 @@ const props = defineProps({
   roomId: String,
   closeDrawer: Function,
 });
-const emit = defineEmits(["closeDrawer", "close-drawer"]);
+const emit = defineEmits(["closeDrawer"]);
 
 const mapGroupInfo = (group: any): GroupInfo => ({
   groupId: group.id,
@@ -179,9 +179,6 @@ const handleSearch = () => {
     ? groupStore.groupMemberList
     : groupMemberList.value;
 };
-const handleCloseDrawer = (value: boolean) => {
-  emit("close-drawer", value);
-};
 </script>
 
 <template>
@@ -237,7 +234,6 @@ const handleCloseDrawer = (value: boolean) => {
       ref="groupEditDialogRef"
       @reloadGroupInfo="getGroupMember"
       :close-drawer="closeDrawer"
-      @close-drawer="handleCloseDrawer"
     ></GroupEditDialog>
   </template>
   <template v-else> 群列表图片 </template>
