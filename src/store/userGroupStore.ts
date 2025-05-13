@@ -172,7 +172,7 @@ export const useGroupStore = defineStore(
     // 刷新当前页面
     function reloadPage(isDeletedQuery: boolean) {
       if (isDeletedQuery) {
-        // // 刷新当前页面,删除当前的query
+        // 刷新当前页面,删除当前的query
         window.location.replace(location.pathname);
       } else {
         window.location.reload();

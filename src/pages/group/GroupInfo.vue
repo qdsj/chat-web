@@ -236,7 +236,9 @@ const handleSearch = () => {
       :close-drawer="closeDrawer"
     ></GroupEditDialog>
   </template>
-  <template v-else> 群列表图片 </template>
+  <template v-else>
+    <el-empty description="当前没有正在查看的群组" />
+  </template>
 </template>
 
 <style scoped lang="scss">
@@ -253,5 +255,9 @@ const handleSearch = () => {
 
 .notice {
   align-items: flex-start;
+}
+
+.el-empty {
+  margin-top: 200px;
 }
 </style>
