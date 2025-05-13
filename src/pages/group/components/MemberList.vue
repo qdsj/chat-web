@@ -67,7 +67,7 @@ const menuItems = computed(() => {
     });
 
     // 根据选中成员身份显示不同操作
-    if (selectedMember?.chatRoomShipInfo.userType === "member") {
+    if (selectedMember?.chatRoomShipInfo.userType === "member" || "user") {
       items.push({
         label: "设置为管理员",
         action: () => emit("set-admin", selectedMemberId.value),
@@ -101,14 +101,23 @@ defineExpose({
       class="grid-container"
       @contextmenu.prevent="!isSearching && handleRightClick($event, item.id)"
     >
-      <component
-        :is="currentComponent"
-        :avatar="item.avatar"
-        :username="item.username"
-        :user-id="item.id"
-        :email="item.email"
-        :width="50"
-      />
+      <div class="avatar">
+        <div class="role" v-if="item.chatRoomShipInfo.userType === 'owner'">
+          群主
+        </div>
+        <div class="role" v-if="item.chatRoomShipInfo.userType === 'admin'">
+          管理员
+        </div>
+
+        <component
+          :is="currentComponent"
+          :avatar="item.avatar"
+          :username="item.username"
+          :user-id="item.id"
+          :email="item.email"
+          :width="50"
+        />
+      </div>
       <div class="nickname">{{ item.username }}</div>
     </div>
 
@@ -138,6 +147,16 @@ defineExpose({
     justify-items: center; /* 单元格内水平居中 */
     align-items: center; /* 单元格内垂直居中 */
     margin-bottom: 30px;
+
+    .avatar {
+      display: flex;
+      .role {
+        writing-mode: vertical-rl;
+        text-align: center;
+        background: #d6d6d6;
+      }
+    }
+
     .iconfont {
       width: 50px;
       height: 50px;

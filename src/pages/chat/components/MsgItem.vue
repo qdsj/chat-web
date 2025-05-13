@@ -108,7 +108,7 @@ const Compo = {
 .message {
   display: flex;
   align-items: center;
-  margin-bottom: 20px;
+  margin: 20px 0;
 
   .message-container {
     display: flex;
@@ -147,6 +147,10 @@ const Compo = {
     flex-wrap: wrap;
     padding: 12px 16px;
     white-space: normal;
+    /* 新增溢出处理 */
+    max-width: 100%;
+    overflow-wrap: break-word;
+    word-break: break-all;
     background: #e0e0e0;
     color: #000;
     border-radius: 16px 8px 8px 4px;
