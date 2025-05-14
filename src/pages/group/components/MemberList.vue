@@ -36,7 +36,6 @@ const selectedMemberId = ref<string | null>(null);
 
 const handleRightClick = (event: MouseEvent, memberId: string) => {
   if (!validateRightClick(memberId)) return;
-
   nextTick(() => {
     selectedMemberId.value = memberId;
     menuPosition.value = { x: event.clientX, y: event.clientY };
@@ -67,12 +66,13 @@ const menuItems = computed(() => {
     });
 
     // 根据选中成员身份显示不同操作
-    if (selectedMember?.chatRoomShipInfo.userType === "member" || "user") {
+    const memberType = selectedMember?.chatRoomShipInfo.userType;
+    if (memberType === "member" || memberType === "user") {
       items.push({
         label: "设置为管理员",
         action: () => emit("set-admin", selectedMemberId.value),
       });
-    } else if (selectedMember?.chatRoomShipInfo.userType === "admin") {
+    } else if (memberType === "admin") {
       items.push({
         label: "取消管理员",
         action: () => emit("cancel-admin", selectedMemberId.value),
