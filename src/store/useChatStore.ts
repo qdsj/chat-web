@@ -144,7 +144,6 @@ export const useChatStore = defineStore(
           roomId,
           type,
         });
-        ElMessage.success(res.message);
         return [null, res.data];
       } catch (error) {
         ElMessage.warning(error || "添加会话失败");
