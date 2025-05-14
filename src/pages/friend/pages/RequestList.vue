@@ -40,6 +40,7 @@ const agreeApply = async (applyId: string, username: string) => {
       text: "确定",
       click: async () => {
         await friendStore.agreeFriend(applyId);
+        await friendStore.getRequestList();
         dialogConfig.value.show = false;
       },
     },

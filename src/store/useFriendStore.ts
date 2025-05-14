@@ -110,7 +110,7 @@ export const useFriendStore = defineStore(
         chatStore.addConversation({
           id: friend!.id,
           name: friend!.username,
-          avatar: "",
+          avatar: friend!.avatar,
           type: "person",
           messages: [
             {

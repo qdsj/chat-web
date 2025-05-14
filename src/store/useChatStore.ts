@@ -22,6 +22,7 @@ import {
 import { useGroupStore } from "./userGroupStore";
 import { ElMessage } from "element-plus";
 import { useRouter } from "vue-router";
+import { I_AddSessionResultApi } from "@/apis/types/chat.type";
 
 export const useChatStore = defineStore(
   "chat",
@@ -134,6 +135,23 @@ export const useChatStore = defineStore(
       currentConversation.value!.messages.push(message);
     };
 
+    const addSession = async (
+      roomId: string,
+      type: ConversationType
+    ): Promise<[string | null, I_AddSessionResultApi["data"] | null]> => {
+      try {
+        const res = await addSessionApi({
+          roomId,
+          type,
+        });
+        ElMessage.success(res.message);
+        return [null, res.data];
+      } catch (error) {
+        ElMessage.warning(error || "添加会话失败");
+        return [error, null] as any;
+      }
+    };
+
     // 添加新的会话
     const addConversation = (conversation: Conversation) => {
       conversationsList.value.push(conversation);
@@ -148,35 +166,33 @@ export const useChatStore = defineStore(
       memberCount?: number;
       msgType?: MsgType;
     }) => {
-      // 检查是否是否在会话列表中
-      const conversation = conversationsList.value.filter((item) => {
-        return item.id === params.id;
-      });
-
-      // 如果不存在，则添加到会话列表中
-      if (conversation.length == 0) {
-        const messages = await getChatHistoryByRoomId(
-          params.id,
-          params.type || "person"
+      try {
+        const hasConversation = conversationsList.value.some(
+          (item) => item.id === params.id
         );
-        addConversation({
-          id: params.id,
-          name: params.name,
-          avatar: params.avatar || "",
-          messages: messages,
-          type: params.type || "person",
-          memberCount: params.memberCount,
-        });
-
-        addSessionApi({
-          roomId: params.id,
-          type: params.type || "person",
-        });
+        // 如果不存在，则添加到会话列表中
+        if (!hasConversation) {
+          await addSession(params.id, params.type || "person");
+          const messages = await getChatHistoryByRoomId(
+            params.id,
+            params.type || "person"
+          );
+          addConversation({
+            id: params.id,
+            name: params.name,
+            avatar: params.avatar || "",
+            messages: messages,
+            type: params.type || "person",
+            memberCount: params.memberCount,
+          });
+        }
+        setCurrentConversation(params.id);
+      } catch (error) {
+        console.log(error);
+      } finally {
+        // 关闭好友列表的搜索状态
+        friendStore.isSearching = false;
       }
-      setCurrentConversation(params.id);
-
-      // 关闭好友列表的搜索状态
-      friendStore.isSearching = false;
     };
 
     const createMessage = (
@@ -238,6 +254,7 @@ export const useChatStore = defineStore(
 
       // 如果不在，添加新的会话
       if (!isSenderInConversations) {
+        await addSession(message.roomId, message.type);
         let memberCount = null;
         if (message.type === "group") {
           const [_, res] = await groupStore.getGroupMemberCountByList(
@@ -257,11 +274,6 @@ export const useChatStore = defineStore(
           type: message.type,
           memberCount: memberCount || undefined,
           unreadCount: 0,
-        });
-
-        addSessionApi({
-          roomId: message.roomId,
-          type: message.type || "person",
         });
       } else {
         // 追加聊天记录
