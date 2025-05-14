@@ -29,8 +29,14 @@ defineProps({
     <div class="user-info">
       <div class="nick-name">
         {{ userInfo.username }}
-        <span class="iconfont icon-icon-woman" v-if="userInfo.sex == 0"></span>
-        <span class="iconfont icon-icon-man" v-if="userInfo.sex == 1"></span>
+        <span
+          class="iconfont icon-icon-woman"
+          v-if="userInfo.sex == 'female'"
+        ></span>
+        <span
+          class="iconfont icon-icon-man"
+          v-if="userInfo.sex == 'male'"
+        ></span>
       </div>
       <div class="info">Email: {{ userInfo.email }}</div>
       <div class="info">

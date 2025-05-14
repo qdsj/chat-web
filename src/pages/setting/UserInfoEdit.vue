@@ -28,37 +28,10 @@ const formDataRef = ref();
 const formData = ref({ ...props.data });
 
 const rules = reactive({
-  avatar: [
-    {
-      required: true,
-      message: "请上传头像",
-      trigger: "blur",
-    },
-  ],
-  username: [
-    {
-      required: true,
-      message: "请输入昵称",
-      trigger: "blur",
-    },
-    {
-      min: 2,
-      max: 150,
-      message: "长度在 2 到 150 个字符",
-      trigger: "blur",
-    },
-  ],
   sex: [
     {
       required: true,
       message: "请选择性别",
-      trigger: "blur",
-    },
-  ],
-  description: [
-    {
-      required: true,
-      message: "请选择个性签名",
       trigger: "blur",
     },
   ],
@@ -73,6 +46,9 @@ const saveUserInfo = () => {
   formDataRef.value.validate(async (valid: any) => {
     if (!valid) return;
     const { avatar, sex, description } = formData.value;
+    if (!avatar && !sex && !description) {
+      return;
+    }
     await userStore.updateUserInfo(avatar, sex, description);
     await userStore.getUserInfo();
     emits("editBack");
@@ -99,14 +75,14 @@ const cancel = () => {
           @updateAvatar="updateAvatar"
         ></AvatarUpload>
       </el-form-item>
-      <el-form-item label="昵称" prop="username">
+      <!-- <el-form-item label="昵称" prop="username">
         <el-input
           maxlength="150"
           clearable
           placeholder="请输入昵称"
           v-model.trim="formData.username"
         ></el-input>
-      </el-form-item>
+      </el-form-item> -->
       <el-form-item label="性别" prop="sex">
         <el-radio-group v-model="formData.sex">
           <el-radio :value="'male'">男</el-radio>
