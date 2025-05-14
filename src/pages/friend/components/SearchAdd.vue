@@ -9,7 +9,7 @@ const userStore = useUserStore();
 const friendStore = useFriendStore();
 const groupStore = useGroupStore();
 
-const emits = defineEmits(["reload"]);
+const emits = defineEmits(["reload", "applied"]);
 
 const formDataRef = ref();
 const formData = ref({
@@ -64,6 +64,7 @@ const submitApply = () => {
     );
 
     if (isSuccess) {
+      emits("applied"); // 触发自定义事件
       ElMessage.success("申请成功，等待对方同意");
     } else {
       ElMessage.error(error || "申请失败");
