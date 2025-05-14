@@ -4,10 +4,12 @@ import { ref } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { useUserStore } from "@/store/useUserStore";
 import { DEFAULT_ACTIVE_ROUTE } from "@/util/constants";
+import { useChatStore } from "@/store/useChatStore";
 
 const router = useRouter();
 const route = useRoute();
 const userStore = useUserStore();
+const chatStore = useChatStore();
 
 // 图标菜单列表
 const menuList = ref([
@@ -48,6 +50,13 @@ const updateCurrentMenu = () => {
     route.path.startsWith(item.path)
   );
   currentMenu.value = foundMenu || menuList.value[0];
+  if (chatStore.currentConversation && route.name === "聊天") {
+    // 设置query
+    router.push(
+      "/chat" +
+        `?id=${chatStore.currentConversation.id}&username=${chatStore.currentConversation.name}`
+    );
+  }
 };
 
 onMounted(() => {

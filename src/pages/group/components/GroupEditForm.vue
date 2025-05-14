@@ -16,23 +16,6 @@ const formData = ref({
   type: "",
 });
 
-const rules = ref({
-  groupName: [
-    {
-      required: true,
-      message: "请输入群名称",
-      trigger: "blur",
-    },
-  ],
-  groupDescription: [
-    {
-      required: true,
-      message: "请输入群聊描述",
-      trigger: "blur",
-    },
-  ],
-});
-
 const emits = defineEmits(["editBack"]);
 const submit = () => {
   formDataRef.value.validate(async (valid: any) => {
@@ -71,12 +54,7 @@ defineExpose({
 </script>
 
 <template>
-  <el-form
-    ref="formDataRef"
-    :model="formData"
-    :rules="rules"
-    label-width="100px"
-  >
+  <el-form ref="formDataRef" :model="formData" label-width="100px">
     <el-form-item label="头像" prop="avatar">
       <AvatarUpload
         :avatar="formData.avatar"
