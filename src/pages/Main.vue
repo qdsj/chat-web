@@ -78,6 +78,13 @@ const changeMenu = (item: MenuItem) => {
   currentMenu.value = item;
   router.push(item.path);
 };
+
+const totalUnread = computed(() => {
+  return chatStore.conversationsList.reduce(
+    (sum, conv) => sum + (conv.unreadCount || 0),
+    0
+  );
+});
 </script>
 
 <template>
@@ -94,19 +101,45 @@ const changeMenu = (item: MenuItem) => {
         :avatar="userStore.userInfo!.avatar"
       ></Avatar>
       <!-- 菜单列表 -->
+
       <div class="menu-list">
         <template v-for="item in menuList">
-          <div
-            :class="[
+          <!-- 带徽章的菜单项 -->
+          <template v-if="item.countKey === 'chatCount'">
+            <el-badge
+              :value="totalUnread"
+              class="menu-badge"
+              :offset="[-2, 18]"
+              :show-zero="false"
+              :max="99"
+            >
+              <div
+                :class="[
             'tab-item iconfont',
             item.icon,
             currentMenu!.path.startsWith(item.path) ? 'active' : '',
           ]"
-            v-if="item.position == 'top'"
-            @click="changeMenu(item)"
-          ></div>
+                v-if="item.position == 'top'"
+                @click="changeMenu(item)"
+              ></div>
+            </el-badge>
+          </template>
+
+          <!-- 普通菜单项 -->
+          <template v-else>
+            <div
+              :class="[
+            'tab-item iconfont',
+            item.icon,
+            currentMenu!.path.startsWith(item.path) ? 'active' : '',
+          ]"
+              v-if="item.position == 'top'"
+              @click="changeMenu(item)"
+            ></div>
+          </template>
         </template>
       </div>
+
       <div class="menu-list menu-bottom">
         <template v-for="item in menuList">
           <div
@@ -153,6 +186,13 @@ const changeMenu = (item: MenuItem) => {
     .menu-list {
       width: 100%;
       flex: 1;
+
+      .menu-badge {
+        margin-top: 36px;
+        .tab-item {
+          margin-top: 0;
+        }
+      }
 
       .tab-item {
         color: #d3d3d3;

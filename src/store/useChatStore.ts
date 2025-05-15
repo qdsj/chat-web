@@ -235,6 +235,7 @@ export const useChatStore = defineStore(
         senderId: senderId,
         msgType,
       });
+      currentConversation.value!.unreadCount = 0;
     };
 
     // 用来处理接收到的消息
@@ -297,7 +298,6 @@ export const useChatStore = defineStore(
       const targetSession = conversationsList.value.find(
         (session) => session.id === message.roomId
       );
-
       if (
         targetSession &&
         message.senderId !== userStore.userInfo?.id &&
@@ -356,11 +356,16 @@ export const useChatStore = defineStore(
         });
 
         // 计算未读消息数（createAt晚于openTime的消息数量）
-        item.unreadCount = item.messages.filter((msg) => {
-          const msgTime = new Date(msg.createdAt).getTime();
-          const openTime = new Date(item.openTime!).getTime();
-          return msgTime > openTime;
-        }).length;
+        if (
+          currentConversation.value?.id &&
+          item.id !== currentConversation.value?.id
+        ) {
+          item.unreadCount = item.messages.filter((msg) => {
+            const msgTime = new Date(msg.createdAt).getTime();
+            const openTime = new Date(item.openTime!).getTime();
+            return msgTime > openTime;
+          }).length;
+        }
       }
     };
     // 删除会话记录
