@@ -72,8 +72,6 @@ const sendMessage = () => {
     avatar: friendInfo.value.avatar,
     type: friendInfo.value.type || "person",
   });
-  // 跳转到聊天页面
-  router.push("/chat");
 };
 
 const searchAddRef = ref();

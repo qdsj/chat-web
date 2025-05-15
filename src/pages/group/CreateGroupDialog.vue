@@ -121,7 +121,6 @@ const handleConfirm = async () => {
     }
 
     handleDialogClose();
-    router.push("/chat");
   } catch (error) {
     console.error("[handleConfirm] 操作失败:", error);
   }

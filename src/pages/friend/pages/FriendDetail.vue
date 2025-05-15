@@ -86,9 +86,6 @@ const sendmessage = () => {
     avatar: friendInfo.value.avatar,
     type: friendInfo.value.type,
   });
-
-  // 跳转到聊天页面
-  router.push("/chat");
 };
 
 const friendStatus = computed(() => {

@@ -69,9 +69,6 @@ const sendMessage = () => {
     avatar: searchResult.value.avatar,
     type: searchResult.value.type,
   });
-
-  // 跳转到聊天页面
-  router.push("/chat");
 };
 
 // 重置表单
