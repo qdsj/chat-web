@@ -287,6 +287,7 @@ export const useGroupStore = defineStore(
       dissolveGroup,
       setGroupAdmin,
       cancelGroupAdmin,
+      reloadPage,
     };
   },
   {
