@@ -5,12 +5,10 @@ import { useFriendStore } from "@/store/useFriendStore";
 import { useGroupStore } from "@/store/userGroupStore";
 import { useUserStore } from "@/store/useUserStore";
 import { ConversationType } from "@/types/model/chat.type";
-import { useRouter } from "vue-router";
 const userStroe = useUserStore();
 const chatStore = useChatStore();
 const friendStore = useFriendStore();
 const groupStore = useGroupStore();
-const router = useRouter();
 
 const props = defineProps({
   userId: {

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import GroupEditDialog from "./components/GroupEditDialog.vue";
-import { useRoute, useRouter } from "vue-router";
+import { useRoute } from "vue-router";
 import { useGroupStore } from "@/store/userGroupStore";
 import CreateGroup from "./CreateGroupDialog.vue";
 import { I_GetGroupMemberInfoApiResult } from "@/apis/types/group.type";
@@ -10,7 +10,6 @@ import { GroupInfo } from "@/types/model/group.type";
 import MemberList from "./components/MemberList.vue";
 import GroupDetails from "./components/GroupDetails.vue";
 
-const router = useRouter();
 const route = useRoute();
 const groupStore = useGroupStore();
 const chatStore = useChatStore();

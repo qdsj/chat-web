@@ -7,12 +7,10 @@ import SearchAdd from "../components/SearchAdd.vue";
 import { useFriendStore } from "@/store/useFriendStore";
 import { I_FindUserByNameApiResult } from "@/apis/types/friend.types";
 import { useChatStore } from "@/store/useChatStore";
-import { useRouter } from "vue-router";
 
 const chatStore = useChatStore();
 const userStore = useUserStore();
 const friendStore = useFriendStore();
-const router = useRouter();
 const contactId = ref();
 
 const searchResult = ref<I_FindUserByNameApiResult["data"]>(

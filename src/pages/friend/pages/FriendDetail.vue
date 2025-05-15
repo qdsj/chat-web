@@ -3,10 +3,9 @@ import { useChatStore } from "@/store/useChatStore";
 import { useFriendStore } from "@/store/useFriendStore";
 import { ConversationType } from "@/types/model/chat.type";
 import { ElMessage, ElMessageBox } from "element-plus";
-import { useRouter, useRoute } from "vue-router";
+import { useRoute } from "vue-router";
 
 const friendStore = useFriendStore();
-const router = useRouter();
 const route = useRoute();
 
 const chatStore = useChatStore();

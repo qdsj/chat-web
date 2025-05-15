@@ -5,7 +5,6 @@ import { ConversationType } from "@/types/model/chat.type";
 import ContactInfo from "./components/FriendInfo.vue";
 import { useChatStore } from "@/store/useChatStore";
 import { useGroupStore } from "@/store/userGroupStore";
-import router from "@/router";
 import { useUserStore } from "@/store/useUserStore";
 import ContactListPanel from "./components/LeftFriendList.vue";
 import RightSelectedList from "./components/RightSelectedList.vue";
