@@ -9,16 +9,13 @@ import {
   unblockFriendApi,
 } from "@/apis/friend";
 import {
+  I_AgreeFriendApiResult,
   I_FindUserByNameApiResult,
   I_GetRequestListApiResult,
 } from "@/apis/types/friend.types";
-import { v4 as uuidv4 } from "uuid";
 import { T_Friend } from "@/types/model/friend.types";
 import { ElMessage } from "element-plus";
 import { defineStore } from "pinia";
-import { useChatStore } from "./useChatStore";
-import { useRouter } from "vue-router";
-import { useUserStore } from "./useUserStore";
 import { useGroupStore } from "./userGroupStore";
 // 具体和api交互的代码，统一放在store中。
 // vue文件只需要考虑和store进行交互即可
@@ -26,10 +23,7 @@ import { useGroupStore } from "./userGroupStore";
 export const useFriendStore = defineStore(
   "use-friend-store",
   () => {
-    const chatStore = useChatStore();
-    const userStore = useUserStore();
     const groupStore = useGroupStore();
-    const router = useRouter();
     const friendList = ref<T_Friend[]>([]);
     const blockList = ref<T_Friend[]>([]);
 
@@ -101,36 +95,16 @@ export const useFriendStore = defineStore(
     };
 
     // 同意好友请求
-    const agreeFriend = async (friendId: string) => {
+    const agreeFriend = async (
+      friendId: string
+    ): Promise<[string | null, I_AgreeFriendApiResult["data"] | null]> => {
       try {
         const res = await agreeFriendApi({ friendId });
         await getAllFriend();
-        const friend = await getFriendById(res.data.requesterId);
-        // 将好友加进会话列表
-        chatStore.addConversation({
-          id: friend!.id,
-          name: friend!.username,
-          avatar: "",
-          type: "person",
-          messages: [
-            {
-              id: uuidv4(),
-              roomId: userStore.userInfo!.id,
-              senderId: friend!.id,
-              content: res.data.requestMessage,
-              createdAt: new Date(Date.now()).toISOString(),
-              msgType: "text",
-            },
-          ],
-        });
-        chatStore.sendMessage({
-          content: res.data.requestMessage,
-        });
-        chatStore.setCurrentConversation(friend!.id);
-        // 跳转至会话列表，开始聊天
-        router.push("/chat");
+        return [null, res.data];
       } catch (error) {
         ElMessage.warning(error || "获取好友申请列表失败");
+        return [error, null] as any;
       }
     };
 
