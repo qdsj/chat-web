@@ -23,7 +23,7 @@ const props = defineProps({
   roomId: String,
   closeDrawer: Function,
 });
-const emit = defineEmits(["closeDrawer"]);
+const emits = defineEmits(["closeDrawer"]);
 
 const mapGroupInfo = (group: any): GroupInfo => ({
   groupId: group.id,
@@ -97,9 +97,9 @@ const sendMessage = () => {
     type: groupInfo.value.type,
     memberCount: groupMemberList.value!.length,
   });
-  emit("closeDrawer"); // 触发关闭抽屉事件
-  // 跳转到聊天页面
-  router.push("/chat");
+  if (route.name === "聊天") {
+    emits("closeDrawer"); // 触发关闭抽屉事件
+  }
 };
 
 const selectedIds = ref<string[]>([]);
@@ -121,7 +121,8 @@ const updateMemberList = (
   showMemberList.value = memberList;
 };
 
-// 公共方法：刷新成员列表并关闭菜单
+// 公共方法：刷新成员列表并关闭右键菜单
+const memberListRef = ref();
 const refreshMemberList = async () => {
   memberListRef.value?.closeMenu();
   const [_, res] = await groupStore.getGroupMemberByList(
@@ -130,10 +131,10 @@ const refreshMemberList = async () => {
     false
   );
   showMemberList.value = res!;
+  return res;
 };
 
 // 群主踢除群成员
-const memberListRef = ref();
 const handleRemoveMember = async (selectedMemberId: string) => {
   if (selectedMemberId) {
     showMemberList.value = groupMemberList.value.filter(
@@ -144,7 +145,13 @@ const handleRemoveMember = async (selectedMemberId: string) => {
       selectedMemberId,
       groupInfo.value.type
     );
-    await refreshMemberList();
+    const res = await refreshMemberList();
+    if (
+      chatStore.currentConversation &&
+      chatStore.currentConversation.id === groupInfo.value.groupId
+    ) {
+      chatStore.currentConversation.memberCount = res!.length;
+    }
   }
 };
 
@@ -166,6 +173,16 @@ const handleCancelAdmin = async (selectedMemberId: string) => {
     selectedMemberId
   );
   await refreshMemberList();
+};
+
+// 更新群聊信息
+const updateGroupInfo = async () => {
+  const group = await groupStore.getGroupById(
+    (route.query.id || props.roomId) as string
+  );
+  if (group) {
+    mapGroupInfo(group);
+  }
 };
 
 // 搜索功能
@@ -232,7 +249,7 @@ const handleSearch = () => {
     <!-- 编辑群信息 -->
     <GroupEditDialog
       ref="groupEditDialogRef"
-      @reloadGroupInfo="getGroupMember"
+      @reloadGroupInfo="updateGroupInfo"
       :close-drawer="closeDrawer"
     ></GroupEditDialog>
   </template>

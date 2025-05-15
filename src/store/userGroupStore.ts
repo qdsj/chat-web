@@ -83,7 +83,18 @@ export const useGroupStore = defineStore(
           name,
         });
         ElMessage.success(result.message);
-        return [null, result.status];
+        await getGroupChatList();
+        const group = groupList.value.find((item) => item.id === roomId);
+        if (group) {
+          await chatStore.getSessionList();
+          if (
+            chatStore.currentConversation &&
+            chatStore.currentConversation.id === roomId
+          ) {
+            chatStore.currentConversation.name = name;
+          }
+        }
+        return [null, result.data];
       } catch (error) {
         ElMessage.warning(error || "更新群聊消息失败");
         return [error, false] as any;

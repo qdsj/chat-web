@@ -29,11 +29,6 @@ const submit = () => {
       groupDescription,
       type
     );
-    if (route.name === "聊天") {
-      await chatStore.getSessionList();
-    } else {
-      await groupStore.getGroupChatList();
-    }
     formDataRef.value.resetFields();
     emits("editBack");
   });

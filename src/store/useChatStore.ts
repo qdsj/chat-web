@@ -21,7 +21,7 @@ import {
 } from "@/apis/chat";
 import { useGroupStore } from "./userGroupStore";
 import { ElMessage } from "element-plus";
-import { useRouter } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import { I_AddSessionResultApi } from "@/apis/types/chat.type";
 
 export const useChatStore = defineStore(
@@ -32,6 +32,7 @@ export const useChatStore = defineStore(
     const friendStore = useFriendStore();
     const groupStore = useGroupStore();
     const router = useRouter();
+    const route = useRoute();
     // 会话列表
     const conversationsList = ref<Conversation[]>([]);
     // 搜索中的会话列表
@@ -96,7 +97,6 @@ export const useChatStore = defineStore(
 
       // 退出搜索状态
       isSearching.value = false;
-
       // 设置query
       router.push(
         "/chat" +
@@ -409,7 +409,7 @@ export const useChatStore = defineStore(
       await getSessionList();
 
       // 设置当前会话列表，更新当前会话列表的窗口时间
-      if (conversationsList.value.length > 0) {
+      if (route.name === "聊天" && conversationsList.value.length > 0) {
         if (currentConversation.value) {
           setCurrentConversation(currentConversation.value.id);
         } else {

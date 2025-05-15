@@ -124,6 +124,7 @@ const closeDrawer = () => {
                 <GroupInfo
                   :roomId="chatStore.currentConversation?.id"
                   :close-drawer="closeDrawer"
+                  @close-drawer="closeDrawer"
                 ></GroupInfo>
               </el-drawer>
               <div class="messages-container" ref="messageContainer">
