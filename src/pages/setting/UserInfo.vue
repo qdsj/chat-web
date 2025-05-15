@@ -43,9 +43,9 @@ const editBack = () => {
                 <el-dropdown-item @click="changePart(1)"
                   >修改个人信息</el-dropdown-item
                 >
-                <el-dropdown-item @click="changePart(2)"
+                <!-- <el-dropdown-item @click="changePart(2)"
                   >修改密码</el-dropdown-item
-                >
+                > -->
               </el-dropdown-menu>
             </template>
           </el-dropdown>
