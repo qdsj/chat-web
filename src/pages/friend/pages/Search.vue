@@ -25,7 +25,7 @@ const friendShipStatus = computed(() => {
     "pending") as friendShipStatusType;
 });
 
-const search = async () => {
+const handleSearch = async () => {
   if (!contactId.value) {
     ElMessage.warning("请输入用户名");
     return;
@@ -38,6 +38,11 @@ const search = async () => {
     ElMessage.error("没有该用户");
     return;
   }
+};
+
+const handleApplied = () => {
+  contactId.value = ""; // 清空输入框
+  searchResult.value = {} as I_FindUserByNameApiResult["data"]; // 重置搜索结果，隐藏卡片
 };
 
 const contactTypeName = computed(() => {
@@ -82,9 +87,9 @@ const resetForm = () => {};
         placeholder="请输入用户名"
         v-model="contactId"
         size="large"
-        @keydown.enter="search"
+        @keydown.enter="handleSearch"
       ></el-input>
-      <div class="search-btn iconfont icon-search" @click="search"></div>
+      <div class="search-btn iconfont icon-search" @click="handleSearch"></div>
     </div>
     <div class="search-result-panel" v-if="searchResult.id">
       <!-- 信息展示 -->
@@ -111,7 +116,11 @@ const resetForm = () => {};
     </div>
   </ContentPanel>
   <!-- 添加好友申请弹框 -->
-  <SearchAdd ref="searchAddRef" @reload="resetForm"></SearchAdd>
+  <SearchAdd
+    ref="searchAddRef"
+    @reload="resetForm"
+    @applied="handleApplied"
+  ></SearchAdd>
 </template>
 
 <style scoped lang="scss">
