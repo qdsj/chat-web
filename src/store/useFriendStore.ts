@@ -17,8 +17,6 @@ import { T_Friend } from "@/types/model/friend.types";
 import { ElMessage } from "element-plus";
 import { defineStore } from "pinia";
 import { useGroupStore } from "./userGroupStore";
-import { useRouter } from "vue-router";
-import { useChatStore } from "./useChatStore";
 // 具体和api交互的代码，统一放在store中。
 // vue文件只需要考虑和store进行交互即可
 
@@ -26,8 +24,6 @@ export const useFriendStore = defineStore(
 	"use-friend-store",
 	() => {
 		const groupStore = useGroupStore();
-		const router = useRouter();
-		const chatStore = useChatStore();
 		const friendList = ref<T_Friend[]>([]);
 		const blockList = ref<T_Friend[]>([]);
 
