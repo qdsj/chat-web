@@ -5,6 +5,7 @@ import ContextMenu from "@/pages/chat/components/ContextMenu.vue";
 import Avatar from "@/components/Avatar.vue";
 import { I_GetGroupMemberInfoApiResult } from "@/apis/types/group.type";
 import { GroupInfo } from "@/types/model/group.type";
+import { ElMessage, ElMessageBox } from "element-plus";
 
 const props = defineProps({
   members: {
@@ -63,11 +64,23 @@ const menuItems = computed(() => {
     // 移除成员始终显示（不能移除自己）
     items.push({
       label: "从群聊中移除",
-      action: () => emit("remove-member", selectedMemberId.value),
+      action: () => {
+        ElMessageBox.confirm("确认要从群聊中移除该成员吗！", "Warning", {
+          confirmButtonText: "确认",
+          cancelButtonText: "取消",
+          type: "warning",
+        })
+          .then(() => emit("remove-member", selectedMemberId.value))
+          .catch(() => ElMessage.info("操作已取消"))
+          .finally(() => (showMenu.value = false));
+      },
     });
 
     // 根据选中成员身份显示不同操作
-    if (selectedMember?.chatRoomShipInfo.userType === "member" || "user") {
+    if (
+      selectedMember?.chatRoomShipInfo.userType === "member" ||
+      selectedMember?.chatRoomShipInfo.userType === "user"
+    ) {
       items.push({
         label: "设置为管理员",
         action: () => emit("set-admin", selectedMemberId.value),
@@ -99,6 +112,7 @@ defineExpose({
       v-for="item in members"
       :key="item.id"
       class="grid-container"
+      @click.stop="closeMenu"
       @contextmenu.prevent="!isSearching && handleRightClick($event, item.id)"
     >
       <div class="avatar">
