@@ -26,6 +26,7 @@ import { T_GroupList } from "@/types/model/group.type";
 import { ElMessage } from "element-plus";
 import { defineStore } from "pinia";
 import { useChatStore } from "./useChatStore";
+import { ConversationType } from "@/types/model/chat.type";
 
 export const useGroupStore = defineStore(
   "use-group-store",
@@ -211,10 +212,12 @@ export const useGroupStore = defineStore(
     // 群成员退出群聊
     const quitGroup = async (
       roomId: string,
-      type: string
+      type: ConversationType
     ): Promise<[string | null, I_QuitGroupApiResult["data"] | null]> => {
       try {
         const res = await quitGroupApi({ roomId, type });
+        // 删除会话
+        await chatStore.deleteSession({ roomId, type });
         // 重置当前currentConversation
         await chatStore.resetCurrentConversation();
         reloadPage(true);

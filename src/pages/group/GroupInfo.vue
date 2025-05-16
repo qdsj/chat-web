@@ -73,8 +73,11 @@ const getGroupMember = async () => {
     );
   }
   if (currentGroup && currentGroup.id === groupInfo.value.groupId) {
-    groupMemberList.value = currentGroup.member;
-    showMemberList.value = currentGroup.member;
+    const acceptedMembers = currentGroup.member.filter(
+      (member) => member?.chatRoomShipInfo?.status === "accepted"
+    );
+    groupMemberList.value = acceptedMembers;
+    showMemberList.value = acceptedMembers;
   }
 };
 

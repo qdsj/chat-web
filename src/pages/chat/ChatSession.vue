@@ -14,6 +14,19 @@ const props = defineProps({
   },
 });
 const hasMessages = computed(() => props.data?.messages?.length > 0);
+
+// 计算最后一条非系统消息
+const lastNonSystemMessage = computed(() => {
+  // 倒序查找第一个非系统消息
+  return [...props.data.messages]
+    .reverse()
+    .find((msg) => msg.msgType !== "server");
+});
+
+// 判断是否存在有效消息
+const hasValidMessages = computed(() => {
+  return props.data.messages.some((msg) => msg.msgType !== "server");
+});
 </script>
 
 <template>
@@ -39,8 +52,8 @@ const hasMessages = computed(() => props.data?.messages?.length > 0);
       </div>
       <div
         class="last-message"
-        v-if="hasMessages"
-        v-html="data.messages.at(-1)?.content ?? ''"
+        v-if="hasValidMessages"
+        v-html="lastNonSystemMessage?.content ?? ''"
       ></div>
     </div>
     <!-- 置顶 -->

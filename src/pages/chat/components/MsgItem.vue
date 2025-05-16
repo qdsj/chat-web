@@ -76,35 +76,48 @@ const Compo = {
 </script>
 
 <template>
-  <div
-    class="message flex"
-    :class="{
-      'flex-row-reverse message-self': isSelf(msg.senderId),
-      'message-other': !isSelf(msg.senderId),
-    }"
-  >
-    <AvatarBase :avatar="avatar" :alt="alt" :width="45"></AvatarBase>
-    <div class="message-container">
-      <div
-        v-if="
-          chatStore.currentConversation?.type === 'group' &&
-          !isSelf(msg.senderId)
-        "
-        class="username"
-      >
-        {{ username }}
-      </div>
-      <div class="message-content" shadow="never">
-        <component
-          :is="Compo[msg.msgType! as keyof typeof Compo]"
-          :msg="msg"
-        ></component>
+  <template v-if="msg.msgType === 'server'">
+    <div class="serverMessage">
+      {{ `"${JSON.parse(msg.content).content}" ` }}
+    </div>
+  </template>
+  <template v-else>
+    <div
+      class="message flex"
+      :class="{
+        'flex-row-reverse message-self': isSelf(msg.senderId),
+        'message-other': !isSelf(msg.senderId),
+      }"
+    >
+      <AvatarBase :avatar="avatar" :alt="alt" :width="45"></AvatarBase>
+      <div class="message-container">
+        <div
+          v-if="
+            chatStore.currentConversation?.type === 'group' &&
+            !isSelf(msg.senderId)
+          "
+          class="username"
+        >
+          {{ username }}
+        </div>
+        <div class="message-content" shadow="never">
+          <component
+            :is="Compo[msg.msgType! as keyof typeof Compo]"
+            :msg="msg"
+          ></component>
+        </div>
       </div>
     </div>
-  </div>
+  </template>
 </template>
 
 <style scoped lang="scss">
+.serverMessage {
+  text-align: center;
+  margin: 15px;
+  font-size: 18px;
+  color: grey;
+}
 .message {
   display: flex;
   align-items: center;
